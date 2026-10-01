@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head><meta charset="utf-8"><title>RONIN — ساخت آیکن‌ها</title>
+<style>
+body{font-family:sans-serif;background:#05070f;color:#eef1ff;padding:24px}
+button{font-size:18px;padding:12px 22px;border-radius:12px;border:1px solid #7c5cff;
+background:#12172e;color:#eef1ff;cursor:pointer}
+#log{white-space:pre-line;margin-top:16px;color:#22d3ee}
+</style></head>
+<body>
+<h2>ساخت آیکن‌های رونین</h2>
+<p>دکمه رو بزن، ۴ فایل PNG دانلود می‌شه. همه رو کنار <code>index.html</code> بذار.</p>
+<button id="go">دانلود همهٔ آیکن‌ها</button>
+<div id="log"></div>
+<script>
+/* محتوای آیکن (همون طرح فعلی: 忍 + گرادیان بنفش/فیروزه‌ای) */
+var INNER =
+  '<path d="M256 60l150 86v220l-150 86-150-86V146z" fill="#0b1030" ' +
+  'stroke="url(#g)" stroke-width="14"/>' +
+  '<path d="M160 352L352 160" stroke="url(#g)" stroke-width="22" ' +
+  'stroke-linecap="round"/>' +
+  '<text x="256" y="310" text-anchor="middle" font-size="150" ' +
+  'fill="#eef1ff" font-family="sans-serif">忍</text>';
+
+var DEFS = '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+  '<stop offset="0" stop-color="#7c5cff"/>' +
+  '<stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>';
+
+/* آیکن معمولی: مربع گرد */
+function svgNormal() {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
+    DEFS +
+    '<rect width="512" height="512" rx="96" fill="#05070f"/>' +
+    INNER + '</svg>';
+}
+
+/* آیکن maskable: پس‌زمینهٔ تمام‌پر + محتوا داخل ناحیهٔ امن ۸۰٪ */
+function svgMaskable() {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
+    DEFS +
+    '<rect width="512" height="512" fill="#05070f"/>' +
+    '<g transform="translate(256,256) scale(0.78) translate(-256,-256)">' +
+    INNER + '</g></svg>';
+}
+
+function toPng(svg, size) {
+  return new Promise(function (res, rej) {
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement("canvas");
+      c.width = c.height = size;
+      c.getContext("2d").drawImage(img, 0, 0, size, size);
+      c.toBlob(function (b) { res(b); }, "image/png");
+    };
+    img.onerror = rej;
+    img.src = "data:image/svg+xml;charset=utf-8," +
+      encodeURIComponent(svg);
+  });
+}
+
+function save(blob, name) {
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+var JOBS = [
+  [svgNormal(),   180, "apple-touch-icon.png"],
+  [svgNormal(),   192, "icon-192.png"],
+  [svgNormal(),   512, "icon-512.png"],
+  [svgMaskable(), 512, "icon-maskable-512.png"]
+];
+
+document.getElementById("go").onclick = function () {
+  var log = document.getElementById("log");
+  log.textContent = "داره می‌سازه…";
+  JOBS.reduce(function (p, j) {
+    return p.then(function () {
+      return toPng(j[0], j[1]).then(function (b) {
+        save(b, j[2]);
+        log.textContent += "\n✅ " + j[2] + " (" + j[1] + "×" + j[1] + ")";
+        return new Promise(function (r) { setTimeout(r, 700); });
+      });
+    });
+  }, Promise.resolve()).then(function () {
+    log.textContent += "\n\nتمام شد! فایل‌ها رو کنار index.html بذار.";
+  });
+};
+</script>
+</body></html>
