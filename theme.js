@@ -1,13 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════
    RONIN STORE — theme.js | تم دارک/روشن خودکار
-   اول از تنظیم گوشی پیروی می‌کنه، بعد از زدن دکمه، انتخاب کاربر ذخیره می‌شه
    ═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
   var KEY = "ronin-theme";
   var root = document.documentElement;
 
-  /* ── خواندن تم ذخیره‌شده یا تنظیم گوشی ── */
   function readSaved() {
     try { return localStorage.getItem(KEY); } catch (e) { return null; }
   }
@@ -20,8 +18,6 @@
   var saved = readSaved();
   var manual = (saved === "light" || saved === "dark");
   var theme = manual ? saved : systemTheme();
-
-  /* ── اعمال فوری روی <html> (قبل از رندر → بدون چشمک) ── */
   root.dataset.theme = theme;
 
   function syncMeta(t) {
@@ -32,7 +28,6 @@
   }
   syncMeta(theme);
 
-  /* ── استایل تم روشن (تزریق می‌شه، پس فایل CSS جدا لازم نیست) ── */
   function injectCss() {
     if (document.getElementById("theme-css")) return;
     var s = document.createElement("style");
@@ -49,7 +44,6 @@
     document.head.appendChild(s);
   }
 
-  /* ── اعمال تم + آپدیت دکمه و متاها ── */
   function apply(t, save) {
     root.dataset.theme = t;
     syncMeta(t);
@@ -65,7 +59,6 @@
     }
   }
 
-  /* ── ساخت دکمهٔ تم داخل نوار بالا ── */
   function injectBtn() {
     var tools = document.querySelector("#top .tools");
     if (!tools || document.getElementById("themeToggle")) return;
@@ -79,10 +72,9 @@
       var next = root.dataset.theme === "dark" ? "light" : "dark";
       apply(next, true);
     });
-    tools.appendChild(b);
+    tools.insertBefore(b, tools.firstChild);
   }
 
-  /* ── پیروی از تغییر تنظیم گوشی (فقط اگه کاربر خودش انتخاب نکرده) ── */
   try {
     var mq = matchMedia("(prefers-color-scheme: light)");
     var onSys = function (e) { if (!manual) apply(e.matches ? "light" : "dark", false); };
@@ -90,7 +82,6 @@
     else if (mq.addListener) mq.addListener(onSys);
   } catch (e) {}
 
-  /* ── آماده‌سازی وقتی DOM آمد ── */
   function ready() {
     injectCss();
     injectBtn();
