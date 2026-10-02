@@ -1,0 +1,209 @@
+/* ═══════════════════════════════════════════════════════════
+   RONIN STORE — V2 "CINEMATIC CITY" 🌃
+   فقط ظاهر — هیچ قابلیتی عوض نمی‌شود
+   باید آخرین CSS سایت لود شود
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 0) خاموش کردن شهر قدیمی → پس‌زمینه زنده (کانواس) ──── */
+#city{display:none!important}
+html{scroll-behavior:smooth}
+body{
+  background:
+    linear-gradient(180deg,rgba(4,3,15,.72),rgba(4,3,15,.90)),
+    url("https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=1800&q=80") center/cover no-repeat,
+    #04030f!important;
+  background-color:#04030f;
+}
+::selection{background:rgba(255,79,216,.40)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#8b5cff,#2fe6ff);border-radius:20px}
+
+/* ── 1) هدر: نوار فرمان شیشه‌ای ───────────────────────── */
+#top{
+  margin:10px 12px 0!important;
+  border-radius:20px!important;
+  border:1px solid rgba(160,110,255,.35)!important;
+  background-color:rgba(12,9,34,.82)!important;
+  background-image:linear-gradient(135deg,rgba(20,14,52,.86),rgba(8,7,24,.80))!important;
+  backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:0 18px 50px rgba(0,0,0,.60),0 0 34px rgba(139,92,255,.22),
+             inset 0 0 0 1px rgba(47,230,255,.08)!important;
+}
+#top::after{
+  content:"";position:absolute;left:18px;right:18px;bottom:-1px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,#2fe6ff,#8b5cff,#ff4fd8,transparent);
+  opacity:.85;pointer-events:none;
+}
+.brandmark{box-shadow:0 0 22px rgba(47,230,255,.55)}
+.nav a.on{
+  background-image:linear-gradient(135deg,rgba(139,92,255,.40),rgba(47,230,255,.20))!important;
+  box-shadow:0 0 0 1px rgba(47,230,255,.42),0 0 22px rgba(139,92,255,.40)}
+.nav a.on,.nav a{border-radius:999px}
+
+/* جستجوی پیل (فقط دسکتاپ عریض) */
+#searchBtn{
+  display:inline-flex!important;align-items:center;gap:9px;justify-content:flex-start;
+  width:auto!important;height:40px!important;border-radius:999px!important;padding:0 14px!important;
+  border:1px solid rgba(120,180,255,.22)!important;background-color:rgba(10,12,34,.55)!important;
+}
+@media(min-width:1180px){
+  #searchBtn{width:250px!important}
+  #searchBtn::after{content:"جستجو در دنیای رونین…";color:#9aa0d4;font-size:12.5px;white-space:nowrap}
+}
+
+/* ── 2) سایدبار: سیستم‌عامل انیمه ────────────────────── */
+#rail{
+  background-image:linear-gradient(180deg,rgba(16,12,44,.72),rgba(6,6,20,.88))!important;
+  background-color:rgba(8,7,24,.82)!important;
+  border:1px solid rgba(160,110,255,.22)!important;border-radius:22px!important;
+  box-shadow:0 22px 60px rgba(0,0,0,.55),inset 0 0 0 1px rgba(47,230,255,.06)!important;
+}
+.ditem{border-radius:14px;transition:.18s}
+.ditem.on{
+  background-image:linear-gradient(135deg,rgba(139,92,255,.38),rgba(47,230,255,.18));
+  box-shadow:0 0 0 1px rgba(47,230,255,.35),0 8px 24px rgba(139,92,255,.28)}
+.railuser,.premcard{
+  border-radius:16px!important;border:1px solid rgba(160,110,255,.28)!important;
+  background-image:linear-gradient(160deg,rgba(30,20,70,.70),rgba(10,8,28,.82))!important}
+.premcard{
+  background-image:linear-gradient(160deg,rgba(139,92,255,.28),rgba(255,79,216,.14))!important;
+  box-shadow:0 0 34px rgba(139,92,255,.25),inset 0 0 0 1px rgba(255,79,216,.20)!important}
+
+/* ── 3) دکمه‌ها ──────────────────────────────────────── */
+.btn{
+  border-radius:14px!important;border:1px solid rgba(150,92,255,.30)!important}
+.btn.p{
+  background-image:none;
+  background-image:linear-gradient(135deg,#8b5cff,#2fe6ff)},
+}
+. .btn. .btn.gd{background-image:linear-gradient(135deg,#ffce56,#ff4fd8);border:0!important}
+.btn:active{transform:translateY(1px)}
+.icobtn{border-radius:12px;border:1px solid rgba(150,120,255,.16);background-color:rgba(12,12,36,.5)}
+
+/* ── 4) هیرو سینمایی ─────────────────────────────────── */
+.hero{
+  position:relative;isolation:isolate;
+  background-image:
+    linear-gradient(180deg,rgba(4,3,15,.28),rgba(4,3,15,.86) 72%,rgba(4,3,15,.97)),
+    url("https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=1800&q=80")!important;
+  background-size:cover!important;background-position:center!important;
+  border-radius:26px!important;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.65),0 0 50px rgba(139,92,255,.18)!important;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(640px 320px at 82% 16%,rgba(255,79,216,.40),transparent 62%),
+    radial-gradient(520px 280px at 8% 92%,rgba(47,230,255,.32),transparent 62%);
+  mix-blend-mode:screen;
+}
+.hero>*{position:relative;z-index:2}
+.hero h1{color:#fff!important;text-shadow:0 0 26px rgba(139,92,255,.75),0 4px 26px rgba(0,0,0,.8)}
+.hero p{color:#dfe3ff!important;text-shadow:0 2px 14px rgba(0,0,0,.85)}
+
+/* ── 5) کارت‌ها: HUD شیشه‌ای ──────────────────────────── */
+.card,.qc{
+  border-radius:20px!important;
+  border:1px solid rgba(150,120,255,.20)!important;
+  background-image:linear-gradient(160deg,rgba(18,14,46,.62),rgba(7,6,22,.78))!important;
+  background-color:rgba(8,7,24,.72)!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.45),inset 0 0 0 1px rgba(47,230,255,.05)!important;
+  transition:transform .2s,box-shadow .2s,border-color .2s}
+.qc:hover{transform:translateY(-4px);
+  box-shadow:0 22px 55px rgba(0,0,0,.55),0 0 34px rgba(139,92,255,.28)!important;
+  border-color:rgba(47,230,255,.45)!important}
+.qc .qi{filter:drop-shadow(0 0 14px rgba(47,230,255,.55))}
+.h2{color:#fff!important;text-shadow:0 0 20px rgba(139,92,255,.5)}
+
+/* ── 6) انیمه: کاورهای رنگی ──────────────────────────── */
+.anime{border-radius:20px!important;overflow:hidden;
+  border:1px solid rgba(150,120,255,.20)!important;
+  background-image:linear-gradient(170deg,rgba(18,14,46,.66),rgba(7,6,22,.86))!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.45)!important;transition:transform .2s,box-shadow .2s}
+.anime:hover{transform:translateY(-5px);box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 34px rgba(255,79,216,.25)!important}
+.anime .cover{
+  background-size:cover!important;background-position:center!important;
+  font-size:42px!important;text-shadow:0 0 26px rgba(255,255,255,.45),0 6px 22px rgba(0,0,0,.7)}
+.anime:nth-child(6n+1) .cover{background-image:linear-gradient(160deg,#3b1e6e,#0d2a4d)!important}
+.anime:nth-child(6n+2) .cover{background-image:linear-gradient(160deg,#5a1b52,#241a5e)!important}
+.anime:nth-child(6n+3) .cover{background-image:linear-gradient(160deg,#0e3d5c,#3a1d68)!important}
+.anime:nth-child(6n+4) .cover{background-image:linear-gradient(160deg,#4d1130,#1b2a63)!important}
+.anime:nth-child(6n+5) .cover{background-image:linear-gradient(160deg,#123a4f,#5b2a10)!important}
+.anime:nth-child(6n+6) .cover{background-image:linear-gradient(160deg,#2a1148,#0f3d3a)!important}
+
+/* ── 7) اخبار ────────────────────────────────────────── */
+.news{
+  border-radius:18px!important;border:1px solid rgba(150,120,255,.18)!important;
+  background-image:linear-gradient(160deg,rgba(18,14,46,.60),rgba(7,6,22,.80))!important;
+  box-shadow:0 14px 36px rgba(0,0,0,.42)!important;transition:transform .18s}
+.news:hover{transform:translateY(-3px)}
+.news .thumb{
+  border-radius:14px!important;
+  background-image:linear-gradient(150deg,rgba(139,92,255,.55),rgba(47,230,255,.30))!important;
+  box-shadow:0 0 24px rgba(139,92,255,.35);font-size:26px!important}
+
+/* ── 8) فروشگاه ──────────────────────────────────────── */
+.prod{border-radius:20px!important;overflow:hidden;
+  border:1px solid rgba(150,120,255,.20)!important;
+  background-image:linear-gradient(170deg,rgba(18,14,46,.66),rgba(7,6,22,.86))!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.45)!important;transition:transform .2s,box-shadow .2s}
+.prod:hover{transform:translateY(-5px);box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 34px rgba(47,230,255,.25)!important}
+.prod .pimg{
+  background-image:linear-gradient(160deg,#1c1147,#0b2c4a)!important;
+  font-size:44px!important;text-shadow:0 0 26px rgba(47,230,255,.45)}
+.price{color:#ffce56!important;text-shadow:0 0 16px rgba(255,206,86,.55)}
+
+/* ── 9) پست‌ها ───────────────────────────────────────── */
+.post{
+  border-radius:20px!important;border:1px solid rgba(150,120,255,.18)!important;
+  background-image:linear-gradient(160deg,rgba(18,14,46,.60),rgba(7,6,22,.82))!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.42)!important}
+.pbody{line-height:2}
+.act{
+  border-radius:999px!important;border:1px solid rgba(150,120,255,.18)!important;
+  background-color:rgba(14,12,38,.6)!important;transition:.16s}
+.act:hover{border-color:rgba(47,230,255,.45)!important;background-color:rgba(24,20,60,.75)!important}
+.act.on{border-color:rgba(255,79,216,.55)!important;box-shadow:0 0 20px rgba(255,79,216,.35)}
+
+/* ── 10) تب‌ها / چیپ‌ها / چت / مودال (فقط ظاهر) ──────── */
+.tabs{border-radius:16px!important;border:1px solid rgba(150,120,255,.16)!important;
+  background-color:rgba(10,9,30,.55)!important}
+.tab.on{background-image:linear-gradient(135deg,rgba(139,92,255,.42),rgba(47,230,255,.20))!important;
+  border-radius:12px!important}
+.chip{border-radius:999px!important;border:1px solid rgba(150,120,255,.24)!important}
+.chat,.cbody{border-radius:20px!important}
+.chead{border-bottom:1px solid rgba(150,120,255,.16)}
+.inp,.area,.sel{
+  border-radius:14px!important;border:1px solid rgba(150,120,255,.22)!important;
+  background-color:rgba(10,9,30,.65)!important}
+.inp:focus,.area:focus{border-color:rgba(47,230,255,.55)!important;
+  box-shadow:0 0 0 3px rgba(47,230,255,.14)!important}
+.modal .box{
+  border-radius:24px!important;border:1px solid rgba(160,110,255,.30)!important;
+  background-image:linear-gradient(160deg,rgba(22,16,58,.96),rgba(8,7,24,.97))!important;
+  box-shadow:0 40px 100px rgba(0,0,0,.75),0 0 60px rgba(139,92,255,.25)!important}
+.carc{border-radius:18px!important;border:1px solid rgba(150,120,255,.22)!important;
+  background-image:linear-gradient(160deg,rgba(18,14,46,.70),rgba(7,6,22,.86))!important;transition:.18s}
+.carc:hover{transform:translateY(-4px);border-color:rgba(47,230,255,.45)!important}
+.carc.on{border-color:rgba(255,79,216,.60)!important;box-shadow:0 0 30px rgba(255,79,216,.30)!important}
+
+/* ── 11) داک موبایل ──────────────────────────────────── */
+#dock{
+  margin:0 10px 8px!important;border-radius:22px!important;
+  border:1px solid rgba(160,110,255,.30)!important;
+  background-image:linear-gradient(160deg,rgba(20,14,52,.88),rgba(8,7,24,.92))!important;
+  box-shadow:0 -14px 44px rgba(0,0,0,.55),0 0 34px rgba(139,92,255,.22)!important;
+  backdrop-filter:blur(16px)}
+#dock a.on{color:#fff!important;text-shadow:0 0 14px rgba(47,230,255,.85)}
+
+/* ── 12) موبایل و صرفه‌جویی ──────────────────────────── */
+@media(max-width:760px){
+  #top{margin:8px 8px 0!important;border-radius:16px!important}
+  #top::after{left:10px;right:10px}
+  .hero{border-radius:20px!important}
+  .hero h1{text-shadow:0 0 18px rgba(139,92,255,.7),0 3px 18px rgba(0,0,0,.85)}
+  .card,.qc,.anime,.prod,.post{border-radius:16px!important}
+  .anime .cover{font-size:36px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation-duration:.01ms!important}
+}
