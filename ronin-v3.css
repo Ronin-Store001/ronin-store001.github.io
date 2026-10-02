@@ -1,0 +1,151 @@
+/* ═══ RONIN V3 — هدر + هیرو (تیکه ۱) ═══ */
+:root{--rnH:64px;--rnTxt:var(--ink,#eef1ff);--rnSub:var(--mut,#9aa0d4)}
+:focus-visible{outline:2px solid #2fe6ff;outline-offset:2px}
+
+/* ── هدر شناور ── */
+body #top{height:var(--rnH);top:12px;inset-inline:12px;max-width:1560px;
+  padding:0 14px;display:flex;align-items:center;gap:12px;z-index:60;
+  margin-inline:auto!important;border-radius:18px!important;
+  border:1px solid rgba(160,110,255,.35)!important;
+  background-color:rgba(9,10,30,.78)!important;
+  background-image:linear-gradient(135deg,rgba(17,14,46,.90),rgba(7,7,22,.82))!important;
+  box-shadow:0 16px 44px rgba(0,0,0,.55),0 0 30px rgba(139,92,255,.16)!important;
+  backdrop-filter:blur(16px) saturate(1.35);-webkit-backdrop-filter:blur(16px) saturate(1.35);
+  transition:height .28s ease,box-shadow .28s ease}
+body.rnScroll #top{height:54px;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 22px rgba(139,92,255,.12)!important}
+.brandmark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#8b5cff,#2fe6ff);color:#fff;font-weight:900;font-size:19px;
+  box-shadow:0 0 20px rgba(139,92,255,.55)}
+.brandtx b{font-size:15px;letter-spacing:2px;color:var(--rnTxt)}
+.brandtx small{font-size:9.5px;letter-spacing:1.1px;color:var(--rnSub)}
+
+/* ابزارهای هدر + ترتیب */
+#top .tools{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
+#top .tools>#searchBtn{order:1}
+#top .tools>#bellBtn{order:2}
+#top .tools>#themeToggle{order:3}
+#top .tools>[data-go="chat"]{order:4}
+#top .tools>#rnAvBtn{order:5}
+#top .tools>[data-guest]{order:6}
+#top .tools>#railBtn{order:9}
+#top .tools>[data-logout]{display:none!important}
+#top .icobtn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  border:1px solid rgba(120,180,255,.2);background:rgba(10,12,32,.45);color:var(--rnTxt);
+  font-size:16px;transition:.18s;cursor:pointer;position:relative}
+#top .icobtn:hover{border-color:rgba(160,110,255,.5);background:rgba(139,92,255,.16);transform:translateY(-1px)}
+#top .icobtn[aria-expanded="true"]{border-color:rgba(47,230,255,.5);box-shadow:0 0 16px rgba(47,230,255,.35)}
+#top #searchBtn{width:38px!important;height:38px!important;justify-content:center}
+@media(min-width:1320px){
+  #top #searchBtn{width:230px!important;display:inline-flex!important;gap:9px;justify-content:flex-start;padding:0 14px!important;border-radius:12px!important}
+  #top #searchBtn::after{content:"جستجو در رونین…";color:var(--rnSub);font-size:12.5px;white-space:nowrap}
+}
+/* ── هیرو سینمایی ── */
+.hero{position:relative;overflow:hidden;border-radius:26px;
+  border:1px solid rgba(160,110,255,.30)!important;
+  background-color:#06050f!important;
+  background-image:
+    radial-gradient(720px 380px at 85% 12%,rgba(255,79,216,.30),transparent 60%),
+    radial-gradient(560px 320px at 8% 96%,rgba(47,230,255,.24),transparent 60%),
+    linear-gradient(180deg,rgba(5,4,15,.35),rgba(5,4,15,.88) 72%,rgba(5,4,15,.97)),
+    var(--art1,linear-gradient(135deg,#1a1040,#05040f))!important;
+  background-size:cover!important;background-position:center!important;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 0 1px rgba(47,230,255,.06)}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:
+    radial-gradient(620px 300px at 78% 20%,rgba(139,92,255,.28),transparent 62%),
+    radial-gradient(480px 240px at 12% 88%,rgba(47,230,255,.20),transparent 62%);
+  mix-blend-mode:screen}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.20;
+  background-image:linear-gradient(rgba(120,180,255,.14) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,180,255,.14) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(circle at 50% 40%,#000 30%,transparent 78%);
+  mask-image:radial-gradient(circle at 50% 40%,#000 30%,transparent 78%)}
+.hero h1,.hero p,.hero .cta,.hero .row,.hero .halo{position:relative;z-index:2}
+.hero .halo{width:150px;height:150px;filter:blur(6px);opacity:.75;animation:rnPulse 4.5s ease-in-out infinite}
+.hero h1{font-size:clamp(24px,4.4vw,46px);line-height:1.35;letter-spacing:.5px;
+  color:#f4f6ff;text-shadow:0 0 34px rgba(139,92,255,.55),0 4px 26px rgba(0,0,0,.65)}
+.hero h1::before{content:"RONIN UNIVERSE • LIVE";display:block;width:max-content;margin:0 auto 12px;
+  font-size:10.5px;letter-spacing:3px;color:#bfe9ff;padding:6px 14px;border-radius:999px;
+  border:1px solid rgba(47,230,255,.40);background:rgba(9,14,38,.55);
+  box-shadow:0 0 18px rgba(47,230,255,.25)}
+.hero p{font-size:clamp(12.5px,1.6vw,16px);color:#c9cff2;max-width:640px;margin-inline:auto}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:20px}
+.hero .cta .btn{position:relative;overflow:hidden;border-radius:14px;padding:12px 22px;font-weight:700}
+.hero .cta .btn.p{background-image:linear-gradient(135deg,#8b5cff,#2fe6ff)!important;border:0!important;color:#fff;
+  box-shadow:0 14px 38px rgba(139,92,255,.45),0 0 26px rgba(47,230,255,.35)}
+.hero .cta .btn:not(.p){background-color:rgba(10,12,34,.55)!important;
+  border:1px solid rgba(160,110,255,.42)!important;color:#eaefff!important;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hero .cta .btn::after{content:"";position:absolute;top:0;bottom:0;width:38%;
+  inset-inline-start:-60%;transform:skewX(-18deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  transition:inset-inline-start .55s ease}
+.hero .cta .btn:hover::after{inset-inline-start:130%}
+.hero .chip{border:1px solid rgba(120,180,255,.22);background:rgba(9,12,32,.6);
+  border-radius:999px;padding:5px 12px;font-size:11.5px;color:#cfd6ff}
+@keyframes rnPulse{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.09);opacity:.9}}
+@keyframes rnUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero h1{animation:rnUp .7s ease both}
+.hero p{animation:rnUp .7s .08s ease both}
+.hero .cta,.hero .row{animation:rnUp .7s .16s ease both}
+/* ── داک موبایل (HUD) ── */
+@media(min-width:1025px){#dock{display:none!important}}
+@media(max-width:1024px){
+  #dock{display:block!important;position:fixed;inset-inline:10px;
+    bottom:calc(8px + env(safe-area-inset-bottom));z-index:70;pointer-events:none}
+  #dock .dwrap{pointer-events:auto;display:flex;justify-content:space-between;align-items:center;gap:4px;
+    padding:8px 10px;border-radius:22px;border:1px solid rgba(160,110,255,.35);
+    background:linear-gradient(160deg,rgba(18,14,50,.92),rgba(8,7,24,.88));
+    backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+    box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 30px rgba(139,92,255,.18)}
+  #dock a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;
+    border-radius:14px;font-size:9px;color:#9aa0d4;transition:.2s;position:relative}
+  #dock a i{font-size:18px;font-style:normal}
+  #dock a.on{color:#fff;
+    background-image:linear-gradient(135deg,rgba(139,92,255,.38),rgba(47,230,255,.16));
+    box-shadow:0 0 0 1px rgba(47,230,255,.40),0 0 18px rgba(139,92,255,.35)}
+  #dock a.on::before{content:"";position:absolute;top:-9px;width:26px;height:3px;border-radius:3px;
+    background:linear-gradient(90deg,#2fe6ff,#8b5cff,#ff4fd8);box-shadow:0 0 12px rgba(47,230,255,.8)}
+}
+
+/* ── ریسپانسیو هدر ── */
+@media(max-width:1024px){
+  body #top{height:56px;top:8px;inset-inline:8px;padding:0 10px;border-radius:16px}
+  body #stage{padding-top:calc(8px + 56px + 16px)!important;padding-bottom:120px!important}
+  #top .tools>[data-go="chat"],#top .tools>#themeToggle{display:none!important}
+  .brandtx small{display:none}
+  #top .tools{gap:6px}
+}
+@media(max-width:520px){
+  #top .tools>[data-guest]{display:none!important}
+  #top .icobtn{width:36px;height:36px}
+  #top .brandmark{width:34px;height:34px;font-size:17px}
+}
+
+/* ── تم روشن (Premium Light) ── */
+html[data-theme="light"]{
+  --ink:#151a3a;--mut:#5a628f;--bg:#eef1fb;
+  --g1:rgba(255,255,255,.86);--g2:rgba(255,255,255,.94);--g3:rgba(250,251,255,.98);
+  --ln:rgba(90,110,200,.22);--ln2:rgba(120,110,255,.32)}
+html[data-theme="light"] body{background-color:#eef1fb!important;background-image:
+  radial-gradient(900px 600px at 85% -10%,rgba(139,92,255,.14),transparent 60%),
+  radial-gradient(760px 520px at 5% 4%,rgba(47,230,255,.12),transparent 60%),
+  linear-gradient(180deg,#f7f8ff,#e9edfa)!important}
+html[data-theme="light"] #top{background-color:rgba(255,255,255,.84)!important;
+  background-image:linear-gradient(135deg,rgba(255,255,255,.94),rgba(240,243,255,.88))!important;
+  border-color:rgba(120,110,255,.28)!important;box-shadow:0 14px 40px rgba(40,50,110,.16)!important}
+html[data-theme="light"] #top .icobtn{background:rgba(240,243,255,.8)!important;color:#1b2148!important}
+html[data-theme="light"] #rail{background-image:linear-gradient(180deg,rgba(255,255,255,.88),rgba(238,241,252,.94))!important}
+html[data-theme="light"] #dock .dwrap{background:linear-gradient(160deg,rgba(255,255,255,.95),rgba(238,241,252,.92));
+  border-color:rgba(120,110,255,.25);box-shadow:0 14px 34px rgba(40,50,110,.18)}
+html[data-theme="light"] #dock a{color:#5a628f}
+html[data-theme="light"] #dock a.on{color:#1b2148}
+html[data-theme="light"] .inp,html[data-theme="light"] .area,html[data-theme="light"] .sel{
+  background:rgba(255,255,255,.94)!important;color:#151a3a!important;border-color:rgba(120,110,255,.25)!important}
+
+/* ── احترام به کاهش انیمیشن ── */
+@media(prefers-reduced-motion:reduce){
+  .hero h1,.hero p,.hero .cta,.hero .row,.hero .halo{animation:none!important}
+  body #top{transition:none!important}
+}
