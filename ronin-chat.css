@@ -1,0 +1,136 @@
+/* ═══════════════════════════════════════════════════════════
+   RONIN CHAT+ — ارتقای ظاهر چت (فقط ظاهر)
+   فایل جدید — به هیچ فایل قبلی دست نمی‌زند
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── پایه ── */
+.chat{position:relative}
+.cbar{position:relative}
+[data-go="chat"]{position:relative}
+.ditem{position:relative}
+
+/* ── پیام ── */
+.cpmsg{position:relative;display:flex;align-items:flex-end;gap:9px;max-width:86%;
+  animation:cpin .28s ease}
+.cpmsg.me{margin-inline-start:auto;flex-direction:row-reverse}
+@keyframes cpin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* آواتار + نقطه آنلاین */
+.avw{position:relative;flex-shrink:0}
+.avw .ondot{position:absolute;bottom:0;inset-inline-end:0;width:10px;height:10px;
+  border-radius:50%;background:#3ddf9b;border:2px solid #0a0d22;
+  box-shadow:0 0 8px rgba(61,223,155,.9)}
+
+/* نام + نشان پرمیوم */
+.cpmain{min-width:0;display:flex;flex-direction:column}
+.cpmsg.me .cpmain{align-items:flex-end}
+.cpname{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;
+  color:#8fdcff;margin:0 4px 3px}
+.cpname:empty{display:none}
+.cpbadge{font-size:9.5px;padding:1px 6px;border-radius:999px;
+  background:linear-gradient(135deg,rgba(255,206,86,.22),rgba(255,79,216,.18));
+  border:1px solid rgba(255,206,86,.45);color:#ffce56;font-weight:800}
+
+/* حباب */
+.cpmsg .bub{position:relative;padding:9px 13px;border-radius:15px 15px 15px 4px;
+  font-size:13px;line-height:1.8;word-break:break-word;
+  background:rgba(255,255,255,.07);border:1px solid rgba(150,120,255,.22)}
+.cpmsg.me .bub{border-radius:15px 15px 4px 15px;
+  background:linear-gradient(135deg,rgba(139,92,255,.42),rgba(47,230,255,.28));
+  border-color:rgba(47,230,255,.35)}
+
+/* نقل‌قول ریپلای */
+.cprp{margin:0 4px 5px;padding:5px 9px;border-radius:9px;font-size:11px;color:#c9cff2;
+  background:rgba(9,12,32,.6);border-inline-start:3px solid #2fe6ff;max-width:230px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cprp b{color:#8fdcff;font-size:10px;display:block}
+
+/* نوار واکنش */
+.rxbar{display:flex;gap:3px;margin:0 4px;height:0;overflow:hidden;opacity:0;
+  transform:translateY(4px);transition:.18s;pointer-events:none}
+.cpmsg:hover .rxbar,.cpmsg.rxopen .rxbar{height:28px;margin-top:4px;opacity:1;
+  transform:none;pointer-events:auto}
+.rxb{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid rgba(150,120,255,.25);background:rgba(10,12,34,.72);
+  font-size:13px;cursor:pointer;transition:.15s;padding:0}
+.rxb:hover{transform:scale(1.18);border-color:#2fe6ff;
+  box-shadow:0 0 12px rgba(47,230,255,.5)}
+.rxchips{display:flex;gap:4px;flex-wrap:wrap;margin:4px 4px 0}
+.rxchip{font-size:11px;padding:2px 8px;border-radius:999px;
+  background:rgba(139,92,255,.18);border:1px solid rgba(150,120,255,.3);
+  cursor:pointer;color:#e6e2ff}
+.rxchip.mine{border-color:#2fe6ff;background:rgba(47,230,255,.16);
+  box-shadow:0 0 10px rgba(47,230,255,.25)}
+@media(hover:none){
+  .rxbar{display:none}
+  .cpmsg.rxopen .rxbar{display:flex;height:28px;margin-top:4px;opacity:1;
+    transform:none;pointer-events:auto}
+}
+
+/* نشانگر «در حال نوشتن» */
+.cpTyping{position:absolute;bottom:74px;inset-inline-start:14px;z-index:6;display:none;
+  align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-size:11.5px;
+  color:#cfe0ff;background:rgba(10,12,34,.88);border:1px solid rgba(47,230,255,.3);
+  backdrop-filter:blur(10px);pointer-events:none}
+.cpTyping.on{display:flex}
+.cpTyping i{display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:#2fe6ff;animation:cpdots 1.1s infinite}
+.cpTyping i:nth-child(2){animation-delay:.18s}
+.cpTyping i:nth-child(3){animation-delay:.36s}
+@keyframes cpdots{0%,60%,100%{opacity:.25;transform:translateY(0)}
+  30%{opacity:1;transform:translateY(-3px)}}
+
+/* شمارنده پیام نخوانده */
+.cpunread{position:absolute;top:-4px;inset-inline-end:-4px;min-width:17px;height:17px;
+  padding:0 4px;border-radius:999px;background:linear-gradient(135deg,#ff4fd8,#ff5b5b);
+  color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;
+  box-shadow:0 0 10px rgba(255,79,216,.7);pointer-events:none;z-index:5}
+
+/* پنل ایموجی */
+.cpemoji{position:relative;display:inline-flex}
+.cpemjBtn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  font-size:17px;cursor:pointer;border:1px solid rgba(120,180,255,.2);
+  background:rgba(10,12,32,.45);padding:0}
+.cpemjBtn:hover{border-color:#2fe6ff}
+.cpemojiPanel{position:absolute;bottom:calc(100% + 10px);inset-inline-end:0;z-index:20;
+  display:none;grid-template-columns:repeat(6,1fr);gap:4px;padding:9px;
+  border-radius:14px;background:rgba(10,12,34,.96);
+  border:1px solid rgba(47,230,255,.3);box-shadow:0 18px 40px rgba(0,0,0,.6);
+  width:224px}
+.cpemojiPanel.on{display:grid}
+.cpemj{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  font-size:17px;cursor:pointer;border:0;background:transparent;transition:.15s;padding:0}
+.cpemj:hover{background:rgba(139,92,255,.25);transform:scale(1.15)}
+
+/* نوار «در حال پاسخ» */
+.cpreplying{display:none;align-items:center;gap:8px;margin:6px 4px 0;padding:6px 10px;
+  border-radius:10px;font-size:11.5px;color:#cfe0ff;background:rgba(47,230,255,.10);
+  border-inline-start:3px solid #2fe6ff}
+.cpreplying.on{display:flex}
+.cpreplying b{color:#8fdcff}
+.cpreplying button{margin-inline-start:auto;border:0;background:transparent;
+  color:#ff8fb0;cursor:pointer;font-size:15px;padding:0}
+
+/* ── تم روشن ── */
+html[data-theme="light"] .cpmsg .bub{background:rgba(255,255,255,.85);
+  border-color:rgba(90,110,200,.25);color:#151a3a}
+html[data-theme="light"] .cpmsg.me .bub{
+  background:linear-gradient(135deg,rgba(139,92,255,.18),rgba(47,230,255,.14));
+  color:#151a3a}
+html[data-theme="light"] .cpname{color:#3b56a8}
+html[data-theme="light"] .cpTyping{background:rgba(255,255,255,.94);color:#2a3566}
+html[data-theme="light"] .cprp{background:rgba(255,255,255,.8);color:#2a3566}
+html[data-theme="light"] .cpemojiPanel{background:rgba(255,255,255,.97)}
+
+/* ── موبایل ── */
+@media(max-width:520px){
+  .cpmsg{max-width:92%}
+  .rxb{width:30px;height:30px}
+  .cpTyping{bottom:64px;inset-inline-start:10px}
+}
+
+/* ── حرکت کم ── */
+@media(prefers-reduced-motion:reduce){
+  .cpmsg{animation:none}
+  .cpTyping i{animation:none;opacity:.8}
+}
