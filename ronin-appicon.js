@@ -1,7 +1,7 @@
 /* ═══ RONIN STORE — APP ICON v3 · رونین: تلاش دوباره + ادامه دادن ═══ */
 "use strict";
 (function () {
-  var REPO = "mohammadislam2367/Ronin", BRANCH = "main", TK = "ronin_gh_tok";
+ var REPO = "Ronin-Store001/ronin-store001.github.io", BRANCH = "main", TK = "ronin_gh_tok";
   var API = "https://api.github.com/repos/" + REPO + "/contents/";
   var FILES = [
     { p: "icon-192.png", s: 192 },
