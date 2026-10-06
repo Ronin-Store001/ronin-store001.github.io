@@ -1,0 +1,39 @@
+/* ══════════════════════════════════════════════════════════════
+   RONIN RAIL SCROLL  ·  ronin-rail-scroll.css
+   فقط ۱ کار: منوی کناری یک اسکرول تمیز و قابلدیدن بگیرد.
+   به ساختار، data-go ها و بقیه قابلیتها دست نمیزند.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ۱) خودِ ریل = تنها اسکرولکننده (اسکرول تودرتو حذف میشود) */
+html body #rail{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;                                   /* فایرفاکس */
+  scrollbar-color:rgba(124,92,255,.9) rgba(255,255,255,.07);
+}
+
+/* ۲) .rnav دیگر اسکرول نکند — فقط محتوا را بدهد به ریل */
+html body #rail>.rnav{
+  flex:0 0 auto!important;
+  min-height:auto!important;
+  overflow:visible!important;
+}
+
+/* ۳) اسکرولبارِ دیدهشدنی (کروم / سافاری / اج) */
+html body #rail::-webkit-scrollbar{width:8px}
+html body #rail::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.06);border-radius:9px;margin:6px 0
+}
+html body #rail::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#7c5cff,#22d3ee);
+  border-radius:9px;border:1px solid rgba(255,255,255,.14)
+}
+html body #rail::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,#8d70ff,#3ce0ff)
+}
+
+/* ۴) حالت کشویی موبایل (☰): ارتفاع امن تا هیچوقت زیر صفحه نرود */
+@media (max-width:1024px){
+  html body #rail{max-height:calc(100vh - 96px)}
+}
