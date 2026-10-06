@@ -52,17 +52,28 @@
     return null;
   }
 
-  /* متن را عوض می‌کند ولی <i> و بقیه بچه‌ها (مثل شمارنده) سالم می‌مانند */
+  /* متن را عوض می‌کند ولی <i> و شمارنده‌ها (مثل #ownCount) سالم می‌مانند */
   function setLabel(node, ic, name) {
     if (!node) return;
     var i = node.querySelector("i");
     if (i && ic) i.textContent = ic;
-    var texts = [], k;
+
+    /* ۱) اگر اسم داخل <span> است (سرگروه‌ها) — فقط همان span */
+    var spans = node.querySelectorAll("span"), sp = null, k;
+    for (k = 0; k < spans.length; k++) {
+      if (!spans[k].classList.contains("cnt")) { sp = spans[k]; break; }
+    }
+    if (sp) { sp.textContent = name; return; }
+
+    /* ۲) وگرنه متن مستقیم داخل خود عنصر */
+    var texts = [];
     for (k = 0; k < node.childNodes.length; k++) {
       if (node.childNodes[k].nodeType === 3) texts.push(node.childNodes[k]);
     }
-    if (texts.length) texts[0].nodeValue = name;
-    else node.insertBefore(document.createTextNode(name), i ? i.nextSibling : node.firstChild);
+    if (texts.length) { texts[0].nodeValue = name; return; }
+
+    /* ۳) اگر هیچ متنی نبود، بساز */
+    node.insertBefore(document.createTextNode(name), i ? i.nextSibling : node.firstChild);
   }
 
   function doGroups() {
