@@ -8,7 +8,6 @@
   var seen = false, reduce = false;
   try { seen = localStorage.getItem(KEY) === "1"; } catch (e) {}
   try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-  if (!force && (seen || reduce)) return;          // فقط یکبار؛ و برای Redused-motion خاموش
   if (!force) { try { localStorage.setItem(KEY, "1"); } catch (e) {} }
 
   H.classList.add("rnIntroOn");                    // قفل از همین لحظه → بدون پرش تصویر
@@ -84,7 +83,7 @@
       at(850 + 3000 * S, function () {
         root.classList.add("brand"); brand.classList.add("on");                 // RONIN STORE
       });
-      at(850 + 5300 * S, finish);                                              // پایان
+      at(850 + 7200 * S, finish);                                              // پایان
     } catch (e) {
       H.classList.remove("rnIntroOn");
     }
