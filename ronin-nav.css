@@ -1,0 +1,18 @@
+/* ═══════ RONIN NAV — منوی گروه‌بندی‌شده ☰ ═══════ */
+#rail .rnav{display:flex;flex-direction:column;gap:6px;flex:1 1 auto;min-height:0;overflow:auto}
+#rail .rgroup{border-radius:14px;background:rgba(140,160,255,.05);
+  border:1px solid var(--r-line,rgba(140,160,255,.16));overflow:hidden}
+#rail .rgroup.hide{display:none!important}
+#rail .rghead{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;
+  border:0;background:transparent;color:var(--r-mut,#9aa3c7);font-family:inherit;
+  font-size:12.5px;font-weight:800;cursor:pointer;transition:.22s;text-align:start}
+#rail .rghead i{font-style:normal;font-size:15px}
+#rail .rghead span{flex:1 1 auto}
+#rail .rghead .rgchev{font-style:normal;opacity:.65;transition:transform .25s}
+#rail .rgroup.open>.rghead{color:#fff;background:linear-gradient(90deg,rgba(124,92,255,.24),transparent)}
+#rail .rgroup.open>.rghead .rgchev{transform:rotate(-90deg)}
+#rail .rgbody{display:none;padding:2px 6px 8px}
+#rail .rgroup.open>.rgbody{display:block;animation:rnGrow .28s cubic-bezier(.2,.7,.2,1)}
+@keyframes rnGrow{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+#rail .rgbody .ditem{padding:9px 10px;font-size:13px;border-radius:10px}
+@media(prefers-reduced-motion:reduce){#rail .rgroup.open>.rgbody{animation:none}}
