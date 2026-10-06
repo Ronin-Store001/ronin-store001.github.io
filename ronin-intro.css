@@ -1,0 +1,137 @@
+/* ══════════════════════════════════════════════════════════
+   RONIN STORE — CINEMATIC INTRO  v1  ·  ronin-intro.css
+   فایل مستقل ظاهری. به هیچ فایل دیگری دست نمیزند.
+   ══════════════════════════════════════════════════════════ */
+html.rnIntroOn{overflow:hidden!important}
+html.rnIntroOn>body>*:not(#rnIntro){visibility:hidden!important}
+
+#rnIntro{position:fixed;inset:0;z-index:99999;overflow:hidden;
+  font-family:Vazirmatn,system-ui,sans-serif;color:#eef1ff;opacity:1;
+  transition:opacity .7s ease;
+  background:radial-gradient(120% 95% at 50% 120%,#141a3e 0%,#080b1e 46%,#03040b 100%)}
+#rnIntro.out{opacity:0}
+#rnIntro *{box-sizing:border-box}
+
+/* ── ستارهها ── */
+.ri-stars{position:absolute;inset:0;opacity:0;transition:opacity 1.7s ease;
+  background-repeat:repeat;background-size:44% 42%;animation:riDrift 30s linear infinite;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 22%,rgba(255,255,255,.9),transparent),
+    radial-gradient(1.4px 1.4px at 74% 12%,rgba(180,240,255,.85),transparent),
+    radial-gradient(1.8px 1.8px at 46% 38%,rgba(255,255,255,.75),transparent),
+    radial-gradient(1.3px 1.3px at 88% 52%,rgba(200,190,255,.8),transparent),
+    radial-gradient(1.5px 1.5px at 28% 68%,rgba(255,255,255,.6),transparent),
+    radial-gradient(1.2px 1.2px at 62% 78%,rgba(160,220,255,.7),transparent),
+    radial-gradient(1.7px 1.7px at 6% 88%,rgba(255,255,255,.55),transparent),
+    radial-gradient(1.3px 1.3px at 94% 30%,rgba(255,255,255,.5),transparent)}
+#rnIntro.lit .ri-stars{opacity:.8}
+@keyframes riDrift{0%{transform:scale(1.05) translateY(0)}100%{transform:scale(1.05) translateY(-4%)}}
+
+/* ── غبار فضایی ── */
+.ri-dust{position:absolute;inset:0;opacity:0;transition:opacity 2s ease;
+  background-repeat:repeat;background-size:33% 35%;animation:riDust 17s linear infinite;
+  background-image:
+    radial-gradient(1.6px 1.6px at 20% 80%,rgba(180,230,255,.85),transparent),
+    radial-gradient(1.5px 1.5px at 60% 92%,rgba(255,255,255,.7),transparent),
+    radial-gradient(1.6px 1.6px at 82% 72%,rgba(200,190,255,.75),transparent)}
+#rnIntro.lit2 .ri-dust{opacity:.9}
+@keyframes riDust{0%{transform:translateY(0)}100%{transform:translateY(-18%)}}
+
+/* ── مه و نور دوردست ── */
+.ri-fog{position:absolute;width:min(80vw,720px);aspect-ratio:2/1;border-radius:50%;
+  filter:blur(30px);opacity:0;transition:opacity 2s ease;
+  background:radial-gradient(circle,rgba(124,92,255,.20),transparent 66%)}
+#rnIntro.lit .ri-fog{opacity:.9}
+.ri-fog.a{left:-10%;bottom:8%;animation:riFogA 22s ease-in-out infinite alternate}
+.ri-fog.b{right:-12%;bottom:18%;animation:riFogB 27s ease-in-out infinite alternate;
+  background:radial-gradient(circle,rgba(34,211,238,.17),transparent 66%)}
+@keyframes riFogA{from{transform:translateX(0)}to{transform:translateX(9%)}}
+@keyframes riFogB{from{transform:translateX(0)}to{transform:translateX(-9%)}}
+
+/* ── هالهی مرکزی ── */
+.ri-glow{position:absolute;left:50%;bottom:24%;width:min(74vw,780px);aspect-ratio:1;
+  transform:translate(-50%,16%) scale(.35);opacity:0;filter:blur(26px);
+  background:radial-gradient(circle,rgba(34,211,238,.30),rgba(124,92,255,.18) 42%,transparent 70%);
+  transition:opacity 1.9s ease,transform 2.5s cubic-bezier(.2,.7,.2,1)}
+#rnIntro.lit .ri-glow{opacity:.9;transform:translate(-50%,16%) scale(1)}
+#rnIntro.pulse .ri-glow{opacity:1}
+
+/* ── نور کف ── */
+.ri-floor{position:absolute;left:50%;bottom:13%;width:min(62vw,640px);height:58px;
+  border-radius:50%;opacity:0;transform:translateX(-50%) scaleX(.3);filter:blur(14px);
+  transition:.9s cubic-bezier(.2,.7,.2,1);
+  background:radial-gradient(ellipse,rgba(34,211,238,.44),rgba(124,92,255,.18) 46%,transparent 73%)}
+#rnIntro.pulse .ri-floor{opacity:1;transform:translateX(-50%) scaleX(1)}
+
+/* ── نور کششی سینمایی ── */
+.ri-sweep{position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-120%);
+  background:linear-gradient(105deg,transparent 38%,rgba(200,235,255,.14) 47%,
+    rgba(255,255,255,.3) 50%,rgba(200,235,255,.14) 53%,transparent 62%)}
+#rnIntro.brand .ri-sweep{animation:riSweep 1.6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes riSweep{0%{opacity:1;transform:translateX(-120%)}100%{opacity:0;transform:translateX(120%)}}
+
+/* ══ کاراکتر ══ */
+.ri-stage{position:absolute;inset:0}
+.ri-cast{position:absolute;left:50%;bottom:24%;display:flex;align-items:flex-end;
+  transform:translateX(calc(-50% - 58vw));transition:transform 2.15s cubic-bezier(.42,0,.34,1)}
+.ri-cast.on{transform:translateX(-50%)}
+
+.ri-fig{height:clamp(64px,9.5vw,104px);width:auto;overflow:visible;
+  filter:drop-shadow(0 16px 24px rgba(0,0,0,.65))}
+.ri-fig *{transform-box:fill-box}
+.ri-arm-l,.ri-arm-r{transform-origin:50% 8%}
+.ri-leg-l,.ri-leg-r{transform-origin:50% 6%}
+.ri-scarf{transform-origin:92% 8%}
+.ri-cast.on .ri-fig{animation:riBob .52s ease-in-out infinite}
+.ri-cast.on .ri-leg-l,.ri-cast.on .ri-arm-r{animation:riSwingA .52s ease-in-out infinite}
+.ri-cast.on .ri-leg-r,.ri-cast.on .ri-arm-l{animation:riSwingB .52s ease-in-out infinite}
+.ri-cast.on .ri-scarf{animation:riScarf 1.5s ease-in-out infinite}
+@keyframes riSwingA{0%,100%{transform:rotate(15deg)}50%{transform:rotate(-15deg)}}
+@keyframes riSwingB{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(15deg)}}
+@keyframes riBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5px)}}
+@keyframes riScarf{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(9deg)}}
+
+/* ── پرچم RONIN ── */
+.ri-sign{width:clamp(30px,4.4vw,42px);height:clamp(54px,8vw,80px);margin-bottom:6px;
+  border-radius:9px;display:grid;place-items:center;transform-origin:50% 100%;
+  border:1px solid rgba(34,211,238,.5);
+  background:linear-gradient(180deg,rgba(16,20,44,.94),rgba(8,10,24,.97));
+  box-shadow:0 0 22px rgba(34,211,238,.35),inset 0 0 18px rgba(124,92,255,.25);
+  transform:rotate(-16deg) translate(-6px,-26px);
+  transition:transform .85s cubic-bezier(.34,.9,.28,1),box-shadow .6s}
+.ri-sign b{writing-mode:vertical-rl;font-size:clamp(10px,1.5vw,13px);font-weight:900;
+  letter-spacing:3px;color:#e6faff;text-shadow:0 0 12px rgba(34,211,238,.9)}
+.ri-cast.placed .ri-sign{transform:rotate(0) translate(0,0);
+  box-shadow:0 0 36px rgba(34,211,238,.6),inset 0 0 20px rgba(124,92,255,.35)}
+
+/* ── برند نهایی ── */
+.ri-brand{position:absolute;left:50%;top:45%;direction:ltr;text-align:center;max-width:92vw;
+  pointer-events:none;opacity:0;
+  transform:translate(-50%,-50%) translateY(16px) scale(.96);
+  transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.ri-brand.on{opacity:1;transform:translate(-50%,-50%)}
+.ri-brand b{display:block;font-size:clamp(30px,8.2vw,86px);line-height:1;font-weight:900;
+  letter-spacing:.14em;color:#fff;
+  text-shadow:0 0 26px rgba(124,92,255,.85),0 0 62px rgba(34,211,238,.5),0 10px 34px rgba(0,0,0,.7)}
+.ri-brand span{display:block;margin-top:2px;font-size:clamp(15px,4.4vw,42px);font-weight:800;
+  letter-spacing:.42em;color:#bfe9ff;text-shadow:0 0 22px rgba(34,211,238,.8)}
+.ri-brand em{display:block;margin-top:14px;font-style:normal;font-size:clamp(9px,1.6vw,12px);
+  letter-spacing:.34em;color:rgba(200,215,255,.62);opacity:0;transition:opacity 1s ease .5s}
+.ri-brand.on em{opacity:1}
+
+/* ── دکمهی رد کردن ── */
+.ri-skip{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);cursor:pointer;
+  padding:9px 16px;border-radius:999px;font-family:inherit;font-size:12.5px;font-weight:700;
+  color:#cdd6f5;background:rgba(10,14,32,.6);border:1px solid rgba(140,160,255,.3);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:.25s}
+.ri-skip:hover{color:#fff;border-color:rgba(34,211,238,.6);background:rgba(16,22,50,.85)}
+
+@media(max-width:620px){
+  .ri-cast{bottom:27%}
+  .ri-brand{top:42%}
+  .ri-fog{filter:blur(20px)}
+  .ri-skip{bottom:16px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  #rnIntro *{animation:none!important;transition-duration:.01s!important}
+}
