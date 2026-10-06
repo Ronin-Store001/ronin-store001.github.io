@@ -102,26 +102,50 @@ background:linear-gradient(135deg,#7c5cff,#22d3ee);box-shadow:0 10px 28px rgba(0
 </div>
 </header>
 <aside id="rail">
-<div class="railtitle">ناوبری</div>
+<div class="rnav">
 <div class="ditem on" data-go="home"><i>🏠</i>خانه</div>
+
+<div class="rgroup open">
+<button class="rghead" type="button"><i>🎬</i><span>کاوش</span><b class="rgchev">›</b></button>
+<div class="rgbody">
 <div class="ditem" data-go="anime"><i>🎬</i>انیمه</div>
 <div class="ditem" data-go="news"><i>📰</i>اخبار</div>
-<div class="ditem" data-go="community"><i>👥</i>انجمن</div>
 <div class="ditem" data-go="discover"><i>🧭</i>کاوش</div>
-<div class="ditem" data-go="market"><i>🛒</i>فروشگاه</div>
-<div class="ditem" data-go="chat"><i>💬</i>چت عمومی</div>
 <div class="ditem" data-go="rank"><i>🏆</i>رتبه‌بندی</div>
 <div class="ditem" data-go="events"><i>📅</i>رویدادها</div>
+</div></div>
+
+<div class="rgroup open">
+<button class="rghead" type="button"><i>👥</i><span>جامعه</span><b class="rgchev">›</b></button>
+<div class="rgbody">
+<div class="ditem" data-go="community"><i>👥</i>انجمن</div>
+<div class="ditem" data-go="chat"><i>💬</i>چت عمومی</div>
+</div></div>
+
+<div class="rgroup open">
+<button class="rghead" type="button"><i>🛒</i><span>بازار</span><b class="rgchev">›</b></button>
+<div class="rgbody">
+<div class="ditem" data-go="market"><i>🛒</i>فروشگاه</div>
 <div class="ditem" data-go="ads"><i>📢</i>تبلیغات</div>
-<div class="ditem" data-go="premium"><i>💎</i>پرمیوم</div>
-<div class="railtitle hide" data-staff>تیم</div>
-<div class="ditem hide" data-staff data-go="team"><i>🛡</i>شبکه فرماندهی</div>
-<div class="ditem hide" data-owner data-go="owner"><i>👑</i>پنل مالک<span class="cnt hide" id="ownCount"></span></div>
-<div class="railtitle">حساب</div>
+</div></div>
+<div class="rgroup open">
+<button class="rghead" type="button"><i>👤</i><span>حساب من</span><b class="rgchev">›</b></button>
+<div class="rgbody">
 <div class="ditem" data-go="profile"><i>👤</i>پروفایل</div>
+<div class="ditem" data-go="premium"><i>💎</i>پرمیوم</div>
 <div class="ditem" data-go="settings"><i>⚙</i>تنظیمات</div>
 <div class="ditem hide" data-guest data-authopen="login"><i>🔑</i>ورود / ثبت‌نام</div>
 <div class="ditem hide" data-auth data-logout><i>🚪</i>خروج</div>
+</div></div> 
+  
+<div class="rgroup hide" data-staff data-owner>
+<button class="rghead" type="button"><i>🛡</i><span>مدیریت</span><b class="rgchev">›</b></button>
+<div class="rgbody">
+<div class="ditem hide" data-staff data-go="team"><i>🛡</i>شبکه فرماندهی</div>
+<div class="ditem hide" data-owner data-go="owner"><i>👑</i>پنل مالک<span class="cnt hide" id="ownCount"></span></div>
+</div></div>
+</div>
+  
 <div class="railuser">
 <div class="row">
 <div class="av sm"><span data-me-av>؟</span></div>
