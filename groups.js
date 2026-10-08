@@ -124,8 +124,7 @@
     var obj = {
       n: name, icon: String(ic.value || "🏯").trim().slice(0, 4) || "🏯",
       desc: String(d.value || "").trim().slice(0, 120),
-      by: R.ME, byn: (R.USER && R.USER.name) || "کاربر", t: Date.now(),
-      open: (el("grpOpen") && el("grpOpen").value === "1")
+      by: R.ME, byn: (R.USER && R.USER.name) || "کاربر", t: Date.now()
     };
     n.value = ""; ic.value = ""; d.value = "";
     R.db.ref("groups/" + gid).set(obj).then(function () {
