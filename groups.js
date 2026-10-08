@@ -60,7 +60,7 @@
     box.innerHTML = arr.map(function (g) {
       return '<div class="card gcard" data-gopen="' + esc(g.id) + '">' +
         '<div class="gicon">' + esc(g.icon || "🏯") + '</div>' +
-        '<div class="h3" style="margin-top:6px">' + esc(g.n || "گروه") + '</div>' +
+        '<div class="h3" style="margin-top:6px">' + esc(g.n || "گروه") + ' <span class="xs">' + (g.open === false ? "🔒" : "🔓") + '</span></div>' +
         (g.desc ? '<div class="sm mut" style="margin-top:3px">' + esc(g.desc) + '</div>' : '') +
         '<div class="gmeta"><span class="xs mut">سازنده: ' + esc(g.byn || "کاربر") + '</span><span class="xs mut">• ' + R.time(g.t) + '</span></div></div>';
     }).join("");
