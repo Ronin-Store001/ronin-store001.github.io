@@ -1,8 +1,9 @@
-/* ═══ RONIN NAV-DRAWER v1 — منوی کنارِ مرتب + هدر خلوت ═══
+/* ═══ RONIN NAV-DRAWER v1 — منوی کنارِ مرتب + هدر چهارتایی ═══
    فایل افزودنی: هیچ فایل قبلی عوض نمی‌شود.
-   - همبرگر از هدر بیرون می‌رود و دکمهٔ شناور لبهٔ صفحه می‌شود (منو از کنار باز می‌شود)
-   - منوی کنار دسته‌بندی شده: کاوش / جامعه / بازار / حساب من / مدیریت / ابزارها
-   - آیکون‌های شلوغ هدر (جستجو، سبد، تم، زبان، چت، خروج) داخل منو می‌آیند
+   - هدر: جستجو، اعلان، سبد، پروفایل (۴ چیز مهم)؛ بقیه داخل منو
+   - نوار پایین گوشی: خانه، انیمه، انجمن، من (۴ آیتم)
+   - همبرگر بیرون هدر و به‌شکل تب شناور لبهٔ صفحه؛ منو از کنار باز می‌شود
+   - منوی دسته‌بندی‌شده: کاوش / جامعه / بازار / حساب من / مدیریت / ابزارها
 */
 "use strict";
 (function () {
@@ -41,10 +42,15 @@
     var s = document.createElement("style");
     s.id = "nvCss";
     s.textContent =
-      /* هدر خلوت: این‌ها به منو منتقل شدند */
-      "#top .tools>#searchBtn,#top .tools>#cartBtn,#top .tools>#themeToggle," +
-      "#top .tools>#rnLang,#top .tools>#railBtn,#top .tools>[data-go=\"chat\"]," +
-      "#top .tools>[data-authopen=\"reg\"],#top .tools>[data-logout]{display:none!important}" +
+      /* هدر: دقیقاً چهار چیز مهم (جستجو، اعلان، سبد، پروفایل)؛ بقیه در منو */
+      "#top .tools>#themeToggle,#top .tools>#rnLang,#top .tools>#railBtn," +
+      "#top .tools>[data-go=\"chat\"],#top .tools>[data-authopen]," +
+      "#top .tools>[data-logout]{display:none!important}" +
+      "@media (max-width:640px){#top{gap:8px;padding:0 10px}#top .tools{gap:5px}" +
+        "#top .tools .icobtn{width:34px;height:34px;font-size:15px}#top .brandtx small{display:none}}" +
+      /* نوار پایین گوشی: فقط چهار آیتم */
+      "#dock .dwrap>a:not([data-go=\"home\"]):not([data-go=\"anime\"])" +
+        ":not([data-go=\"community\"]):not([data-go=\"profile\"]){display:none!important}" +
 
       /* دکمهٔ شناور لبه — بیرون از هدر */
       "#railBtn{position:fixed!important;z-index:58;top:50%;inset-inline-start:0!important;" +
@@ -151,7 +157,13 @@
     h.className = "rghead";
     h.type = "button";
     h.innerHTML = "<i>" + icon + "</i><span>" + title + "</span><b class=\"rgchev\">›</b>";
-    h.addEventListener("click", function () { g.classList.toggle("open"); });
+    /* stopPropagation واجب است: ronin-nav.js هم روی #rail کلیک را می‌گیرد؛
+       بدون آن دو بار باز/بسته می‌شد و دسته‌ها اصلاً باز نمی‌شدند */
+    h.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      g.classList.toggle("open");
+    });
     var body = document.createElement("div");
     body.className = "rgbody";
     g.appendChild(h);
@@ -220,18 +232,15 @@
 
     var g4 = group("👤", "حساب من", true);
     ["profile", "myworld", "premium", "settings"].forEach(function (k) {
-      var it = takeItem(k);
-      if (k === "myworld" && !railItem("myworld") && !it) return;
-      g4.body.appendChild(it);
+      g4.body.appendChild(takeItem(k));
     });
 
     /* ورود / ثبت‌نام / خروج */
     if (R.ME) {
-      var out = makeRow("🚪", "خروج از حساب", function () {
+      g4.body.appendChild(makeRow("🚪", "خروج از حساب", function () {
         var b = document.querySelector("#top [data-logout]") || document.querySelector("[data-logout]");
         if (b) b.click();
-      });
-      g4.body.appendChild(out);
+      }));
     } else {
       g4.body.appendChild(makeRow("🔑", "ورود", function () {
         var b = document.querySelector("#top [data-authopen=\"login\"]") || document.querySelector("[data-authopen=\"login\"]");
@@ -264,15 +273,15 @@
     bellRow.appendChild(bellBadge);
     g6.body.appendChild(bellRow);
 
-    var themeRow = makeRow("🌙", "تم: تیره", function (row) {
+    var themeRow = makeRow("🌙", "تم: تیره", function () {
       var b = el("themeToggle");
       if (b) b.click();
-      setTimeout(function () { syncTools(); }, 80);
+      setTimeout(syncTools, 80);
     });
     themeRow.id = "nvdTheme";
     g6.body.appendChild(themeRow);
 
-    var langRow = makeRow("🌐", "زبان: فارسی", function (row) {
+    var langRow = makeRow("🌐", "زبان: فارسی", function () {
       if (!R.i18n || !R.i18n.set) return;
       var langs = R.i18n.langs || ["fa"];
       var cur = R.i18n.get ? R.i18n.get() : "fa";
@@ -340,12 +349,12 @@
   var prevIn = R.onLogin;
   R.onLogin = function () {
     if (prevIn) { try { prevIn(); } catch (e) {} }
-    setTimeout(function () { buildNav(); }, 200);
+    setTimeout(buildNav, 200);
   };
   var prevOut = R.onLogout;
   R.onLogout = function () {
     if (prevOut) { try { prevOut(); } catch (e) {} }
-    setTimeout(function () { buildNav(); }, 200);
+    setTimeout(buildNav, 200);
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
