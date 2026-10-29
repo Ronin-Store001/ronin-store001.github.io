@@ -75,6 +75,7 @@
   /* باز کردن گروه (هر کسی می‌تواند ببیند) */
   function open(gid) {
     cur = gid;
+    R.gcur = gid;   /* گروه فعال — برای groups-plus */
     var g = all[gid] || {};
     var chat = el("grpChat"), ttl = el("grpTitle");
     if (chat) chat.classList.remove("hide");
@@ -95,13 +96,16 @@
   function close() {
     if (ref) { ref.off(); ref = null; }
     cur = null;
+    R.gcur = null;
     var c = el("grpChat"); if (c) c.classList.add("hide");
   }
+  R.grpOpen = open;   /* تا گروه‌پلاس بتواند بعد از پیوستن گروه را باز کند */
 
   /* ارسال پیام گروه */
   function send() {
     if (!R.ME) return R.needLogin("پیام گروه");
     if (!cur) return R.toast("اول یه گروه را باز کن", "err");
+    if (R.grpGate && !R.grpGate(cur)) return R.toast("اول عضو گروه شو 🙋", "err");
     var i = el("grpIn"); if (!i) return;
     var txt = R.clean ? R.clean(i.value, 500) : String(i.value || "").trim().slice(0, 500);
     if (!txt) return;
@@ -121,11 +125,17 @@
     var name = R.clean ? R.clean(n.value, 40) : String(n.value || "").trim().slice(0, 40);
     if (!name) return R.toast("اسم گروه را بنویس", "err");
     var gid = "g" + Date.now().toString(36);
+    var mems = {};
+    mems[R.ME] = {
+      n: (R.USER && R.USER.name) || "کاربر", av: (R.USER && R.USER.av) || "",
+      role: "owner", t: Date.now()
+    };
     var obj = {
       n: name, icon: String(ic.value || "🏯").trim().slice(0, 4) || "🏯",
       desc: String(d.value || "").trim().slice(0, 120),
       by: R.ME, byn: (R.USER && R.USER.name) || "کاربر", t: Date.now(),
-      open: (el("grpOpen") && el("grpOpen").value === "1")
+      open: (el("grpOpen") && el("grpOpen").value === "1"),
+      members: mems
     };
     n.value = ""; ic.value = ""; d.value = "";
     R.db.ref("groups/" + gid).set(obj).then(function () {
