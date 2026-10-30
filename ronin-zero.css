@@ -469,3 +469,88 @@ html body .toast{
     scroll-behavior: auto !important;
   }
 }
+/* ═══════════════════════════════════════════════════════════════
+   CITY REPLACED — پس‌زمینه کاملاً جدید و انتزاعی ۲۰۲۶
+   ═══════════════════════════════════════════════════════════════ */
+
+/* همه چیز قبلی شهر رو حذف کن */
+#city .haze,
+#city .stars,
+#city .moon,
+#city .rain,
+#city .rain.b,
+#city .skyline,
+#city .bld,
+#city .sign,
+#city .street,
+#city .train,
+#city .fog,
+#city .scan{
+  display: none !important;
+}
+
+/* لایه اول: هاله‌های نرم */
+#city::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 40% at 50% -10%, rgba(189,238,99,.12), transparent 72%),
+    radial-gradient(40% 30% at 12% 80%, rgba(160,166,255,.08), transparent 75%),
+    radial-gradient(38% 28% at 88% 85%, rgba(189,238,99,.07), transparent 76%);
+  filter: blur(70px);
+  opacity: .9;
+  animation: zOrbs 24s ease-in-out infinite alternate;
+}
+
+@keyframes zOrbs{
+  0%{
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: .9;
+  }
+  50%{
+    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
+    opacity: 1;
+  }
+  100%{
+    transform: translate3d(1%, -0.8%, 0) scale(1.018);
+    opacity: .9;
+  }
+}
+
+/* لایه دوم: گرید کج‌شده با حس عمق */
+#city::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -40%;
+  width: 200vw;
+  height: 140vh;
+  transform: translateX(-50%) perspective(900px) rotateX(72deg);
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(189,238,99,.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(189,238,99,.06) 1px, transparent 1px);
+  background-size: 90px 90px;
+  background-position: 0 0, 0 0;
+  opacity: .16;
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(70% 60% at 50% 0%, black 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(70% 60% at 50% 0%, black 0%, transparent 100%);
+  animation: zGrid 38s linear infinite;
+}
+
+@keyframes zGrid{
+  from{
+    background-position: 0 0, 0 0;
+  }
+  to{
+    background-position: 0 180px, 0 180px;
+  }
+}
+
+/* یه لایه خیلی کم نویز هم اضافه شه تا خیلی تمیز نشه */
+body::after{
+  opacity: .01 !important;
+}
