@@ -2,9 +2,10 @@
 <html dir="rtl" lang="fa">
 <head>
 
-  <!-- ── تم (باید قبل از رندر اجرا شود) ───────────────────────── -->
+  <!-- ── تم — باید قبل از رندر اجرا شود ───────────────────────── -->
   <script src="theme.js"></script>
 
+  <!-- ── متاها ───────────────────────────────────────────────── -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#05070f">
@@ -15,12 +16,12 @@
   <meta property="og:title" content="RONIN STORE — Anime Universe">
   <meta property="og:description" content="انیمه • انجمن • فروشگاه • پرمیوم">
   <meta name="twitter:card" content="summary_large_image">
-
   <title>RONIN STORE — Anime Universe</title>
 
+  <!-- ── آیکن ────────────────────────────────────────────────── -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e22'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='36' fill='%238fdcff'%3E%E5%BF%8D%3C/text%3E%3C/svg%3E">
 
-  <!-- ── فونت‌ها ──────────────────────────────────────────────── -->
+  <!-- ── فونت‌ها ─────────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
@@ -32,6 +33,7 @@
   <link rel="stylesheet" href="css/css/3-panels.css">
   <link rel="stylesheet" href="css/css/4-mobile.css">
 
+  <!-- ── پک ارتقای رونین ─────────────────────────────────────── -->
   <style>
   /* ═══════════ RONIN UPGRADE PACK ═══════════ */
   #rprog{position:fixed;top:0;inset-inline:0;height:3px;z-index:9999;pointer-events:none;
@@ -39,6 +41,7 @@
   transform-origin:right;transition:transform .08s linear}
   #rsplash{position:fixed;inset:0;z-index:9990;display:grid;place-items:center;pointer-events:none;
   background:radial-gradient(circle at 50% 42%,#0c1236,#04060f 72%);transition:opacity .55s}
+  #rsplash>div{text-align:center}
   #rsplash b{font-size:24px;letter-spacing:7px;color:#eef1ff;text-shadow:0 0 30px rgba(124,92,255,.95)}
   #rsplash i{display:block;margin:16px auto 0;height:3px;width:130px;border-radius:3px;
   background:linear-gradient(90deg,#7c5cff,#22d3ee);animation:rsl .9s infinite}
@@ -58,9 +61,10 @@
   <link rel="stylesheet" href="ronin-intro-plus.css?v=1">
   <script src="ronin-intro.js?v=1"></script>
 
-  <!-- پس‌زمینه‌ی فضایی — باید آخرین استایل باشد -->
-  <link rel="stylesheet" href="ronin-zero.css?v=3">
+  <!-- ── پس‌زمینه‌ی فضایی — باید آخرین استایل باشد ───────────── -->
+  <link rel="stylesheet" href="ronin-zero.css?v=4">
 
+  <!-- ── کارت پوستر انیمه ────────────────────────────────────── -->
   <style>
   /* ═══════════ ANIME POSTER CARD ═══════════ */
   .anime .cover{overflow:hidden}
@@ -76,12 +80,21 @@
 
 <!-- ═══════════ پس‌زمینه‌ی فضایی ═══════════ -->
 <div id="rz" aria-hidden="true">
+  <span class="rz-neb a"></span>
+  <span class="rz-neb b"></span>
   <span class="rz-stars a"></span>
   <span class="rz-stars b"></span>
   <span class="rz-stars c"></span>
+  <span class="rz-shoot a"></span>
+  <span class="rz-shoot b"></span>
+  <span class="rz-far"></span>
   <span class="rz-glow"></span>
-  <span class="rz-planet"></span>
-  <span class="rz-moon"></span>
+  <span class="rz-world">
+    <span class="rz-rings"></span>
+    <span class="rz-planet"></span>
+  </span>
+  <span class="rz-moon m1"></span>
+  <span class="rz-moon m2"></span>
 </div>
 
 <!-- ═══════════ هدر ═══════════ -->
@@ -96,7 +109,7 @@
 
   <nav class="nav">
     <a data-go="home" class="on">خانه</a>
-    <a data-go="anime">انیمه</a>
+    <a data-go="animeinfo">📺 اطلاعات انیمه</a>
     <a data-go="community">انجمن</a>
     <a data-go="market">فروشگاه</a>
     <a data-go="premium">💎 پرمیوم</a>
@@ -121,7 +134,7 @@
     <div class="rgroup open">
       <button class="rghead" type="button"><i>🎬</i><span>کاوش</span><b class="rgchev">›</b></button>
       <div class="rgbody">
-        <div class="ditem" data-go="anime"><i>🎬</i>انیمه</div>
+        <div class="ditem" data-go="animeinfo"><i>📺</i>اطلاعات انیمه</div>
         <div class="ditem" data-go="discover"><i>🧭</i>کاوش</div>
         <div class="ditem" data-go="rank"><i>🏆</i>رتبه‌بندی</div>
         <div class="ditem" data-go="events"><i>📅</i>رویدادها</div>
@@ -184,7 +197,7 @@
 <!-- ═══════════ محتوای اصلی ═══════════ -->
 <main id="stage">
 
-  <!-- ── خانه ───────────────────────────────────────────────── -->
+  <!-- ── ۱. خانه ────────────────────────────────────────────── -->
   <section class="sec on" id="sec-home">
     <div class="hero">
       <div class="halo"></div>
@@ -192,7 +205,7 @@
       <p>انیمه، جامعه، فروشگاه و دنیایی که خودت می‌سازی.</p>
       <div class="cta">
         <button class="btn p" data-go="community">شروع ماجراجویی</button>
-        <button class="btn" data-go="anime">مشاهده انیمه‌ها</button>
+        <button class="btn" data-go="animeinfo">اطلاعات انیمه‌ها</button>
       </div>
       <div class="row w" style="gap:7px;margin-top:16px;position:relative">
         <span class="chip cy" data-online>🟢 ۰ نفر آنلاین</span>
@@ -202,7 +215,7 @@
 
     <div class="head"><h2 class="h2">دسترسی سریع</h2></div>
     <div class="grid auto">
-      <div class="qc" data-go="anime"><div class="qi">🎬</div><div class="h3">انیمه</div><div class="sm mut">کشف و پیگیری انیمه‌ها</div></div>
+      <div class="qc" data-go="animeinfo"><div class="qi">📺</div><div class="h3">اطلاعات انیمه</div><div class="sm mut">عکس، تعداد قسمت و خلاصه داستان</div></div>
       <div class="qc" data-go="market"><div class="qi">🛒</div><div class="h3">فروشگاه</div><div class="sm mut">آگهی محصولات و فروشندگان</div></div>
       <div class="qc" data-go="community"><div class="qi">👥</div><div class="h3">انجمن</div><div class="sm mut">پست، لایک، کامنت، فالو</div></div>
       <div class="qc" data-go="chat"><div class="qi">💬</div><div class="h3">چت عمومی</div><div class="sm mut">گفتگوی زنده با کاربران</div></div>
@@ -222,9 +235,10 @@
     </div>
   </section>
 
-  <!-- ── انیمه ──────────────────────────────────────────────── -->
-  <section class="sec" id="sec-anime">
-    <div class="head"><h2 class="h2">🎬 شبکه انیمه</h2></div>
+  <!-- ── ۲. اطلاعات انیمه ───────────────────────────────────── -->
+  <section class="sec" id="sec-animeinfo">
+    <div class="head"><h2 class="h2">📺 اطلاعات انیمه</h2></div>
+    <div class="xs mut mb">عکس، تعداد قسمت و بخشی از داستان — بدون پخش ویدیو</div>
 
     <div class="card mb hide" id="animeForm">
       <div class="sm b mb">افزودن انیمه (مالک / دسترسی انیمه)</div>
@@ -249,7 +263,7 @@
     <div class="grid auto" id="animeWall"></div>
   </section>
 
-  <!-- ── انجمن ──────────────────────────────────────────────── -->
+  <!-- ── ۳. انجمن ───────────────────────────────────────────── -->
   <section class="sec" id="sec-community">
     <div class="head"><h2 class="h2">👥 انجمن رونین</h2><span class="chip cy" data-online></span></div>
 
@@ -282,7 +296,7 @@
     <div class="col" id="feedBox"></div>
   </section>
 
-  <!-- ── چت عمومی ───────────────────────────────────────────── -->
+  <!-- ── ۴. چت عمومی ────────────────────────────────────────── -->
   <section class="sec" id="sec-chat">
     <div class="head"><h2 class="h2">💬 چت عمومی</h2><span class="chip ok" data-online></span></div>
     <div class="chat">
@@ -298,7 +312,7 @@
     </div>
   </section>
 
-  <!-- ── شبکه فرماندهی (فقط تیم) ────────────────────────────── -->
+  <!-- ── ۵. شبکه فرماندهی ───────────────────────────────────── -->
   <section class="sec" id="sec-team">
     <div class="head"><h2 class="h2">🛡 شبکه فرماندهی</h2><span class="chip bad">مخفی — فقط تیم</span></div>
     <div class="tabs mb" id="teamTabs"></div>
@@ -312,7 +326,7 @@
     </div>
   </section>
 
-  <!-- ── پیام خصوصی ─────────────────────────────────────────── -->
+  <!-- ── ۶. پیام خصوصی ──────────────────────────────────────── -->
   <section class="sec" id="sec-dm">
     <div class="head"><h2 class="h2" id="dmTitle">پیام خصوصی</h2></div>
     <div class="chat">
@@ -324,13 +338,13 @@
     </div>
   </section>
 
-  <!-- ── فروشگاه ────────────────────────────────────────────── -->
+  <!-- ── ۷. فروشگاه ─────────────────────────────────────────── -->
   <section class="sec" id="sec-market">
     <div class="head"><h2 class="h2">🛒 فروشگاه رونین</h2><span class="chip cy">آگهی فعال: <b id="shopCount">۰</b></span></div>
     <div class="grid auto" id="shopWall"></div>
   </section>
 
-  <!-- ── تبلیغات ────────────────────────────────────────────── -->
+  <!-- ── ۸. تبلیغات ─────────────────────────────────────────── -->
   <section class="sec" id="sec-ads">
     <div class="head"><h2 class="h2">📢 تبلیغات و آگهی</h2></div>
 
@@ -362,19 +376,19 @@
     <div class="col" id="myAds"></div>
   </section>
 
-  <!-- ── کاوش ───────────────────────────────────────────────── -->
+  <!-- ── ۹. کاوش ────────────────────────────────────────────── -->
   <section class="sec" id="sec-discover">
     <div class="head"><h2 class="h2">🧭 کاوش</h2></div>
     <div id="discBox"></div>
   </section>
 
-  <!-- ── رتبه‌بندی ──────────────────────────────────────────── -->
+  <!-- ── ۱۰. رتبه‌بندی ───────────────────────────────────────── -->
   <section class="sec" id="sec-rank">
     <div class="head"><h2 class="h2">🏆 رتبه‌بندی رونین</h2></div>
     <div id="rankBox"></div>
   </section>
 
-  <!-- ── رویدادها ───────────────────────────────────────────── -->
+  <!-- ── ۱۱. رویدادها ───────────────────────────────────────── -->
   <section class="sec" id="sec-events">
     <div class="head"><h2 class="h2">📅 رویدادها</h2></div>
 
@@ -391,7 +405,7 @@
     <div id="evWall"></div>
   </section>
 
-  <!-- ── پرمیوم ─────────────────────────────────────────────── -->
+  <!-- ── ۱۲. پرمیوم ─────────────────────────────────────────── -->
   <section class="sec" id="sec-premium">
     <div class="head"><h2 class="h2">💎 Ronin Elite</h2><span class="chip gd" data-premstate>—</span></div>
 
@@ -410,13 +424,13 @@
     </div>
   </section>
 
-  <!-- ── پروفایل ────────────────────────────────────────────── -->
+  <!-- ── ۱۳. پروفایل ────────────────────────────────────────── -->
   <section class="sec" id="sec-profile">
     <div class="head"><h2 class="h2">👤 پروفایل</h2></div>
     <div id="profBox"></div>
   </section>
 
-  <!-- ── پنل مالک ───────────────────────────────────────────── -->
+  <!-- ── ۱۴. پنل مالک ───────────────────────────────────────── -->
   <section class="sec" id="sec-owner">
     <div class="head"><h2 class="h2">👑 مرکز فرماندهی رونین</h2><span class="chip gd">فقط مالک</span></div>
 
@@ -433,7 +447,7 @@
     <div id="ownerBody"></div>
   </section>
 
-  <!-- ── تنظیمات ────────────────────────────────────────────── -->
+  <!-- ── ۱۵. تنظیمات ────────────────────────────────────────── -->
   <section class="sec" id="sec-settings">
     <div class="head"><h2 class="h2">⚙ تنظیمات</h2></div>
 
@@ -472,7 +486,7 @@
 <nav id="dock">
   <div class="dwrap">
     <a data-go="home" class="on"><i>🏠</i>خانه</a>
-    <a data-go="anime"><i>🎬</i>انیمه</a>
+    <a data-go="animeinfo"><i>📺</i>اطلاعات</a>
     <a data-go="community"><i>👥</i>انجمن</a>
     <a data-go="market"><i>🛒</i>فروشگاه</a>
     <a data-go="profile"><i>👤</i>من</a>
@@ -555,13 +569,16 @@
 </div>
 
 <div id="rprog"></div>
-<div id="rsplash"><div style="text-align:center"><b>RONIN STORE</b><i></i></div></div>
+<div id="rsplash"><div><b>RONIN STORE</b><i></i></div></div>
 
 <!-- ═══════════ اسکریپت‌ها ═══════════ -->
+
+<!-- فایربیس -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+<!-- هسته‌ی رونین -->
 <script src="css/js/1-core.js"></script>
 <script src="fb-guard.js?v=1"></script>
 <script src="css/js/js/2-auth.js"></script>
@@ -572,6 +589,7 @@
 <script src="css/js/js/js/js/js/js/js/7-extra.js"></script>
 <script src="css/js/js/js/js/js/js/js/js/8-companion.js"></script>
 
+<!-- رابط و برند -->
 <script src="profile.js"></script>
 <script src="ui-fix.js"></script>
 <script src="brand.js"></script>
@@ -580,6 +598,8 @@
 <script src="ronin-bulletin.js?v=1"></script>
 <script src="extra.js"></script>
 <script src="css/js/js/js/js/js/js/js/js/js/9-boot.js"></script>
+
+<!-- پک‌ها و قابلیت‌ها -->
 <script src="pack1.js"></script>
 <script src="pack2.js"></script>
 <script src="pack3.js"></script>
@@ -596,8 +616,8 @@
 <script src="notif-prefs.js"></script>
 <script src="ronin-nav.js"></script>
 
+<!-- پک ارتقا: اسپلش، نوار پیشرفت، دکمه‌ی بازگشت به بالا -->
 <script>
-/* ═══════ RONIN UPGRADE PACK — boot ═══════ */
 (function () {
   try {
     var s = document.getElementById("rsplash");
@@ -630,6 +650,7 @@
 
 <script>addEventListener('scroll',function(){document.body.classList.toggle('rnScroll',scrollY>40)},{passive:true});</script>
 
+<!-- منو، ترجمه، همراه، فوتر -->
 <script src="ronin-menu.js?v=1"></script>
 <script src="ronin-i18n.js?v=1"></script>
 <script src="ronin-companion-plus.js?v=1"></script>
