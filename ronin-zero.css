@@ -1,556 +1,394 @@
-/* ══════════════════════════════════════════════════════════════════
-   RONIN STORE — ZERO 2026  ·  ronin-zero.css
-   ظاهر کاملاً تازه از صفر | شیشه‌ای ساده، مدرن، کم‌نویز
-   فقط استایل — هیچ منطقی دست‌نخورده می‌مونه
-   ══════════════════════════════════════════════════════════════════ */
-
-@charset "utf-8";
-
-:root{
-  --z-bg: #08090A;
-  --z-s1: #0F1011;
-  --z-s2: #191A1B;
-  --z-s3: #23252A;
-  --z-line: rgba(255,255,255,.08);
-  --z-line-h: rgba(255,255,255,.16);
-  --z-txt: #F7F8F8;
-  --z-mut: #8A8F98;
-  --z-sub: #62666D;
-  --z-accent: #BDEE63;
-  --z-accent-h: #D4FF70;
-  --z-accent-ink: #11130C;
-  --z-r: 18px;
-  --z-r2: 22px;
-  --z-r3: 28px;
-  --z-ease: cubic-bezier(.25,.8,.25,1);
-  --z-spring: cubic-bezier(.25,.8,.25,1.2);
-  --z-sh: 0 30px 70px -40px rgba(0,0,0,.95);
-  --z-glow: 0 0 0 1px rgba(189,238,99,.16), 0 40px 90px -50px rgba(189,238,99,.5);
-}
-
-/* ── ریست سبک ─────────────────────────────────────────────── */
-html, body{
-  background: radial-gradient(140% 140% at 50% 0%, #15171C 0%, var(--z-bg) 55%, #050506 100%) !important;
-  color: var(--z-txt) !important;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ── Mesh خیلی کم + Grain خیلی کم ─────────────────────────── */
-body::before,
-body::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -4;
-}
-
-body::before{
-  background:
-    radial-gradient(60% 40% at 10% -10%, rgba(189,238,99,.08), transparent 70%),
-    radial-gradient(40% 30% at 90% -12%, rgba(189,238,99,.05), transparent 72%);
-  mix-blend-mode: screen;
-}
-
-body::after{
-  z-index: -3;
-  opacity: .018;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
-  mix-blend-mode: soft-light;
-}
-
-/* شهر نئونی قبلی کم‌رنگ شه */
-#city .rain,
-#city .fog,
-#city .train,
-#city .scan{ display:none !important; }
-#city .stars{ opacity:.4 !important; animation:none !important; }
-#city .moon{ opacity:.8 !important; box-shadow: none !important; }
-
-/* ── اسکرولبار ────────────────────────────────────────────── */
-::-webkit-scrollbar{ width: 10px; height: 10px; }
-::-webkit-scrollbar-track{ background: transparent; }
-::-webkit-scrollbar-thumb{
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  background-image: linear-gradient(180deg, rgba(189,238,99,.9), rgba(212,255,112,.6));
-}
-::selection{ background: rgba(189,238,99,.28); color: var(--z-txt); }
-:focus-visible{ outline: 2px solid rgba(189,238,99,.8); outline-offset: 2px; border-radius: 10px; }
-
-/* ── چیدمان ──────────────────────────────────────────────── */
-#stage{
-  max-width: 1280px !important;
-  padding: calc(var(--top) + 34px) 24px 110px calc(var(--rail) + 28px) !important;
-}
-.wrap{ max-width: 1180px; margin: 0 auto; }
-
-/* ── هدر ─────────────────────────────────────────────────── */
-#top{
-  top: 16px !important;
-  inset-inline: 16px !important;
-  height: var(--top) !important;
-  border-radius: 999px !important;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.02), transparent 70%), rgba(12,13,16,.7) !important;
-  backdrop-filter: blur(18px) saturate(1.08) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(1.08) !important;
-  border: 1px solid var(--z-line) !important;
-  box-shadow: var(--z-sh) !important;
-}
-#top.small{ top: 12px !important; height: 58px !important; border-radius: 999px !important; }
-
-.brandmark{
-  background: radial-gradient(circle at 30% 30%, var(--z-accent-h), var(--z-accent)) !important;
-  color: var(--z-accent-ink) !important;
-  box-shadow: 0 0 0 1px rgba(189,238,99,.4), 0 18px 40px -20px rgba(189,238,99,.8) !important;
-}
-.brandtx b{
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  background-clip: initial !important;
-  color: var(--z-txt) !important;
-  letter-spacing: .32em !important;
-}
-.brandtx small{ letter-spacing: .24em !important; color: var(--z-sub) !important; }
-
-#top .nav a{
-  padding: 7px 14px !important;
-  border-radius: 999px !important;
-  font-size: 12.5px !important;
-  color: var(--z-mut) !important;
-  transition: all .2s var(--z-ease) !important;
-}
-#top .nav a:hover{
-  color: var(--z-txt) !important;
-  background: rgba(255,255,255,.01) !important;
-}
-#top .nav a.on{
-  color: var(--z-accent-ink) !important;
-  background: linear-gradient(135deg, var(--z-accent-h), var(--z-accent)) !important;
-  box-shadow: 0 16px 36px -18px rgba(189,238,99,.9) !important;
-}
-#top .nav a.on::after{ display: none !important; }
-
-html body .icobtn{
-  border-radius: 999px !important;
-  border: 1px solid var(--z-line) !important;
-  background: transparent !important;
-  color: var(--z-mut) !important;
-  transition: all .2s var(--z-ease) !important;
-}
-html body .icobtn:hover{
-  color: var(--z-txt) !important;
-  border-color: var(--z-line-h) !important;
-  background: rgba(255,255,255,.01) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* ── دکمه‌ها ──────────────────────────────────────────────── */
-html body .btn{
-  border-radius: 999px !important;
-  padding: 10px 18px !important;
-  font-weight: 800 !important;
-  border: 1px solid var(--z-line) !important;
-  background: transparent !important;
-  color: var(--z-txt) !important;
-  box-shadow: none !important;
-  transition: all .2s var(--z-ease) !important;
-}
-html body .btn:hover{
-  border-color: var(--z-line-h) !important;
-  transform: translateY(-1px) !important;
-}
-html body .btn.p{
-  color: var(--z-accent-ink) !important;
-  border: none !important;
-  background: linear-gradient(135deg, var(--z-accent-h), var(--z-accent)) !important;
-  box-shadow: var(--z-glow) !important;
-}
-html body .btn.p:hover{
-  filter: brightness(1.02) !important;
-  box-shadow: 0 0 0 1px rgba(189,238,99,.22), 0 46px 90px -48px rgba(189,238,99,.95) !important;
-}
-html body .btn.gd{
-  color: var(--z-accent-ink) !important;
-  border: none !important;
-  background: linear-gradient(135deg, var(--z-accent-h), var(--z-accent)) !important;
-}
-
-/* ── هیرو ─────────────────────────────────────────────────── */
-html body .hero{
-  position: relative !important;
-  overflow: hidden !important;
-  border-radius: var(--z-r3) !important;
-  border: 1px solid var(--z-line) !important;
-  background:
-    radial-gradient(90% 70% at 50% 0%, rgba(189,238,99,.1), transparent 70%),
-    radial-gradient(120% 120% at 80% 120%, rgba(189,238,99,.06), transparent 70%),
-    linear-gradient(180deg, rgba(20,21,26,.9), rgba(10,11,14,.98)) !important;
-  box-shadow: var(--z-sh) !important;
-  min-height: 340px !important;
-  padding: clamp(32px,6vw,58px) clamp(22px,6vw,56px) !important;
-}
-html body .hero::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background: radial-gradient(60% 40% at 50% 0%, rgba(255,255,255,.01), transparent 70%);
-}
-html body .hero .halo{ display:none !important; }
-html body .hero h1{
-  position: relative;
-  font-weight: 900 !important;
-  letter-spacing: -1.6px !important;
-  line-height: 1.08 !important;
-  font-size: clamp(30px,7vw,64px) !important;
-  background: linear-gradient(95deg, #fff 10%, #f8ffe8 40%, var(--z-accent) 90%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-}
-html body .hero p{
-  position: relative;
-  margin-top: 14px !important;
-  max-width: 580px !important;
-  color: var(--z-mut) !important;
-  font-size: clamp(14.5px,1.6vw,16px) !important;
-}
-html body .hero .cta{ position: relative; margin-top: 30px !important; gap: 12px !important; }
-
-/* ── تیتر بخش‌ها ─────────────────────────────────────────── */
-.head{ margin: 34px 0 16px !important; padding: 0 !important; border: none !important; }
-.head .h2{
-  display:flex !important;
-  align-items:center !important;
-  gap: 12px !important;
-  font-weight: 900 !important;
-  letter-spacing: -0.8px !important;
-  font-size: clamp(18px,2.6vw,22px) !important;
-}
-.head .h2::before{
-  content:"";
-  width: 6px !important;
-  height: 18px !important;
-  border-radius: 999px !important;
-  background: linear-gradient(180deg, var(--z-accent-h), var(--z-accent)) !important;
-  box-shadow: 0 0 0 1px rgba(189,238,99,.25), 0 0 40px -18px rgba(189,238,99,.9) !important;
-}
-
-/* ── کارت‌ها ──────────────────────────────────────────────── */
-html body .card{
-  position: relative !important;
-  border-radius: var(--z-r2) !important;
-  border: 1px solid var(--z-line) !important;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.01), transparent 70%), linear-gradient(180deg, rgba(22,23,28,.8), rgba(12,13,16,.95)) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: var(--z-sh) !important;
-  transition: all .25s var(--z-ease) !important;
-}
-html body .card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius: inherit;
-  background: radial-gradient(60% 40% at 50% 0%, rgba(255,255,255,.01), transparent 70%);
-  pointer-events:none;
-}
-html body .card:hover{
-  transform: translateY(-3px) !important;
-  border-color: var(--z-line-h) !important;
-}
-html body .card.hov:hover{
-  box-shadow: 0 0 0 1px rgba(189,238,99,.14), var(--z-sh) !important;
-}
-
-/* ── دسترسی سریع (qc) ─────────────────────────────────────── */
-html body .qc{
-  position: relative !important;
-  border-radius: var(--z-r) !important;
-  border: 1px solid var(--z-line) !important;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.01), transparent 70%), linear-gradient(180deg, rgba(22,23,28,.78), rgba(12,13,16,.96)) !important;
-  box-shadow: var(--z-sh) !important;
-  transition: all .25s var(--z-ease) !important;
-  overflow: hidden !important;
-}
-html body .qc::after{ display:none !important; }
-html body .qc .qi{
-  width: 48px !important;
-  height: 48px !important;
-  border-radius: 14px !important;
-  display:grid !important;
-  place-items:center !important;
-  font-size: 22px !important;
-  margin-bottom: 12px !important;
-  border: 1px solid rgba(189,238,99,.24) !important;
-  background: radial-gradient(circle at 30% 30%, rgba(212,255,112,.22), transparent 70%) !important;
-  color: var(--z-accent) !important;
-  box-shadow: 0 30px 60px -36px rgba(189,238,99,.9) !important;
-  transition: all .25s var(--z-spring) !important;
-}
-html body .qc:hover{
-  transform: translateY(-4px) !important;
-  border-color: var(--z-line-h) !important;
-}
-html body .qc:hover .qi{
-  transform: scale(1.05) !important;
-  color: var(--z-accent-h) !important;
-}
-html body .qc .h3{ color: var(--z-txt) !important; }
-html body .qc .sm.mut{ color: var(--z-mut) !important; }
-
-/* ── منوی کنار ────────────────────────────────────────────── */
-html body #rail{
-  border-radius: 26px !important;
-  border: 1px solid var(--z-line) !important;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.01), transparent 70%), linear-gradient(180deg, rgba(18,19,24,.88), rgba(10,11,14,.98)) !important;
-  box-shadow: var(--z-sh) !important;
-  backdrop-filter: blur(16px) saturate(1.06) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(1.06) !important;
-}
-html body .ditem{
-  border-radius: 999px !important;
-  color: var(--z-mut) !important;
-  transition: all .2s var(--z-ease) !important;
-}
-html body .ditem:hover{
-  color: var(--z-txt) !important;
-  background: transparent !important;
-}
-html body .ditem.on{
-  color: var(--z-accent-ink) !important;
-  background: linear-gradient(135deg, var(--z-accent-h), var(--z-accent)) !important;
-  box-shadow: 0 18px 38px -20px rgba(189,238,99,.9) !important;
-}
-html body .ditem.on::before{ display:none !important; }
-html body .railuser,
-html body .premcard{
-  border-radius: 20px !important;
-  border: 1px solid var(--z-line) !important;
-  background: linear-gradient(180deg, rgba(22,23,28,.8), rgba(12,13,16,.98)) !important;
-}
-html body .premcard .btn.gd{
-  border-radius: 999px !important;
-}
-
-/* ── نوار پایین موبایل ────────────────────────────────────── */
-#dock .dwrap{
-  border-radius: 999px !important;
-  border: 1px solid var(--z-line) !important;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.01), transparent 70%), rgba(12,13,16,.86) !important;
-  backdrop-filter: blur(18px) saturate(1.06) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(1.06) !important;
-  box-shadow: var(--z-sh) !important;
-}
-#dock a{
-  border-radius: 999px !important;
-  color: var(--z-mut) !important;
-}
-#dock a.on{
-  color: var(--z-accent-ink) !important;
-  background: linear-gradient(135deg, var(--z-accent-h), var(--z-accent)) !important;
-  box-shadow: 0 16px 34px -18px rgba(189,238,99,.9) !important;
-}
-#dock a.on i{ filter:none !important; }
-
-/* ── فرم‌ها / تب‌ها / چیپ‌ها ──────────────────────────────── */
-html body .inp,
-html body .sel,
-html body .area{
-  border-radius: 14px !important;
-  border: 1px solid var(--z-line) !important;
-  background: transparent !important;
-  color: var(--z-txt) !important;
-}
-html body .inp:focus,
-html body .sel:focus,
-html body .area:focus{
-  border-color: rgba(189,238,99,.7) !important;
-  box-shadow: 0 0 0 4px rgba(189,238,99,.08) !important;
-}
-html body .tabs{
-  border-radius: 999px !important;
-  padding: 4px !important;
-  border: 1px solid var(--z-line) !important;
-  background: transparent !important;
-}
-html body .tab{
-  border-radius: 999px !important;
-  color: var(--z-mut) !important;
-}
-html body .tab.on{
-  color: var(--z-accent-ink) !important;
-  background: linear-gradient(135deg, var(--z-accent-h), var(--z-accent)) !important;
-}
-html body .chip{
-  border-radius: 999px !important;
-  border: 1px solid var(--z-line) !important;
-  background: transparent !important;
-  color: var(--z-mut) !important;
-}
-html body .chip.cy,
-html body .chip.ok,
-html body .chip.gd{
-  color: var(--z-accent) !important;
-  border-color: rgba(189,238,99,.4) !important;
-}
-
-/* ── چت / محصول / انیمه ───────────────────────────────────── */
-html body .chat,
-html body .prod,
-html body .anime,
-html body .news,
-html body .kpi,
-html body .notif{
-  border-radius: var(--z-r2) !important;
-  border: 1px solid var(--z-line) !important;
-  background: linear-gradient(180deg, rgba(22,23,28,.8), rgba(12,13,16,.98)) !important;
-  box-shadow: var(--z-sh) !important;
-}
-html body .bub{
-  border-radius: 16px 16px 16px 6px !important;
-  border: 1px solid var(--z-line) !important;
-  background: transparent !important;
-}
-html body .msg.me .bub{
-  border: none !important;
-  color: var(--z-accent-ink) !important;
-  background: linear-gradient(135deg, var(--z-accent-h), var(--z-accent)) !important;
-  border-radius: 16px 16px 6px 16px !important;
-  box-shadow: 0 24px 48px -28px rgba(189,238,99,.9) !important;
-}
-html body .price{ color: var(--z-accent) !important; }
-
-/* ── مودال / توست ─────────────────────────────────────────── */
-html body .modal{ background: rgba(5,6,8,.8) !important; backdrop-filter: blur(10px) !important; }
-html body .modal .box{
-  border-radius: 30px !important;
-  border: 1px solid var(--z-line-h) !important;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.01), transparent 70%), linear-gradient(180deg, rgba(22,23,28,.96), rgba(10,11,14,.99)) !important;
-  box-shadow: 0 60px 120px -70px rgba(0,0,0,1) !important;
-}
-html body .toast{
-  border-radius: 999px !important;
-  border: 1px solid var(--z-line) !important;
-  background: rgba(12,13,16,.92) !important;
-  backdrop-filter: blur(14px) !important;
-}
-
-/* ── افکت ورود ───────────────────────────────────────────── */
-.sec.on{
-  animation: zIn .5s var(--z-ease) both !important;
-}
-@keyframes zIn{
-  from{ opacity:0; transform: translateY(10px); }
-  to{ opacity:1; transform: none; }
-}
-
-/* ── موبایل ──────────────────────────────────────────────── */
-@media (max-width: 980px){
-  #stage{ padding: calc(var(--top) + 18px) 16px 104px !important; }
-  #top{ border-radius: 18px !important; inset-inline: 12px !important; }
-}
-@media (max-width: 640px){
-  html body .hero{ border-radius: 24px !important; }
-  html body .card{ border-radius: 20px !important; }
-}
-
-/* ── کاهش حرکت ───────────────────────────────────────────── */
-@media (prefers-reduced-motion: reduce){
-  *, *::before, *::after{
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
 /* ═══════════════════════════════════════════════════════════════
-   CITY REPLACED — پس‌زمینه کاملاً جدید و انتزاعی ۲۰۲۶
+   RONIN ZERO  ·  ronin-zero.css   (v3)
+   آسمان فضایی ساده و خفن: ستاره‌های رنگارنگ و زنده + سیاره‌ی متحرک
+   + یک ماه کوچک در حال چرخش.
+   فقط استایل — هیچ منطقی، هیچ canvas، هیچ JS.
    ═══════════════════════════════════════════════════════════════ */
 
-/* همه چیز قبلی شهر رو حذف کن */
-#city .haze,
-#city .stars,
-#city .moon,
-#city .rain,
-#city .rain.b,
-#city .skyline,
-#city .bld,
-#city .sign,
-#city .street,
-#city .train,
-#city .fog,
-#city .scan{
+/* ── ۰. خاموش کردن کامل پس‌زمینه‌ی قدیمی ──────────────────────── */
+#city,
+#rcCanvas,
+#rcFog,
+#rcRain,
+#rcVig {
   display: none !important;
 }
 
-/* لایه اول: هاله‌های نرم */
-#city::before{
+/* ── ۱. بوم ───────────────────────────────────────────────────── */
+html {
+  background: #04060d;
+}
+
+body {
+  background: transparent !important;
+}
+
+#rz {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  contain: layout paint;
+}
+
+#rz::before {
   content: "";
   position: absolute;
   inset: 0;
-  pointer-events: none;
   background:
-    radial-gradient(70% 40% at 50% -10%, rgba(189,238,99,.12), transparent 72%),
-    radial-gradient(40% 30% at 12% 80%, rgba(160,166,255,.08), transparent 75%),
-    radial-gradient(38% 28% at 88% 85%, rgba(189,238,99,.07), transparent 76%);
-  filter: blur(70px);
-  opacity: .9;
-  animation: zOrbs 24s ease-in-out infinite alternate;
+    radial-gradient(70% 52% at 12% -6%, rgba(124, 92, 255, 0.20), transparent 64%),
+    radial-gradient(56% 44% at 88% 4%, rgba(34, 211, 238, 0.15), transparent 66%),
+    radial-gradient(64% 48% at 62% 96%, rgba(255, 79, 216, 0.13), transparent 68%),
+    radial-gradient(52% 40% at 30% 76%, rgba(255, 190, 90, 0.07), transparent 70%),
+    linear-gradient(180deg, #06080f 0%, #070b18 40%, #080c1b 70%, #05070f 100%);
 }
 
-@keyframes zOrbs{
-  0%{
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: .9;
+/* ── ۲. ستاره‌ها ─────────────────────────────────────────────────
+   هر ستاره یک گرادیان با مرکزِ روشن و محو شدن نرم است، با موقعیت
+   پیکسلی داخل یک tile تکرارشونده تا آسمان بی‌درز بماند.
+   ──────────────────────────────────────────────────────────────── */
+.rz-stars {
+  position: absolute;
+  inset: -10%;
+  display: block;
+  background-repeat: repeat;
+  will-change: opacity;
+}
+
+/* لایه‌ی الف — انبوه و ریز */
+.rz-stars.a {
+  background-size: 260px 260px;
+  background-image:
+    radial-gradient(circle at 18px 32px, #fff 0, rgba(255, 255, 255, 0.85) 1.1px, transparent 2.2px),
+    radial-gradient(circle at 92px 14px, #d9ecff 0, rgba(217, 236, 255, 0.8) 1px, transparent 2px),
+    radial-gradient(circle at 141px 88px, #fff 0, rgba(255, 255, 255, 0.7) 1.1px, transparent 2.1px),
+    radial-gradient(circle at 208px 47px, #e6dcff 0, rgba(230, 220, 255, 0.8) 1px, transparent 2px),
+    radial-gradient(circle at 63px 121px, #fff 0, rgba(255, 255, 255, 0.75) 1.2px, transparent 2.3px),
+    radial-gradient(circle at 168px 166px, #cfe6ff 0, rgba(207, 230, 255, 0.7) 1px, transparent 2px),
+    radial-gradient(circle at 246px 118px, #fff 0, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
+    radial-gradient(circle at 34px 208px, #ffe9cc 0, rgba(255, 233, 204, 0.7) 1.1px, transparent 2.1px),
+    radial-gradient(circle at 118px 246px, #fff 0, rgba(255, 255, 255, 0.7) 1px, transparent 2px),
+    radial-gradient(circle at 214px 208px, #d8f4ff 0, rgba(216, 244, 255, 0.75) 1px, transparent 2px),
+    radial-gradient(circle at 152px 28px, #fff 0, rgba(255, 255, 255, 0.6) 1px, transparent 1.9px),
+    radial-gradient(circle at 12px 148px, #fff 0, rgba(255, 255, 255, 0.55) 1px, transparent 1.9px);
+  opacity: 0.9;
+  animation: rz-twinkle-a 5.5s ease-in-out infinite alternate,
+    rz-drift-a 260s linear infinite;
+}
+
+/* لایه‌ی ب — درشت‌تر، رنگارنگ، با هاله */
+.rz-stars.b {
+  background-size: 420px 420px;
+  background-image:
+    radial-gradient(circle at 46px 68px, #fff 0, rgba(206, 236, 255, 0.95) 1.6px, transparent 4px),
+    radial-gradient(circle at 188px 34px, #ffd9f2 0, rgba(255, 120, 220, 0.85) 1.5px, transparent 4px),
+    radial-gradient(circle at 302px 142px, #d6fbff 0, rgba(34, 211, 238, 0.9) 1.7px, transparent 4.2px),
+    radial-gradient(circle at 96px 226px, #efe6ff 0, rgba(160, 130, 255, 0.9) 1.6px, transparent 4px),
+    radial-gradient(circle at 368px 296px, #fff4dd 0, rgba(255, 200, 110, 0.85) 1.5px, transparent 4px),
+    radial-gradient(circle at 244px 372px, #fff 0, rgba(255, 255, 255, 0.9) 1.7px, transparent 4.2px),
+    radial-gradient(circle at 152px 128px, #eef6ff 0, rgba(190, 220, 255, 0.8) 1.4px, transparent 3.6px),
+    radial-gradient(circle at 392px 58px, #fff 0, rgba(255, 255, 255, 0.85) 1.5px, transparent 3.8px),
+    radial-gradient(circle at 24px 340px, #d8fbff 0, rgba(34, 211, 238, 0.7) 1.4px, transparent 3.6px),
+    radial-gradient(circle at 318px 236px, #fff 0, rgba(255, 255, 255, 0.8) 1.4px, transparent 3.6px);
+  opacity: 0.95;
+  animation: rz-twinkle-b 7.5s ease-in-out infinite alternate,
+    rz-drift-b 340s linear infinite;
+}
+
+/* لایه‌ی ج — ستاره‌های قهرمان، با درخشش */
+.rz-stars.c {
+  background-size: 620px 620px;
+  background-image:
+    radial-gradient(circle at 120px 96px, #fff 0, rgba(255, 255, 255, 0.95) 2.4px, transparent 7px),
+    radial-gradient(circle at 402px 60px, #fff 0, rgba(214, 236, 255, 0.95) 2.1px, transparent 6.4px),
+    radial-gradient(circle at 300px 322px, #fff 0, rgba(255, 236, 214, 0.95) 2.6px, transparent 7.6px),
+    radial-gradient(circle at 512px 402px, #fff 0, rgba(255, 190, 240, 0.9) 2.2px, transparent 6.6px),
+    radial-gradient(circle at 62px 470px, #fff 0, rgba(190, 245, 255, 0.9) 2px, transparent 6px);
+  animation: rz-twinkle-c 11s ease-in-out infinite alternate,
+    rz-drift-c 420s linear infinite;
+  filter: drop-shadow(0 0 3px rgba(210, 232, 255, 0.6));
+}
+
+@keyframes rz-twinkle-a {
+  from {
+    opacity: 0.45;
   }
-  50%{
-    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
+  to {
     opacity: 1;
   }
-  100%{
-    transform: translate3d(1%, -0.8%, 0) scale(1.018);
-    opacity: .9;
+}
+
+@keyframes rz-twinkle-b {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
   }
 }
 
-/* لایه دوم: گرید کج‌شده با حس عمق */
-#city::after{
+@keyframes rz-twinkle-c {
+  from {
+    opacity: 0.4;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+/* حرکت آرام؛ هر لایه دقیقاً به اندازه‌ی tile خودش تا حلقه بی‌درز بماند */
+@keyframes rz-drift-a {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -260px 260px;
+  }
+}
+
+@keyframes rz-drift-b {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -420px 420px;
+  }
+}
+
+@keyframes rz-drift-c {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -620px 620px;
+  }
+}
+
+/* ── ۳. هاله‌ی رنگی پشت سیاره ─────────────────────────────────── */
+.rz-glow {
+  position: absolute;
+  right: -24vmax;
+  bottom: -32vmax;
+  width: 66vmax;
+  height: 66vmax;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(124, 92, 255, 0.34) 0%,
+    rgba(34, 211, 238, 0.16) 34%,
+    rgba(255, 79, 216, 0.10) 52%,
+    transparent 70%
+  );
+  filter: blur(30px);
+  animation: rz-breathe 12s ease-in-out infinite;
+}
+
+/* ── ۴. سیاره — ترکیب بنفش/فیروزه‌ای/ماژنتا با نوارهای در حال چرخش ── */
+.rz-planet {
+  position: absolute;
+  right: -9vmax;
+  bottom: -15vmax;
+  width: min(52vmax, 620px);
+  height: min(52vmax, 620px);
+  border-radius: 50%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(160, 215, 255, 0.55) 0%, rgba(70, 110, 200, 0.25) 22%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(255, 90, 200, 0.30) 0%, transparent 55%),
+    radial-gradient(circle at 40% 50%, #2b3670 0%, #1a2350 34%, #0d1330 66%, #05070f 100%);
+  box-shadow:
+    inset -30px -26px 76px rgba(0, 0, 0, 0.92),
+    inset 16px 14px 62px rgba(120, 170, 255, 0.24),
+    0 0 110px 10px rgba(100, 130, 255, 0.20),
+    0 0 42px 4px rgba(34, 211, 238, 0.12);
+  animation: rz-float 16s ease-in-out infinite alternate;
+}
+
+/* نوارهای گازی که آرام می‌چرخند — دلیل دیده‌شدن حرکت سیاره */
+.rz-planet::before {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: -40%;
-  width: 200vw;
-  height: 140vh;
-  transform: translateX(-50%) perspective(900px) rotateX(72deg);
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(189,238,99,.09) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(189,238,99,.06) 1px, transparent 1px);
-  background-size: 90px 90px;
-  background-position: 0 0, 0 0;
-  opacity: .16;
-  mix-blend-mode: screen;
-  mask-image: radial-gradient(70% 60% at 50% 0%, black 0%, transparent 100%);
-  -webkit-mask-image: radial-gradient(70% 60% at 50% 0%, black 0%, transparent 100%);
-  animation: zGrid 38s linear infinite;
+  inset: -35%;
+  background: repeating-linear-gradient(
+    128deg,
+    rgba(124, 92, 255, 0.16) 0 22px,
+    rgba(34, 211, 238, 0.10) 22px 44px,
+    rgba(255, 79, 216, 0.09) 44px 66px,
+    transparent 66px 92px
+  );
+  animation: rz-spin 90s linear infinite;
 }
 
-@keyframes zGrid{
-  from{
-    background-position: 0 0, 0 0;
+/* سایه‌ی حجم و لبه‌ی روشن */
+.rz-planet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 72% 82%, transparent 46%, rgba(0, 0, 0, 0.62) 92%);
+  box-shadow:
+    inset 2px 2px 0 rgba(180, 210, 255, 0.26),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.55);
+}
+
+@keyframes rz-spin {
+  from {
+    transform: rotate(0deg);
   }
-  to{
-    background-position: 0 180px, 0 180px;
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* یه لایه خیلی کم نویز هم اضافه شه تا خیلی تمیز نشه */
-body::after{
-  opacity: .01 !important;
+@keyframes rz-float {
+  from {
+    transform: translate3d(0, 14px, 0) rotate(-2deg);
+  }
+  to {
+    transform: translate3d(0, -22px, 0) rotate(2deg);
+  }
+}
+
+@keyframes rz-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* ── ۵. ماه کوچک ──────────────────────────────────────────────── */
+.rz-moon {
+  position: absolute;
+  right: 24vmax;
+  bottom: 30vmax;
+  width: clamp(38px, 5vmax, 76px);
+  height: clamp(38px, 5vmax, 76px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #fbf7ff 0%, #d6d2ec 44%, #8d88b1 78%, #4b4770 100%);
+  box-shadow: 0 0 26px 4px rgba(196, 210, 255, 0.28);
+  animation: rz-moon-path 46s ease-in-out infinite alternate;
+}
+
+.rz-moon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 68% 74%, transparent 50%, rgba(0, 0, 0, 0.42) 96%);
+}
+
+@keyframes rz-moon-path {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-7vmax, -5vmax, 0);
+  }
+}
+
+/* ── ۶. کاهش حرکت / کم‌مصرف ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .rz-stars {
+    animation: none !important;
+    opacity: 0.9;
+  }
+  .rz-stars.c {
+    opacity: 0.9;
+  }
+  .rz-planet,
+  .rz-planet::before,
+  .rz-moon,
+  .rz-glow {
+    animation: none !important;
+  }
+}
+
+body.lite .rz-stars.b,
+body.lite .rz-stars.c,
+body.lite .rz-moon {
+  display: none;
+}
+
+body.lite .rz-stars.a {
+  animation: none;
+  opacity: 0.8;
+}
+
+body.lite .rz-planet::before {
+  animation: none;
+}
+
+body.lite .rz-planet,
+body.lite .rz-glow {
+  animation: none;
+}
+
+/* ── ۷. موبایل ────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .rz-stars.c {
+    display: none;
+  }
+  .rz-stars.a {
+    opacity: 0.75;
+  }
+  .rz-planet {
+    right: -20vmax;
+    bottom: -22vmax;
+    width: min(80vmax, 470px);
+    height: min(80vmax, 470px);
+  }
+  .rz-glow {
+    right: -34vmax;
+    bottom: -38vmax;
+  }
+  .rz-moon {
+    right: 12vmax;
+    bottom: 34vmax;
+  }
+}
+
+/* ── ۸. تم روشن ───────────────────────────────────────────────── */
+html[data-theme="light"] #rz::before,
+html.light #rz::before,
+body.light #rz::before {
+  background:
+    radial-gradient(70% 52% at 12% -6%, rgba(124, 92, 255, 0.12), transparent 64%),
+    radial-gradient(56% 44% at 88% 4%, rgba(34, 150, 205, 0.11), transparent 66%),
+    linear-gradient(180deg, #f6f8ff 0%, #eef1fa 48%, #e9ecf7 100%);
+}
+
+html[data-theme="light"] .rz-stars,
+html.light .rz-stars,
+body.light .rz-stars {
+  filter: invert(1) hue-rotate(180deg);
+  opacity: 0.6;
+}
+
+html[data-theme="light"] .rz-glow,
+html.light .rz-glow,
+body.light .rz-glow {
+  background: radial-gradient(
+    circle,
+    rgba(124, 92, 255, 0.16) 0%,
+    rgba(34, 150, 205, 0.10) 36%,
+    transparent 68%
+  );
+}
+
+/* ── ۹. پرینت ─────────────────────────────────────────────────── */
+@media print {
+  #rz {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
 }
