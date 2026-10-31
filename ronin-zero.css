@@ -644,3 +644,272 @@ body.light .rz-shoot {
     background: #fff !important;
   }
 }
+/* ═══════════════════════════════════════════════════════════════
+   PART 3 — پولیش لیمویی
+   بیست ریزه‌کاری که تم را زنده و «خفن» می‌کند: براقی دکمه‌ها،
+   حلقه‌ی نور کارت‌ها، شفق هیرو، پالس آیکن‌ها، خط نور هدر و…
+   هیچ مارک‌آپ جدیدی لازم نیست.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --z-accent-rgb: 189, 238, 99;
+  --z-grad: linear-gradient(135deg, var(--z-accent-h), var(--z-accent));
+  --z-ring: 0 0 0 1px rgba(189, 238, 99, 0.25), 0 0 34px -10px rgba(189, 238, 99, 0.55);
+}
+
+/* ── ۱. اسکرول‌بار فایرفاکس ───────────────────────────────────── */
+html {
+  scrollbar-color: rgba(189, 238, 99, 0.75) transparent;
+  scrollbar-width: thin;
+}
+
+/* ── ۲. نوار پیشرفت، دکمه‌ی بالا و اسپلش لیمویی ───────────────── */
+#rprog {
+  background: linear-gradient(90deg, var(--z-accent), #8ff0c6, var(--z-accent-h)) !important;
+}
+#rstop {
+  background: var(--z-grad) !important;
+  color: var(--z-accent-ink) !important;
+  box-shadow: 0 14px 34px -16px rgba(189, 238, 99, 0.9) !important;
+}
+#rsplash b {
+  text-shadow: 0 0 34px rgba(189, 238, 99, 0.9) !important;
+}
+#rsplash i {
+  background: var(--z-grad) !important;
+}
+
+/* ── ۳. خط نور نفس‌کش روی لبه‌ی هدر ───────────────────────────── */
+#top::after {
+  content: "";
+  position: absolute;
+  inset-inline: 18%;
+  bottom: -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(189, 238, 99, 0.8), transparent);
+  opacity: 0.45;
+  animation: zGlowLine 6s ease-in-out infinite;
+}
+
+/* ── ۴. لوگوی برند ────────────────────────────────────────────── */
+.brandmark {
+  transition: transform 0.35s var(--z-spring);
+}
+.brand:hover .brandmark {
+  transform: rotate(-6deg) scale(1.06);
+}
+
+/* ── ۵. دکمه‌ها: براقی متحرک و حس فشردن ────────────────────────── */
+html body .btn {
+  position: relative !important;
+  overflow: hidden !important;
+}
+html body .btn.p::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: -60%;
+  width: 45%;
+  pointer-events: none;
+  transform: skewX(-18deg);
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+}
+html body .btn.p:hover::before {
+  animation: zShine 0.85s var(--z-ease);
+}
+html body .btn:active {
+  transform: translateY(1px) scale(0.985) !important;
+}
+
+/* ── ۶. کارت‌ها: حلقه‌ی نور لیمویی روی هاور ───────────────────── */
+html body .card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(189, 238, 99, 0);
+  transition: box-shadow 0.3s var(--z-ease);
+}
+html body .card:hover::after {
+  box-shadow:
+    inset 0 0 0 1px rgba(189, 238, 99, 0.35),
+    inset 0 1px 0 rgba(212, 255, 112, 0.25),
+    0 0 44px -20px rgba(189, 238, 99, 0.75);
+}
+
+/* ── ۷. دسترسی سریع: پالس حلقه دور آیکن ───────────────────────── */
+html body .qc:hover .qi {
+  animation: zRing 1.4s ease-out infinite;
+}
+
+/* ── ۸. هیرو: شفق لیمویی متحرک ────────────────────────────────── */
+html body .hero::after {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  background:
+    radial-gradient(45% 40% at 20% 30%, rgba(189, 238, 99, 0.18), transparent 70%),
+    radial-gradient(40% 36% at 80% 70%, rgba(212, 255, 112, 0.12), transparent 72%);
+  filter: blur(44px);
+  mix-blend-mode: screen;
+  animation: zAurora 18s ease-in-out infinite alternate;
+}
+
+/* ── ۹. میله‌ی تیتر بخش‌ها: نفس‌کشیدن ──────────────────────────── */
+.head .h2::before {
+  animation: zBarPulse 4.5s ease-in-out infinite;
+}
+
+/* ── ۱۰. آیتم فعال منوی کناری: درخشش ملایم ────────────────────── */
+html body .ditem.on {
+  animation: zBreath 3.6s ease-in-out infinite;
+}
+
+/* ── ۱۱. نوار پایین موبایل: جهش نرم ───────────────────────────── */
+#dock a.on {
+  animation: zBob 2.8s ease-in-out infinite;
+}
+
+/* ── ۱۲. تب فعال: هاله ────────────────────────────────────────── */
+html body .tab.on {
+  box-shadow: var(--z-ring) !important;
+}
+
+/* ── ۱۳. قیمت: درخشش لیمویی ───────────────────────────────────── */
+html body .price {
+  text-shadow: 0 0 18px rgba(189, 238, 99, 0.55) !important;
+}
+
+/* ── ۱۴. مودال: خط نور بالای کارت ─────────────────────────────── */
+html body .modal .box {
+  position: relative !important;
+}
+html body .modal .box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 16%;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--z-accent), transparent);
+  opacity: 0.7;
+}
+
+/* ── ۱۵. توست: نوار لیمویی کنار ───────────────────────────────── */
+html body .toast {
+  border-inline-start: 2px solid var(--z-accent) !important;
+}
+
+/* ── ۱۶. کارت انیمه: زوم آرام پوستر ────────────────────────────── */
+html body .anime {
+  overflow: hidden !important;
+}
+html body .anime .cover img {
+  transition: transform 0.5s var(--z-ease);
+}
+html body .anime:hover .cover img {
+  transform: scale(1.06);
+}
+
+/* ── ۱۷. چیپ‌ها: هاور لیمویی ───────────────────────────────────── */
+html body .chip {
+  transition: border-color 0.2s var(--z-ease), color 0.2s var(--z-ease);
+}
+html body .chip:hover {
+  border-color: rgba(189, 238, 99, 0.55) !important;
+  color: var(--z-accent-h) !important;
+}
+
+/* ── ۱۸. فوکوس صفحه‌کلید: هاله‌ی نرم ───────────────────────────── */
+:focus-visible {
+  box-shadow: 0 0 0 5px rgba(189, 238, 99, 0.1);
+}
+
+/* ── ۱۹. کی‌فریم‌ها ────────────────────────────────────────────── */
+@keyframes zGlowLine {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scaleX(0.86);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes zShine {
+  from {
+    transform: translateX(-40%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(320%) skewX(-18deg);
+  }
+}
+
+@keyframes zRing {
+  0% {
+    outline: 2px solid rgba(189, 238, 99, 0.55);
+    outline-offset: 0;
+  }
+  100% {
+    outline: 2px solid rgba(189, 238, 99, 0);
+    outline-offset: 12px;
+  }
+}
+
+@keyframes zAurora {
+  from {
+    transform: translate3d(-3%, 2%, 0) scale(1);
+    opacity: 0.55;
+  }
+  to {
+    transform: translate3d(3%, -2%, 0) scale(1.08);
+    opacity: 0.9;
+  }
+}
+
+@keyframes zBarPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(189, 238, 99, 0.85));
+  }
+}
+
+@keyframes zBreath {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.08) drop-shadow(0 6px 20px rgba(189, 238, 99, 0.45));
+  }
+}
+
+@keyframes zBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* ── ۲۰. حالت لمسی: هاورهای سنگین خاموش ──────────────────────── */
+@media (hover: none) {
+  html body .card:hover,
+  html body .qc:hover {
+    transform: none !important;
+  }
+  html body .btn.p:hover::before {
+    animation: none;
+  }
+}
