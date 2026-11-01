@@ -5,9 +5,11 @@
 
    اصل طراحی: کارایی.
    • هیچ filter:blur() و mix-blend-mode‌ای در کار نیست
-   • فقط ۲ انیمیشن، هر دو روی transform/opacity
-   • ستاره‌ها و سحابی‌ها گرادیان ثابت‌اند، نه لایه‌ی متحرک
-   • با prefers-reduced-motion همه‌چیز خاموش می‌شود
+     (این دو گران‌ترین چیزها روی GPU/CPU هستند).
+   • فقط ۲ انیمیشن، هر دو روی transform/opacity که در لایه‌ی
+     composited اجرا می‌شوند و reflow/repaint نمی‌سازند.
+   • ستاره‌ها و سحابی‌ها گرادیان ثابت‌اند، نه لایه‌ی متحرک.
+   • با prefers-reduced-motion همه‌چیز خاموش می‌شود.
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
@@ -18,9 +20,11 @@
   --z-soft: rgba(189, 238, 99, 0.16);
 }
 
-/* ═══════════ PART 1 — پس‌زمینهٔ فضایی ═══════════ */
+/* ═══════════════════════════════════════════════════════════════
+   PART 1 — پس‌زمینهٔ فضایی
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ── ۱. قاب اصلی ── */
+/* ── ۱. قاب اصلی ─────────────────────────────────────────────── */
 #rz {
   position: fixed;
   inset: 0;
@@ -39,7 +43,7 @@
   display: block;
 }
 
-/* ── ۲. سحابی‌ها ── */
+/* ── ۲. سحابی‌ها (گرادیان ثابت، بدون انیمیشن) ────────────────── */
 .rz-neb {
   inset: -8%;
   background:
@@ -55,10 +59,11 @@
   opacity: 0.8;
 }
 
-/* ── ۳. سه لایهٔ ستاره ── */
+/* ── ۳. سه لایهٔ ستاره (تصویر پس‌زمینهٔ تکرارشونده) ─────────────── */
 .rz-stars {
   inset: 0;
   background-repeat: repeat;
+  will-change: auto;
 }
 
 .rz-stars.a {
@@ -80,7 +85,7 @@
   opacity: 0.42;
 }
 
-/* تنها لایهٔ متحرک ستاره‌ها: فقط opacity */
+/* تنها لایهٔ متحرک ستاره‌ها: چیزی که فقط opacity عوض می‌کند */
 .rz-stars.c {
   background-image:
     radial-gradient(1.8px 1.8px at 58px 40px, #d4ff70, transparent),
@@ -91,7 +96,7 @@
   animation: rzTwinkle 9s ease-in-out infinite alternate;
 }
 
-/* ── ۴. شهاب‌سنگ ── */
+/* ── ۴. شهاب‌سنگ (Streak ساده، بدون blur) ─────────────────────── */
 .rz-shoot {
   top: 14%;
   inset-inline-start: 72%;
@@ -103,7 +108,9 @@
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(189, 238, 99, 0.45), transparent);
 }
 
-.rz-shoot.a { animation: rzShoot 14s ease-in 4s infinite; }
+.rz-shoot.a {
+  animation: rzShoot 14s ease-in 4s infinite;
+}
 
 .rz-shoot.b {
   top: 54%;
@@ -113,7 +120,7 @@
   animation: rzShoot 19s ease-in 11s infinite;
 }
 
-/* ── ۵. سیاره و حلقه ── */
+/* ── ۵. سیاره و حلقه ──────────────────────────────────────────── */
 .rz-world {
   inset-inline-end: -12vw;
   bottom: -16vh;
@@ -144,7 +151,7 @@
     0 0 0 20px rgba(124, 92, 255, 0.05);
 }
 
-/* ── ۶. دو ماه ── */
+/* ── ۶. دو ماه ───────────────────────────────────────────────── */
 .rz-moon {
   border-radius: 50%;
   background: radial-gradient(circle at 36% 32%, #dfe6ff 0%, #98a4cf 52%, #4b5480 90%);
@@ -152,10 +159,22 @@
   opacity: 0.8;
 }
 
-.rz-moon.m1 { top: 16%; inset-inline-start: 12%; width: 46px; height: 46px; }
-.rz-moon.m2 { top: 34%; inset-inline-start: 26%; width: 20px; height: 20px; opacity: 0.55; }
+.rz-moon.m1 {
+  top: 16%;
+  inset-inline-start: 12%;
+  width: 46px;
+  height: 46px;
+}
 
-/* ── ۷. هاله و کهکشان دور ── */
+.rz-moon.m2 {
+  top: 34%;
+  inset-inline-start: 26%;
+  width: 20px;
+  height: 20px;
+  opacity: 0.55;
+}
+
+/* ── ۷. هالهٔ لبه و کهکشان دور ────────────────────────────────── */
 .rz-glow {
   inset: 0;
   background: radial-gradient(120% 100% at 50% 0%, transparent 42%, rgba(3, 5, 14, 0.68) 100%);
@@ -167,20 +186,35 @@
   background: linear-gradient(114deg, transparent 34%, rgba(124, 92, 255, 0.07) 46%, rgba(34, 211, 238, 0.05) 54%, transparent 66%);
 }
 
-/* ── ۸. کی‌فریم‌ها ── */
+/* ── ۸. کی‌فریم‌ها (فقط ۲ عدد) ───────────────────────────────── */
 @keyframes rzTwinkle {
-  from { opacity: 0.18; }
-  to { opacity: 0.48; }
+  from {
+    opacity: 0.18;
+  }
+  to {
+    opacity: 0.48;
+  }
 }
 
 @keyframes rzShoot {
-  0%, 86% { opacity: 0; transform: translate3d(0, 0, 0) rotate(16deg) scaleX(0.35); }
-  88% { opacity: 0.85; }
-  96% { opacity: 0.15; }
-  100% { opacity: 0; transform: translate3d(-44vw, 30vh, 0) rotate(16deg) scaleX(1); }
+  0%,
+  86% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(16deg) scaleX(0.35);
+  }
+  88% {
+    opacity: 0.85;
+  }
+  96% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-44vw, 30vh, 0) rotate(16deg) scaleX(1);
+  }
 }
 
-/* ── ۹. تم روشن ── */
+/* ── ۹. تم روشن ──────────────────────────────────────────────── */
 html[data-theme="light"] #rz {
   background:
     radial-gradient(120% 90% at 78% -12%, #dfe4ff 0%, transparent 58%),
@@ -188,28 +222,47 @@ html[data-theme="light"] #rz {
     linear-gradient(180deg, #f6f7ff 0%, #eef0ff 48%, #e9e6ff 78%, #e6e2ff 100%);
 }
 
-html[data-theme="light"] .rz-neb { opacity: 0.55; }
+html[data-theme="light"] .rz-neb {
+  opacity: 0.55;
+}
+
 html[data-theme="light"] .rz-stars,
-html[data-theme="light"] .rz-shoot { display: none; }
-html[data-theme="light"] .rz-planet { opacity: 0.35; }
+html[data-theme="light"] .rz-shoot {
+  display: none;
+}
+
+html[data-theme="light"] .rz-planet {
+  opacity: 0.35;
+}
 
 html[data-theme="light"] .rz-glow {
   background: radial-gradient(120% 100% at 50% 0%, transparent 45%, rgba(246, 247, 255, 0.7) 100%);
 }
 
-/* ═══════════ PART 2 — تم لیمویی ═══════════ */
+/* ═══════════════════════════════════════════════════════════════
+   PART 2 — تم لیمویی
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ── ۱۰. ناوبری و هدر ── */
-#top .nav a { transition: color 0.18s ease, background-color 0.18s ease; }
-#top .nav a:hover { color: var(--z-accent-h); }
-#top .nav a.on { color: var(--z-accent-ink); background: var(--z-grad); }
+/* ── ۱۰. ناوبری و هدر ────────────────────────────────────────── */
+#top .nav a {
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+#top .nav a:hover {
+  color: var(--z-accent-h);
+}
+
+#top .nav a.on {
+  color: var(--z-accent-ink);
+  background: var(--z-grad);
+}
 
 #top .brandmark {
   color: var(--z-accent);
   text-shadow: 0 0 18px rgba(189, 238, 99, 0.45);
 }
 
-/* ── ۱۱. دکمه‌ها ── */
+/* ── ۱۱. دکمه‌ها ─────────────────────────────────────────────── */
 html body .btn.p {
   border: 0;
   color: var(--z-accent-ink);
@@ -223,14 +276,16 @@ html body .btn.p:hover {
   transform: translateY(-2px);
 }
 
-html body .btn.p:active { transform: translateY(1px); }
+html body .btn.p:active {
+  transform: translateY(1px);
+}
 
 html body .btn.gd {
   color: var(--z-accent-ink);
   background: linear-gradient(135deg, #eaffb0, var(--z-accent));
 }
 
-/* ── ۱۲. تب، چیپ، آیتم فعال ── */
+/* ── ۱۲. تب، چیپ، آیتم فعال ──────────────────────────────────── */
 html body .tab.on {
   color: var(--z-accent-h);
   border-color: rgba(189, 238, 99, 0.45);
@@ -249,34 +304,75 @@ html body .ditem.on {
   border-inline-start-color: var(--z-accent);
 }
 
-html body #dock a.on { color: var(--z-accent-h); }
-html body #dock a.on::before { background: var(--z-grad); }
+html body #dock a.on {
+  color: var(--z-accent-h);
+}
 
-/* ── ۱۳. قیمت، نوار پیشرفت، اسپلش ── */
-html body .price { color: var(--z-accent-h); }
-#rprog { background: linear-gradient(90deg, var(--z-accent), #8ff0c6); }
-#rstop { color: var(--z-accent-ink); background: var(--z-grad); }
-#rsplash i { background: var(--z-grad); }
-#rsplash b { color: var(--z-accent-h); }
+html body #dock a.on::before {
+  background: var(--z-grad);
+}
 
-/* ── ۱۴. کارت، مودال، توست ── */
-html body .card:hover { border-color: rgba(189, 238, 99, 0.30); }
+/* ── ۱۳. قیمت، نوار پیشرفت، اسپلش ────────────────────────────── */
+html body .price {
+  color: var(--z-accent-h);
+}
+
+#rprog {
+  background: linear-gradient(90deg, var(--z-accent), #8ff0c6);
+}
+
+#rstop {
+  color: var(--z-accent-ink);
+  background: var(--z-grad);
+}
+
+#rsplash i {
+  background: var(--z-grad);
+}
+
+#rsplash b {
+  color: var(--z-accent-h);
+}
+
+/* ── ۱۴. کارت، مودال، توست ───────────────────────────────────── */
+html body .card:hover {
+  border-color: rgba(189, 238, 99, 0.30);
+}
 
 html body .modal .box {
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(189, 238, 99, 0.10);
 }
 
-html body .toast { border-inline-start: 2px solid var(--z-accent); }
+html body .toast {
+  border-inline-start: 2px solid var(--z-accent);
+}
 
-/* ── ۱۵. فوکوس و انتخاب ── */
-html body :focus-visible { outline: 2px solid var(--z-accent); outline-offset: 2px; }
-html body ::selection { background: var(--z-accent); color: var(--z-accent-ink); }
-html { scrollbar-color: rgba(189, 238, 99, 0.7) #070a1a; }
-::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--z-accent), #7fb03a); }
+/* ── ۱۵. فوکوس و انتخاب ──────────────────────────────────────── */
+html body :focus-visible {
+  outline: 2px solid var(--z-accent);
+  outline-offset: 2px;
+}
 
-/* ═══════════ PART 3 — دسترس‌پذیری ═══════════ */
+html body ::selection {
+  background: var(--z-accent);
+  color: var(--z-accent-ink);
+}
 
-/* ── ۱۷. کاهش حرکت ── */
+html {
+  scrollbar-color: rgba(189, 238, 99, 0.7) #070a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--z-accent), #7fb03a);
+}
+
+/* ── ۱۶. اسکرول‌بار سبک‌تر روی موبایل ────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════
+   PART 3 — دسترس‌پذیری و سبک‌سازی
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ۱۷. احترام به کاهش حرکت ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   #rz .rz-stars.c,
   #rz .rz-shoot,
@@ -284,95 +380,135 @@ html { scrollbar-color: rgba(189, 238, 99, 0.7) #070a1a; }
     animation: none !important;
     transition: none !important;
   }
-  .rz-shoot { display: none; }
+  .rz-shoot {
+    display: none;
+  }
 }
 
-/* ── ۱۸. موبایل ── */
+/* ── ۱۸. موبایل: پس‌زمینهٔ کم‌هزینه‌تر ───────────────────────── */
 @media (max-width: 720px) {
   .rz-stars.b,
-  .rz-far { display: none; }
-  .rz-world { width: 78vw; inset-inline-end: -26vw; bottom: -20vh; }
-  .rz-moon.m2 { display: none; }
+  .rz-far {
+    display: none;
+  }
+  .rz-world {
+    width: 78vw;
+    inset-inline-end: -26vw;
+    bottom: -20vh;
+  }
+  .rz-moon.m2 {
+    display: none;
+  }
 }
 
-/* ── ۱۹. حالت لمسی ── */
+/* ── ۱۹. حالت لمسی: هاور سنگین خاموش ────────────────────────── */
 @media (hover: none) {
-  html body .btn.p:hover { transform: none; }
+  html body .btn.p:hover {
+    transform: none;
+  }
 }
 
-/* ── ۲۰. چاپ ── */
+/* ── ۲۰. چاپ ─────────────────────────────────────────────────── */
 @media print {
-  #rz { display: none; }
+  #rz {
+    display: none;
+  }
 }
 
-/* ── ۲۱. آیکن‌های هدر ── */
-html body #top .tools { gap: 5px; }
+/* ── ۲۱. آیکن‌های هدر (جستجو، اعلان، تم، زبان، پیام) ──────────── */
+html body #top .tools{gap:5px}
 
-html body #top .icobtn {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  border: 1px solid rgba(189, 238, 99, 0.14);
-  background: rgba(255, 255, 255, 0.045);
-  color: var(--ink);
-  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+html body #top .icobtn{
+  width:38px;height:38px;border-radius:12px;
+  border:1px solid rgba(189,238,99,.14);
+  background:rgba(255,255,255,.045);
+  color:var(--ink);
+  transition:border-color .18s ease, color .18s ease, background-color .18s ease;
 }
 
-html body #top .icobtn:hover {
-  border-color: rgba(189, 238, 99, 0.5);
-  color: var(--z-accent-h);
-  background: rgba(189, 238, 99, 0.10);
+html body #top .icobtn:hover{
+  border-color:rgba(189,238,99,.5);
+  color:var(--z-accent-h);
+  background:rgba(189,238,99,.10);
 }
 
-html body #top #rnLangCur { color: var(--z-accent); font-weight: 800; }
+html body #top #rnLangCur{color:var(--z-accent);font-weight:800}
 
-/* ── ۲۲. دکمه‌های تاییدی ── */
-html body .btn.ok {
-  border: 0;
-  color: var(--z-accent-ink);
-  background: linear-gradient(135deg, #e6ff9e, var(--z-accent));
-  box-shadow: 0 10px 26px rgba(189, 238, 99, 0.22);
+/* ── ۲۲. دکمه‌های تاییدی هم لیمویی ───────────────────────────── */
+html body .btn.ok{
+  border:0;
+  color:var(--z-accent-ink);
+  background:linear-gradient(135deg,#e6ff9e,var(--z-accent));
+  box-shadow:0 10px 26px rgba(189,238,99,.22);
 }
 
-html body .btn.ok:hover {
-  box-shadow: 0 14px 32px rgba(189, 238, 99, 0.36);
-  transform: translateY(-2px);
+html body .btn.ok:hover{
+  box-shadow:0 14px 32px rgba(189,238,99,.36);
+  transform:translateY(-2px);
 }
 
-/* ── ۲۳. نوار پایین ── */
-html body #dock .dwrap > a { transition: color 0.18s ease; }
-html body #dock .dwrap > a.on { color: var(--z-accent); }
-html body #dock .dwrap > a.on i { filter: drop-shadow(0 0 8px rgba(189, 238, 99, 0.55)); }
+/* ── ۲۳. نوار پایین: پنج آیتم ────────────────────────────────── */
+html body #dock .dwrap>a{transition:color .18s ease}
 
-/* ── ۲۴. نوار پایین روی گوشی ── */
-@media (max-width: 420px) {
-  html body #dock a { font-size: 9px; gap: 2px; }
-  html body #dock a i { font-size: 16px; }
+html body #dock .dwrap>a.on{
+  color:var(--z-accent);
 }
 
-/* ═══════════ PART 4 — پاس کارایی ═══════════ */
+html body #dock .dwrap>a.on i{
+  filter:drop-shadow(0 0 8px rgba(189,238,99,.55));
+}
 
-/* ── ۲۵. حذف بلور شیشه‌ای ── */
+/* ── ۲۴. نوار پایین روی گوشی: فاصلهٔ کمتر ───────────────────── */
+@media (max-width:420px){
+  html body #dock a{font-size:9px;gap:2px}
+  html body #dock a i{font-size:16px}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PART 4 — پاس کارایی
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ۲۵. حذف بلور شیشه‌ای (backdrop-filter) ────────────────────
+   بلور پشت عناصر، هر فریم باید لایه‌های زیرین را دوباره محاسبه کند؛
+   روی هدر و منو و کارت‌های ثابت، گران‌ترین عامل لگ اسکرول است. */
 html body #top,
 html body #rail,
+html body #dock,
 html body #dock .dwrap,
 html body .card,
 html body .qc,
 html body .chat,
+html body .modal,
 html body .modal .box,
-html body .sheet {
+html body .sheet,
+html body .tab.on,
+html body .ditem.on,
+html body .msg,
+html body .post,
+html body .pollopt span,
+html body .hero .cta,
+html body .cpTyping,
+html body .ri-skip {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
 
-/* سطح مات جای بلور */
+/* سطح مات جای بلور — ظاهر حفظ می‌شود، محاسبهٔ بلور حذف */
 html body #top {
   background: linear-gradient(135deg, rgba(12, 16, 38, 0.97), rgba(8, 11, 26, 0.95)) !important;
 }
 
-html body #dock .dwrap { background: rgba(8, 11, 26, 0.96) !important; }
-html body #rail { background: rgba(9, 12, 28, 0.97) !important; }
-html body .modal .box { background: rgba(10, 13, 30, 0.98) !important; }
+html body #dock .dwrap {
+  background: rgba(8, 11, 26, 0.96) !important;
+}
+
+html body #rail {
+  background: rgba(9, 12, 28, 0.97) !important;
+}
+
+html body .modal .box {
+  background: rgba(10, 13, 30, 0.98) !important;
+}
 
 html body .card {
   background: linear-gradient(150deg, rgba(16, 21, 46, 0.94), rgba(10, 14, 32, 0.92)) !important;
@@ -383,16 +519,26 @@ html[data-theme="light"] body #top {
 }
 
 html[data-theme="light"] body #dock .dwrap,
-html[data-theme="light"] body #rail { background: rgba(250, 251, 255, 0.98) !important; }
+html[data-theme="light"] body #rail {
+  background: rgba(250, 251, 255, 0.98) !important;
+}
 
-html[data-theme="light"] body .modal .box { background: #ffffff !important; }
+html[data-theme="light"] body .modal .box {
+  background: #ffffff !important;
+}
 
 html[data-theme="light"] body .card {
   background: linear-gradient(150deg, #ffffff, #f0f2f8) !important;
 }
 
-/* ── ۲۶. پردهٔ ورود بعد از پایان ── */
+/* ── ۲۶. انیمیشن‌های پردهٔ ورود بعد از پایان ──────────────────── */
 #rnIntro.out,
 #rnIntro.out * {
   animation: none !important;
+}
+/* ── ۲۷. هالهٔ هیرو: بلور گران حذف، گرادیان جایش می‌نشیند ── */
+html body .halo {
+  filter: none !important;
+  opacity: 0.55;
+  background: radial-gradient(circle at 50% 50%, rgba(124, 92, 255, 0.42), rgba(34, 211, 238, 0.12) 42%, transparent 72%) !important;
 }
