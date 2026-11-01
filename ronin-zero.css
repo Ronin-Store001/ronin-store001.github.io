@@ -1,14 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════
-   RONIN STORE — «ZERO» · v7 (نسخهٔ سبک)
+   RONIN STORE — «ZERO» · v8 (گردش کامل، هزینهٔ کم)
    PART 1: پس‌زمینهٔ فضایی
    PART 2: تم لیمویی (روی استایل‌های پایه)
 
    اصل طراحی: کارایی.
    • هیچ filter:blur() و mix-blend-mode‌ای در کار نیست
      (این دو گران‌ترین چیزها روی GPU/CPU هستند).
-   • فقط ۲ انیمیشن، هر دو روی transform/opacity که در لایه‌ی
-     composited اجرا می‌شوند و reflow/repaint نمی‌سازند.
-   • ستاره‌ها و سحابی‌ها گرادیان ثابت‌اند، نه لایه‌ی متحرک.
+   • ۱۲ انیمیشن، همه روی transform/opacity (لایهی composited):
+     reflow/repaint ساخته نمی‌شود، پس گردش کامل پس‌زمینه
+     (سحابی، ستاره‌ها، چرخش حلقه، شناوری سیاره، ماه‌ها) برگشته
+     بدون آنکه لگ اسکرول برگردد.
+   • در تم روشن ستاره‌ها تیره و دیده‌می‌شوند، نه پنهان.
    • با prefers-reduced-motion همه‌چیز خاموش می‌شود.
    ═══════════════════════════════════════════════════════════════ */
 
@@ -50,6 +52,7 @@
     radial-gradient(38% 30% at 24% 30%, rgba(124, 92, 255, 0.30), transparent 70%),
     radial-gradient(32% 26% at 74% 62%, rgba(34, 211, 238, 0.16), transparent 72%),
     radial-gradient(26% 22% at 58% 16%, rgba(189, 238, 99, 0.07), transparent 74%);
+  animation: rzNebA 46s ease-in-out infinite alternate;
 }
 
 .rz-neb.b {
@@ -57,42 +60,44 @@
     radial-gradient(30% 24% at 84% 26%, rgba(255, 79, 216, 0.13), transparent 70%),
     radial-gradient(34% 28% at 12% 72%, rgba(124, 92, 255, 0.20), transparent 72%);
   opacity: 0.8;
+  animation: rzNebB 38s ease-in-out infinite alternate;
 }
 
 /* ── ۳. سه لایهٔ ستاره (تصویر پس‌زمینهٔ تکرارشونده) ─────────────── */
 .rz-stars {
-  inset: 0;
+  inset: -8%;
   background-repeat: repeat;
-  will-change: auto;
 }
 
 .rz-stars.a {
   background-image:
-    radial-gradient(1.6px 1.6px at 20px 30px, #fff, transparent),
-    radial-gradient(1.1px 1.1px at 92px 148px, #cfe6ff, transparent),
-    radial-gradient(1.3px 1.3px at 164px 82px, #fff, transparent),
-    radial-gradient(1px 1px at 232px 206px, #e9d8ff, transparent);
+    radial-gradient(2.3px 2.3px at 20px 30px, #fff, transparent),
+    radial-gradient(1.7px 1.7px at 92px 148px, #cfe6ff, transparent),
+    radial-gradient(2px 2px at 164px 82px, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 232px 206px, #e9d8ff, transparent);
   background-size: 268px 252px;
-  opacity: 0.55;
+  opacity: 0.72;
+  animation: rzDriftA 74s ease-in-out infinite alternate;
 }
 
 .rz-stars.b {
   background-image:
-    radial-gradient(1.2px 1.2px at 44px 96px, #fff, transparent),
-    radial-gradient(1px 1px at 130px 24px, #dbe8ff, transparent),
-    radial-gradient(1.4px 1.4px at 206px 132px, #fff, transparent);
+    radial-gradient(1.8px 1.8px at 44px 96px, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 130px 24px, #dbe8ff, transparent),
+    radial-gradient(2.1px 2.1px at 206px 132px, #fff, transparent);
   background-size: 186px 174px;
-  opacity: 0.42;
+  opacity: 0.58;
+  animation: rzDriftB 96s ease-in-out infinite alternate;
 }
 
 /* تنها لایهٔ متحرک ستاره‌ها: چیزی که فقط opacity عوض می‌کند */
 .rz-stars.c {
   background-image:
-    radial-gradient(1.8px 1.8px at 58px 40px, #d4ff70, transparent),
-    radial-gradient(1.4px 1.4px at 176px 118px, #bff0ff, transparent),
-    radial-gradient(1.6px 1.6px at 118px 214px, #ffd9f6, transparent);
+    radial-gradient(2.6px 2.6px at 58px 40px, #d4ff70, transparent),
+    radial-gradient(2px 2px at 176px 118px, #bff0ff, transparent),
+    radial-gradient(2.3px 2.3px at 118px 214px, #ffd9f6, transparent);
   background-size: 236px 226px;
-  opacity: 0.35;
+  opacity: 0.5;
   animation: rzTwinkle 9s ease-in-out infinite alternate;
 }
 
@@ -126,6 +131,7 @@
   bottom: -16vh;
   width: min(50vw, 560px);
   aspect-ratio: 1 / 1;
+  animation: rzFloat 18s ease-in-out infinite alternate;
 }
 
 .rz-planet {
@@ -138,6 +144,7 @@
     inset 10px 12px 46px rgba(124, 92, 255, 0.18),
     0 0 90px rgba(124, 92, 255, 0.12);
   opacity: 0.9;
+  animation: rzBreathe 14s ease-in-out infinite;
 }
 
 .rz-rings {
@@ -149,6 +156,7 @@
   box-shadow:
     0 0 0 9px rgba(189, 238, 99, 0.045),
     0 0 0 20px rgba(124, 92, 255, 0.05);
+  animation: rzSpin 96s linear infinite;
 }
 
 /* ── ۶. دو ماه ───────────────────────────────────────────────── */
@@ -164,6 +172,7 @@
   inset-inline-start: 12%;
   width: 46px;
   height: 46px;
+  animation: rzOrbit1 44s ease-in-out infinite alternate;
 }
 
 .rz-moon.m2 {
@@ -172,6 +181,7 @@
   width: 20px;
   height: 20px;
   opacity: 0.55;
+  animation: rzOrbit2 62s ease-in-out infinite alternate;
 }
 
 /* ── ۷. هالهٔ لبه و کهکشان دور ────────────────────────────────── */
@@ -189,10 +199,10 @@
 /* ── ۸. کی‌فریم‌ها (فقط ۲ عدد) ───────────────────────────────── */
 @keyframes rzTwinkle {
   from {
-    opacity: 0.18;
+    opacity: 0.3;
   }
   to {
-    opacity: 0.48;
+    opacity: 0.72;
   }
 }
 
@@ -214,6 +224,96 @@
   }
 }
 
+/* گردش سحابی — فقط transform/opacity */
+@keyframes rzNebA {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  to {
+    transform: translate3d(2.5%, -2%, 0) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes rzNebB {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.04);
+    opacity: 0.6;
+  }
+  to {
+    transform: translate3d(-2.5%, 2%, 0) scale(1);
+    opacity: 0.9;
+  }
+}
+
+/* درفت آرام میدان ستاره‌ها (لایه بزرگ‌تر از قاب است تا لبه خالی نشود) */
+@keyframes rzDriftA {
+  from {
+    transform: translate3d(-3%, 2%, 0);
+  }
+  to {
+    transform: translate3d(3%, -2%, 0);
+  }
+}
+
+@keyframes rzDriftB {
+  from {
+    transform: translate3d(2%, -3%, 0);
+  }
+  to {
+    transform: translate3d(-2%, 3%, 0);
+  }
+}
+
+/* سیاره: شناوری + نفس‌کشیدن + چرخش حلقه */
+@keyframes rzFloat {
+  from {
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    transform: translate3d(0, -14px, 0);
+  }
+}
+
+@keyframes rzBreathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes rzSpin {
+  from {
+    transform: rotate(-22deg) scaleY(0.34);
+  }
+  to {
+    transform: rotate(338deg) scaleY(0.34);
+  }
+}
+
+/* مدار ماه‌ها */
+@keyframes rzOrbit1 {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(18px, -26px, 0);
+  }
+}
+
+@keyframes rzOrbit2 {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-14px, 20px, 0);
+  }
+}
+
 /* ── ۹. تم روشن ──────────────────────────────────────────────── */
 html[data-theme="light"] #rz {
   background:
@@ -226,17 +326,43 @@ html[data-theme="light"] .rz-neb {
   opacity: 0.55;
 }
 
-html[data-theme="light"] .rz-stars,
+/* ستاره‌ها در تم روشن تیره می‌شوند تا دیده شوند — و گردششان پابرجاست */
+html[data-theme="light"] .rz-stars.a {
+  background-image:
+    radial-gradient(2.3px 2.3px at 20px 30px, #1a2340, transparent),
+    radial-gradient(1.7px 1.7px at 92px 148px, #33406e, transparent),
+    radial-gradient(2px 2px at 164px 82px, #141c36, transparent),
+    radial-gradient(1.6px 1.6px at 232px 206px, #4a3b8c, transparent);
+  opacity: 0.85;
+}
+
+html[data-theme="light"] .rz-stars.b {
+  background-image:
+    radial-gradient(1.8px 1.8px at 44px 96px, #232e57, transparent),
+    radial-gradient(1.5px 1.5px at 130px 24px, #4c588a, transparent),
+    radial-gradient(2.1px 2.1px at 206px 132px, #1c2547, transparent);
+  opacity: 0.7;
+}
+
+html[data-theme="light"] .rz-stars.c {
+  background-image:
+    radial-gradient(2.6px 2.6px at 58px 40px, #4c7a08, transparent),
+    radial-gradient(2px 2px at 176px 118px, #10708f, transparent),
+    radial-gradient(2.3px 2.3px at 118px 214px, #b32b8b, transparent);
+  opacity: 0.75;
+}
+
 html[data-theme="light"] .rz-shoot {
-  display: none;
+  background: linear-gradient(90deg, rgba(28, 34, 66, 0.9), rgba(124, 92, 255, 0.5), transparent);
 }
 
 html[data-theme="light"] .rz-planet {
-  opacity: 0.35;
+  opacity: 0.5;
 }
 
+/* توری سفید حذف شد — قبلاً ستاره‌های تم روشن را می‌پوشاند */
 html[data-theme="light"] .rz-glow {
-  background: radial-gradient(120% 100% at 50% 0%, transparent 45%, rgba(246, 247, 255, 0.7) 100%);
+  background: radial-gradient(ellipse at 50% 60%, rgba(124, 92, 255, 0.10), transparent 72%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -374,8 +500,10 @@ html {
 
 /* ── ۱۷. احترام به کاهش حرکت ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  #rz .rz-stars.c,
-  #rz .rz-shoot,
+  #rz,
+  #rz * {
+    animation: none !important;
+  }
   html body .btn.p {
     animation: none !important;
     transition: none !important;
@@ -390,6 +518,10 @@ html {
   .rz-stars.b,
   .rz-far {
     display: none;
+  }
+  /* روی موبایل گردش سحابی خاموش می‌ماند تا باتری و رندر سبک بماند */
+  .rz-neb {
+    animation: none;
   }
   .rz-world {
     width: 78vw;
@@ -536,9 +668,27 @@ html[data-theme="light"] body .card {
 #rnIntro.out * {
   animation: none !important;
 }
-/* ── ۲۷. هالهٔ هیرو: بلور گران حذف، گرادیان جایش می‌نشیند ── */
+/* ── ۲۷. هالهٔ هیرو: بلور گران حذف، گرادیان جایش مینشیند ── */
 html body .halo {
   filter: none !important;
   opacity: 0.55;
   background: radial-gradient(circle at 50% 50%, rgba(124, 92, 255, 0.42), rgba(34, 211, 238, 0.12) 42%, transparent 72%) !important;
+}
+
+/* ── ۲۸. نوار بالای هیرو با فونت کوتاه‌تر (جلوگیری از دوخطه شدن) ── */
+html body .qr .qq {
+  font-size: 10.5px !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+html body .qr .qr2 {
+  font-size: 9.5px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
