@@ -19,7 +19,7 @@
   <title>RONIN STORE — Anime Universe</title>
 
   <!-- ── آیکن ────────────────────────────────────────────────── -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e22'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='36' fill='%238fdcff'%3E忍%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e22'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='36' fill='%238fdcff'%3E%E5%BF%8D%3C/text%3E%3C/svg%3E">
 
   <!-- ── فونت‌ها ─────────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,8 +30,8 @@
   <!-- ── استایل‌های پایه ─────────────────────────────────────── -->
   <link rel="stylesheet" href="css/1-base.css">
   <link rel="stylesheet" href="css/2-ui.css">
-  <link rel="stylesheet" href="css/3-panels.css">
-  <link rel="stylesheet" href="css/4-mobile.css">
+  <link rel="stylesheet" href="css/css/3-panels.css">
+  <link rel="stylesheet" href="css/css/4-mobile.css">
 
   <!-- ── پک ارتقای رونین ─────────────────────────────────────── -->
   <style>
@@ -62,18 +62,8 @@
   <script src="ronin-intro.js?v=1"></script>
 
   <!-- ── پس‌زمینه‌ی فضایی — باید آخرین استایل باشد ───────────── -->
-  <link rel="stylesheet" href="ronin-zero.css?v=8">
+  <link rel="stylesheet" href="ronin-zero.css?v=9">
 
-  <!-- ── کارت پوستر انیمه ────────────────────────────────────── -->
-  <style>
-  /* ═══════════ ANIME POSTER CARD ═══════════ */
-  .anime .cover{overflow:hidden}
-  .anime .cover img{width:100%;height:100%;object-fit:cover;display:block}
-  .anime .info .desc{font-size:11px;line-height:1.65;margin-top:3px;opacity:.78;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .anime .eps{position:absolute;top:9px;inset-inline-start:9px;z-index:2}
-  .apost{width:100%;max-height:300px;object-fit:cover;border-radius:14px;display:block;margin-bottom:12px}
-  </style>
 
 </head>
 <body>
@@ -109,7 +99,6 @@
 
   <nav class="nav">
     <a data-go="home" class="on">خانه</a>
-    <a data-go="animeinfo">📺 اطلاعات انیمه</a>
     <a data-go="community">انجمن</a>
     <a data-go="market">فروشگاه</a>
     <a data-go="premium">💎 پرمیوم</a>
@@ -134,7 +123,6 @@
     <div class="rgroup open">
       <button class="rghead" type="button"><i>🎬</i><span>کاوش</span><b class="rgchev">›</b></button>
       <div class="rgbody">
-        <div class="ditem" data-go="animeinfo"><i>📺</i>اطلاعات انیمه</div>
         <div class="ditem" data-go="discover"><i>🧭</i>کاوش</div>
         <div class="ditem" data-go="rank"><i>🏆</i>رتبه‌بندی</div>
         <div class="ditem" data-go="events"><i>📅</i>رویدادها</div>
@@ -196,3 +184,481 @@
 
 <!-- ═══════════ محتوای اصلی ═══════════ -->
 <main id="stage">
+
+  <!-- ── ۱. خانه ────────────────────────────────────────────── -->
+  <section class="sec on" id="sec-home">
+    <div class="hero">
+      <div class="halo"></div>
+      <h1>به دنیای Ronin Store خوش آمدی</h1>
+      <p>انیمه، جامعه، فروشگاه و دنیایی که خودت می‌سازی.</p>
+      <div class="cta">
+        <button class="btn p" data-go="community">شروع ماجراجویی</button>
+        <button class="btn" data-go="bulletin">اطلاعیه و تریلر</button>
+      </div>
+      <div class="row w" style="gap:7px;margin-top:16px;position:relative">
+        <span class="chip cy" data-online>🟢 ۰ نفر آنلاین</span>
+        <span class="chip" data-ver>V19</span>
+      </div>
+    </div>
+
+    <div class="head"><h2 class="h2">دسترسی سریع</h2></div>
+    <div class="grid auto">
+      <div class="qc" data-go="market"><div class="qi">🛒</div><div class="h3">فروشگاه</div><div class="sm mut">آگهی محصولات و فروشندگان</div></div>
+      <div class="qc" data-go="community"><div class="qi">👥</div><div class="h3">انجمن</div><div class="sm mut">پست، لایک، کامنت، فالو</div></div>
+      <div class="qc" data-go="chat"><div class="qi">💬</div><div class="h3">چت عمومی</div><div class="sm mut">گفتگوی زنده با کاربران</div></div>
+      <div class="qc" data-go="premium"><div class="qi">💎</div><div class="h3">پرمیوم</div><div class="sm mut">قابلیت‌های ویژه رونین</div></div>
+    </div>
+
+    <div class="head"><h2 class="h2">شروع کن</h2></div>
+    <div class="grid g3">
+      <div class="card"><div class="h3">۱. حساب بساز</div><div class="sm mut">با ایمیل ثبت‌نام کن</div></div>
+      <div class="card"><div class="h3">۲. پست بگذار</div><div class="sm mut">توی انجمن فعالیت کن</div></div>
+      <div class="card"><div class="h3">۳. آگهی بده</div><div class="sm mut">محصولت را تبلیغ کن</div></div>
+    </div>
+
+    <div class="card mt" id="dbWarn" style="display:none">
+      <b class="bad">⚠ اتصال به فایربیس برقرار نشد</b>
+      <div class="sm mut mt">اینترنت را بررسی کن و صفحه را رفرش کن.</div>
+    </div>
+  </section>
+
+  <!-- ── ۳. انجمن ───────────────────────────────────────────── -->
+  <section class="sec" id="sec-community">
+    <div class="head"><h2 class="h2">👥 انجمن رونین</h2><span class="chip cy" data-online></span></div>
+
+    <div class="card mb hide" data-auth>
+      <div class="row mb"><div class="av sm"><span data-me-av>؟</span></div><b class="sm" data-me-name>کاربر</b></div>
+      <textarea class="area" id="pText" placeholder="چه خبر؟ از انیمه‌ای بگو، نظرسنجی بگذار…" maxlength="1200"></textarea>
+      <label class="check mt"><input type="checkbox" id="pPollOn"> افزودن نظرسنجی</label>
+      <div class="col mt hide" id="pPollWrap">
+        <input class="inp" id="pOpt1" placeholder="گزینه ۱" maxlength="60">
+        <input class="inp" id="pOpt2" placeholder="گزینه ۲" maxlength="60">
+        <input class="inp" id="pOpt3" placeholder="گزینه ۳ (اختیاری)" maxlength="60">
+      </div>
+      <button class="btn p blk mt" id="pBtn">انتشار پست</button>
+    </div>
+
+    <div class="card mb hide" data-guest>
+      <div class="between">
+        <span class="sm mut">برای پست‌گذاشتن وارد شو</span>
+        <button class="btn p mini" data-authopen="login">ورود</button>
+      </div>
+    </div>
+
+    <div class="tabs mb">
+      <div class="tab on" data-feed="foryou">برای تو</div>
+      <div class="tab" data-feed="trending">🔥 داغ</div>
+      <div class="tab" data-feed="following">دنبال‌شده‌ها</div>
+      <div class="tab" data-feed="mine">پست‌های من</div>
+    </div>
+
+    <div class="col" id="feedBox"></div>
+  </section>
+
+  <!-- ── ۴. چت عمومی ────────────────────────────────────────── -->
+  <section class="sec" id="sec-chat">
+    <div class="head"><h2 class="h2">💬 چت عمومی</h2><span class="chip ok" data-online></span></div>
+    <div class="chat">
+      <div class="chead"><b class="sm">اتاق رونین</b><span class="xs mut">گفتگوی زنده</span></div>
+      <div class="cbody" id="chatBox"></div>
+      <div class="cbar hide" data-auth>
+        <input class="inp" id="chatIn" placeholder="پیامت را بنویس…" maxlength="500">
+        <button class="btn p mini" id="chatSend">ارسال</button>
+      </div>
+      <div class="cbar hide" data-guest>
+        <button class="btn p blk" data-authopen="login">برای چت وارد شو</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ۵. شبکه فرماندهی ───────────────────────────────────── -->
+  <section class="sec" id="sec-team">
+    <div class="head"><h2 class="h2">🛡 شبکه فرماندهی</h2><span class="chip bad">مخفی — فقط تیم</span></div>
+    <div class="tabs mb" id="teamTabs"></div>
+    <div class="chat">
+      <div class="chead"><b class="sm">کانال تیم</b><span class="xs mut">کاربران عادی اینجا را نمی‌بینند</span></div>
+      <div class="cbody" id="teamBox"></div>
+      <div class="cbar">
+        <input class="inp" id="teamIn" placeholder="پیام تیم…" maxlength="800">
+        <button class="btn p mini" id="teamSend">ارسال</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ۶. پیام خصوصی ──────────────────────────────────────── -->
+  <section class="sec" id="sec-dm">
+    <div class="head"><h2 class="h2" id="dmTitle">پیام خصوصی</h2></div>
+    <div class="chat">
+      <div class="cbody" id="dmBox"></div>
+      <div class="cbar">
+        <input class="inp" id="dmIn" placeholder="پیام…" maxlength="800">
+        <button class="btn p mini" id="dmSend">ارسال</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ۷. فروشگاه ─────────────────────────────────────────── -->
+  <section class="sec" id="sec-market">
+    <div class="head"><h2 class="h2">🛒 فروشگاه رونین</h2><span class="chip cy">آگهی فعال: <b id="shopCount">۰</b></span></div>
+    <div class="grid auto" id="shopWall"></div>
+  </section>
+
+  <!-- ── ۸. تبلیغات ─────────────────────────────────────────── -->
+  <section class="sec" id="sec-ads">
+    <div class="head"><h2 class="h2">📢 تبلیغات و آگهی</h2></div>
+
+    <div class="card mb hide" data-auth>
+      <div class="sm b mb">ثبت آگهی جدید</div>
+      <div class="grid g2">
+        <input class="inp" id="adName" placeholder="نام محصول" maxlength="60">
+        <input class="inp" id="adIcon" placeholder="ایموجی" maxlength="4">
+        <input class="inp" id="adPrice" placeholder="قیمت (فقط عدد)" maxlength="20">
+        <input class="inp" id="adCur" placeholder="واحد (تومان / دلار)" maxlength="10">
+        <select class="sel" id="adCat"><option>انتخاب دسته</option></select>
+        <input class="inp" id="adCompany" placeholder="نام شرکت / فروشگاه" maxlength="40">
+        <input class="inp" id="adContact" placeholder="راه ارتباطی" maxlength="60">
+        <input class="inp" id="adLoc" placeholder="شهر / منطقه" maxlength="40">
+      </div>
+      <textarea class="area mt" id="adDesc" placeholder="توضیح محصول" maxlength="600"></textarea>
+      <button class="btn p mt" id="adBtn">ارسال آگهی</button>
+      <div class="xs mut mt">آگهی‌های کاربران عادی پس از تایید مالک منتشر می‌شوند.</div>
+    </div>
+
+    <div class="card hide" data-guest>
+      <div class="between">
+        <span class="sm mut">برای ثبت آگهی وارد شو</span>
+        <button class="btn p mini" data-authopen="login">ورود</button>
+      </div>
+    </div>
+
+    <div class="head"><h3 class="h3">آگهی‌های من</h3></div>
+    <div class="col" id="myAds"></div>
+  </section>
+
+  <!-- ── ۹. کاوش ────────────────────────────────────────────── -->
+  <section class="sec" id="sec-discover">
+    <div class="head"><h2 class="h2">🧭 کاوش</h2></div>
+    <div id="discBox"></div>
+  </section>
+
+  <!-- ── ۱۰. رتبه‌بندی ───────────────────────────────────────── -->
+  <section class="sec" id="sec-rank">
+    <div class="head"><h2 class="h2">🏆 رتبه‌بندی رونین</h2></div>
+    <div id="rankBox"></div>
+  </section>
+
+  <!-- ── ۱۱. رویدادها ───────────────────────────────────────── -->
+  <section class="sec" id="sec-events">
+    <div class="head"><h2 class="h2">📅 رویدادها</h2></div>
+
+    <div class="card mb hide" id="evForm">
+      <div class="sm b mb">ساخت رویداد (مالک)</div>
+      <div class="grid g2">
+        <input class="inp" id="evTitle" placeholder="عنوان رویداد" maxlength="90">
+        <input class="inp" id="evWhen" placeholder="زمان (مثلاً جمعه ۲۱)" maxlength="30">
+      </div>
+      <textarea class="area mt" id="evBody" placeholder="توضیح" maxlength="600"></textarea>
+      <button class="btn p mt" id="evBtn">ساخت رویداد</button>
+    </div>
+
+    <div id="evWall"></div>
+  </section>
+
+  <!-- ── ۱۲. پرمیوم ─────────────────────────────────────────── -->
+  <section class="sec" id="sec-premium">
+    <div class="head"><h2 class="h2">💎 Ronin Elite</h2><span class="chip gd" data-premstate>—</span></div>
+
+    <div class="grid g3">
+      <div class="card"><div class="h3">🎨 رنگ کاراکتر</div><div class="sm mut">رنگ‌های ویژه همراه راهنما</div></div>
+      <div class="card"><div class="h3">🖼 قاب پروفایل</div><div class="sm mut">نمایش نشان پرمیوم در پروفایل</div></div>
+      <div class="card"><div class="h3">⚡ اولویت</div><div class="sm mut">دسترسی به قابلیت‌های ویژه</div></div>
+      <div class="card"><div class="h3">🔔 اعلان‌های ویژه</div><div class="sm mut">خبرهای مهم زودتر</div></div>
+      <div class="card"><div class="h3">🏷 نشان Elite</div><div class="sm mut">کنار نامت در انجمن و چت</div></div>
+      <div class="card"><div class="h3">🌙 پشتیبانی</div><div class="sm mut">اولویت در پاسخ‌دهی</div></div>
+    </div>
+
+    <div class="card mt center">
+      <div class="sm mut mb">پرداخت واقعی هنوز فعال نشده — درخواستت مستقیم به مالک می‌رسد و او فعال می‌کند.</div>
+      <button class="btn gd" id="premBtn">درخواست پرمیوم 💎</button>
+    </div>
+  </section>
+
+  <!-- ── ۱۳. پروفایل ────────────────────────────────────────── -->
+  <section class="sec" id="sec-profile">
+    <div class="head"><h2 class="h2">👤 پروفایل</h2></div>
+    <div id="profBox"></div>
+  </section>
+
+  <!-- ── ۱۴. پنل مالک ───────────────────────────────────────── -->
+  <section class="sec" id="sec-owner">
+    <div class="head"><h2 class="h2">👑 مرکز فرماندهی رونین</h2><span class="chip gd">فقط مالک</span></div>
+
+    <div class="tabs mb">
+      <div class="tab on" data-otab="overview">نمای کلی</div>
+      <div class="tab" data-otab="users">کاربران</div>
+      <div class="tab" data-otab="mod">تایید محتوا</div>
+      <div class="tab" data-otab="ads">آگهی‌ها</div>
+      <div class="tab" data-otab="orders">سفارش‌ها</div>
+      <div class="tab" data-otab="reports">گزارش‌ها</div>
+      <div class="tab" data-otab="settings">تنظیمات</div>
+    </div>
+
+    <div id="ownerBody"></div>
+  </section>
+
+  <!-- ── ۱۵. تنظیمات ────────────────────────────────────────── -->
+  <section class="sec" id="sec-settings">
+    <div class="head"><h2 class="h2">⚙ تنظیمات</h2></div>
+
+    <div class="card mb">
+      <div class="between">
+        <div>
+          <div class="sm b">⚡ حالت کم‌مصرف</div>
+          <div class="xs mut">انیمیشن و شیشه‌ی پس‌زمینه رو سبک می‌کنه تا سایت روون‌تر شه</div>
+        </div>
+        <button class="btn mini" id="liteBtn" type="button">خاموش</button>
+      </div>
+    </div>
+
+    <div class="card mb hide" data-guest>
+      <div class="between">
+        <span class="sm mut">وارد حساب شو تا تنظیمات شخصی‌ات ذخیره شود</span>
+        <button class="btn p mini" data-authopen="login">ورود</button>
+      </div>
+    </div>
+
+    <div class="card mb hide" data-auth>
+      <div class="sm b mb">حساب من</div>
+      <button class="btn d" data-logout>🚪 خروج از حساب</button>
+    </div>
+
+    <div class="card">
+      <div class="sm b">RONIN STORE <span data-ver>V19</span></div>
+      <div class="xs mut mt">انیمه • انجمن • فروشگاه • پرمیوم</div>
+      <div class="xs mut">© <span data-year>۲۰۲۶</span> — همه حقوق محفوظ است</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════ نوار پایین موبایل ═══════════ -->
+<nav id="dock">
+  <div class="dwrap">
+    <a data-go="home" class="on"><i>🏠</i>خانه</a>
+    <a data-go="chat"><i>💬</i>چت عمومی</a>
+    <a data-go="profile"><i>👤</i>پروفایل</a>
+    <a data-go="bulletin"><i>📣</i>اطلاعیه</a>
+    <a data-trailer="1"><i>🎬</i>تریلر</a>
+  </div>
+</nav>
+
+<div id="gninja" title="راهنمای رونین"></div>
+<div id="toasts"></div>
+
+<!-- ═══════════ مودال‌ها ═══════════ -->
+<div class="modal" id="authmod">
+  <div class="box">
+    <div class="between">
+      <h3 class="h2" id="authTitle">ورود به رونین</h3>
+      <button class="icobtn" data-close="authmod">✕</button>
+    </div>
+    <div class="tabs mt">
+      <div class="tab on" id="tabLogin">ورود</div>
+      <div class="tab" id="tabReg">ثبت‌نام</div>
+    </div>
+    <div class="col mt">
+      <div class="field" id="fName" style="display:none">
+        <label class="lbl">نام نمایشی</label>
+        <input class="inp" id="aName" maxlength="24" placeholder="مثلاً کِنجی">
+      </div>
+      <div class="field">
+        <label class="lbl">ایمیل</label>
+        <input class="inp" id="aEmail" type="email" dir="ltr" placeholder="you@mail.com">
+      </div>
+      <div class="field">
+        <label class="lbl">رمز عبور</label>
+        <input class="inp" id="aPass" type="password" dir="ltr" placeholder="حداقل ۶ کاراکتر">
+      </div>
+      <div class="field" id="fPass2" style="display:none">
+        <label class="lbl">تکرار رمز عبور</label>
+        <input class="inp" id="aPass2" type="password" dir="ltr">
+      </div>
+    </div>
+    <div id="aMsg" class="sm mt mut" style="min-height:18px"></div>
+    <button class="btn p blk mt" id="aBtn">ورود</button>
+    <div class="center mt"><a id="aForgot" class="sm cy" style="cursor:pointer">رمزت را فراموش کردی؟</a></div>
+  </div>
+</div>
+
+<div class="modal" id="prodMod"><div class="box" id="prodBody"></div></div>
+
+<div class="modal" id="infoMod">
+  <div class="box">
+    <div class="between mb">
+      <h3 class="h2" id="infoTitle">—</h3>
+      <button class="icobtn" data-close="infoMod">✕</button>
+    </div>
+    <div id="infoBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="searchMod">
+  <div class="box">
+    <div class="between mb">
+      <h3 class="h2">🔍 جستجو</h3>
+      <button class="icobtn" data-close="searchMod">✕</button>
+    </div>
+    <div class="row">
+      <input class="inp" id="sqIn" placeholder="پست، محصول، انیمه…">
+      <button class="btn mini" id="sqClear">✕</button>
+    </div>
+    <div id="sqOut" class="mt"></div>
+  </div>
+</div>
+
+<div class="modal" id="notifMod">
+  <div class="box">
+    <div class="between mb">
+      <h3 class="h2">🔔 اعلان‌ها</h3>
+      <button class="icobtn" data-close="notifMod">✕</button>
+    </div>
+    <button class="btn mini mb" id="readAll">همه خوانده شد</button>
+    <div id="notifBox" class="col"></div>
+  </div>
+</div>
+
+<div id="rprog"></div>
+<div id="rsplash"><div><b>RONIN STORE</b><i></i></div></div>
+
+<!-- ═══════════ اسکریپت‌ها ═══════════ -->
+
+<!-- فایربیس -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<!-- هسته‌ی رونین -->
+<script src="css/js/1-core.js"></script>
+<script src="fb-guard.js?v=1"></script>
+<script src="css/js/js/2-auth.js"></script>
+<script src="css/js/js/js/3-feed.js"></script>
+<script src="css/js/js/js/js/4-chat.js"></script>
+<script src="css/js/js/js/js/js/5-market.js"></script>
+<script src="css/js/js/js/js/js/js/6-owner.js"></script>
+<script src="css/js/js/js/js/js/js/js/7-extra.js"></script>
+<script src="css/js/js/js/js/js/js/js/js/8-companion.js"></script>
+
+<!-- رابط و برند -->
+<script src="profile.js"></script>
+<script src="ui-fix.js"></script>
+<script src="brand.js"></script>
+<script src="ronin-appicon.js?v=2"></script>
+<script src="ronin-bulletin.js?v=1"></script>
+<script src="extra.js"></script>
+<script src="css/js/js/js/js/js/js/js/js/js/9-boot.js"></script>
+
+<!-- پک‌ها و قابلیت‌ها -->
+<script src="pack1.js"></script>
+<script src="pack2.js"></script>
+<script src="pack3.js"></script>
+<script src="chat-plus.js"></script>
+<script src="groups.js?v=2"></script>
+<script src="groups-plus.js?v=1"></script>
+<script src="inbox.js?v=1"></script>
+<script src="users.js?v=1"></script>
+<script src="notify-plus.js?v=1"></script>
+<script src="settings-plus.js?v=1"></script>
+<script src="cart-plus.js?v=1"></script>
+<script src="nav-drawer.js?v=1"></script>
+<script src="lite.js"></script>
+<script src="notif-prefs.js"></script>
+<script src="ronin-nav.js"></script>
+
+<!-- پک ارتقا: اسپلش، نوار پیشرفت، دکمه‌ی بازگشت به بالا -->
+<script>
+(function () {
+  try {
+    var s = document.getElementById("rsplash");
+    function kill() {
+      if (!s) return;
+      s.style.opacity = "0";
+      setTimeout(function () { if (s && s.parentNode) s.remove(); }, 600);
+    }
+    setTimeout(kill, 800);
+    setTimeout(kill, 2600);
+
+    var pr = document.getElementById("rprog");
+    var b = document.createElement("button");
+    b.id = "rstop"; b.type = "button"; b.textContent = "↑"; b.title = "برو بالا";
+    b.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+    document.body.appendChild(b);
+
+    /* یک هندلر برای نوار پیشرفت + دکمهٔ بالا + کلاس rnScroll
+       ارتفاع صفحه فقط هنگام تغییر اندازه اندازه‌گیری می‌شود، نه هر فریم */
+    var maxH = 0, ticking = false;
+
+    function measure() {
+      maxH = document.documentElement.scrollHeight - window.innerHeight;
+      if (maxH < 0) maxH = 0;
+    }
+
+    function paint() {
+      ticking = false;
+      var y = window.scrollY || window.pageYOffset || 0;
+      if (pr) pr.style.transform = "scaleX(" + (maxH > 0 ? y / maxH : 0) + ")";
+      b.classList.toggle("on", y > 500);
+      document.body.classList.toggle("rnScroll", y > 40);
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(paint);
+    }
+
+    measure();
+    paint();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", function () { measure(); onScroll(); }, { passive: true });
+    setTimeout(measure, 1200);
+    setTimeout(measure, 3000);
+  } catch (e) {}
+})();
+</script>
+
+<!-- منو، ترجمه، همراه، فوتر -->
+<script src="ronin-menu.js?v=1"></script>
+<script src="ronin-i18n.js?v=1"></script>
+<script src="ronin-companion-plus.js?v=1"></script>
+<script src="ronin-footer.js?v=1"></script>
+<script src="ronin-about.js?v=1"></script>
+
+<!-- ═══════════ دکمهٔ تریلر در نوار پایین ═══════════ -->
+<script>
+(function () {
+  function goTrailer() {
+    if (window.R && R.go) R.go('bulletin');
+    var a = document.querySelector('#dock [data-trailer]');
+    if (a) {
+      var all = document.querySelectorAll('#dock a');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
+      a.classList.add('on');
+    }
+    var tries = 0;
+    (function jump() {
+      var tab = document.querySelector('#sec-bulletin [data-bulk="trailer"]');
+      if (tab) { tab.click(); return; }
+      if (tries++ < 24) setTimeout(jump, 150);
+    })();
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-trailer]') : null;
+    if (!t) return;
+    e.preventDefault();
+    goTrailer();
+  });
+})();
+</script>
+
+</body>
+</html>
