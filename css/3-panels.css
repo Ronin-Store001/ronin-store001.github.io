@@ -1,0 +1,138 @@
+/* ═══════════════════════════════════════════════════════════════
+   RONIN STORE — V19 «NEO RAIN CITY»             css/3-panels.css
+   قهرمان • پست • چت • فروشگاه • پنل مالک • انیمه • پروفایل • کاراکتر
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ۱. بخش قهرمان (Hero) ───────────────────────────────────── */
+.hero{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;
+  min-height:330px;padding:38px 26px;border-radius:var(--rl);border:1px solid var(--ln2);
+  box-shadow:var(--sh);
+  background:linear-gradient(135deg,rgba(124,92,255,.24),rgba(34,211,238,.13) 55%,rgba(255,79,216,.15)),
+             linear-gradient(180deg,rgba(10,14,36,.86),rgba(6,9,24,.9))}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
+.hero .halo{position:absolute;top:-90px;inset-inline-end:-70px;width:340px;height:340px;
+  border-radius:50%;filter:blur(60px);
+  background:radial-gradient(circle,rgba(124,92,255,.6),transparent 68%)}
+.hero h1{position:relative;font-size:clamp(24px,5vw,42px);font-weight:900;line-height:1.25;color:transparent;
+  background:linear-gradient(90deg,#fff,var(--cy) 60%,var(--mag));
+  -webkit-background-clip:text;background-clip:text}
+.hero p{position:relative;margin-top:10px;max-width:520px;font-size:14px;color:#cfd2ee}
+.hero .cta{position:relative;display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+/* ── ۲. فید و پست ───────────────────────────────────────────── */
+.post{padding:15px;border-radius:var(--r);border:1px solid var(--ln);
+  backdrop-filter:blur(12px);box-shadow:0 12px 30px rgba(0,0,0,.32);
+  background:linear-gradient(150deg,rgba(15,19,46,.74),rgba(8,11,28,.64))}
+.post .pbody{margin:11px 0;font-size:14px;line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.post .pimg{margin-top:10px;border-radius:13px;overflow:hidden;border:1px solid var(--ln)}
+.pfoot{display:flex;align-items:center;gap:6px;margin-top:11px;padding-top:10px;
+  border-top:1px solid var(--ln)}
+.act{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:10px;
+  font-size:12px;font-weight:700;color:var(--mut);transition:.2s;cursor:pointer}
+.act:hover{color:#fff;background:rgba(124,92,255,.16)}
+.act.on{color:var(--mag)}
+.cmts{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.cmt{display:flex;gap:9px;padding:9px 11px;border-radius:12px;
+  background:rgba(4,7,18,.5);border:1px solid var(--ln)}
+.poll{margin-top:10px;display:flex;flex-direction:column;gap:7px}
+.pollopt{position:relative;overflow:hidden;padding:10px 13px;border-radius:11px;cursor:pointer;
+  font-size:12.5px;font-weight:700;background:rgba(4,7,18,.5);border:1px solid var(--ln)}
+.pollopt span{position:absolute;inset-block:0;inset-inline-start:0;opacity:.34;background:var(--grad)}
+
+/* ── ۳. چت ──────────────────────────────────────────────────── */
+.chat{display:flex;flex-direction:column;height:min(64vh,600px);overflow:hidden;
+  border-radius:var(--r);border:1px solid var(--ln);backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(12,16,40,.82),rgba(7,10,26,.88))}
+.chead{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--ln)}
+.cbody{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;align-items:flex-end;gap:9px;max-width:82%;animation:fade .25s ease}
+.msg.me{margin-inline-start:auto;flex-direction:row-reverse}
+.bub{padding:9px 13px;border-radius:15px 15px 15px 4px;font-size:13px;line-height:1.75;
+  word-break:break-word;background:rgba(255,255,255,.07);border:1px solid var(--ln)}
+.msg.me .bub{border-color:var(--ln2);border-radius:15px 15px 4px 15px;
+  background:linear-gradient(135deg,rgba(124,92,255,.44),rgba(34,211,238,.3))}
+.cbar{display:flex;gap:8px;padding:11px;border-top:1px solid var(--ln);background:rgba(4,7,18,.5)}
+.typing{padding:0 14px 8px;font-size:11px;color:var(--mut)}
+
+/* ── ۴. فروشگاه ─────────────────────────────────────────────── */
+.prod{overflow:hidden;border-radius:var(--r);border:1px solid var(--ln);transition:.25s;
+  background:linear-gradient(160deg,rgba(15,19,46,.82),rgba(8,11,28,.7))}
+.prod:hover{transform:translateY(-5px);border-color:var(--ln2);box-shadow:0 20px 44px rgba(0,0,0,.5)}
+.prod .pimg{height:150px;display:grid;place-items:center;font-size:46px;
+  background:linear-gradient(135deg,rgba(124,92,255,.32),rgba(34,211,238,.18))}
+.prod .pinfo{padding:13px}
+.price{font-size:14px;font-weight:900;color:var(--gold)}
+
+/* ── ۵. پنل مالک و آمار ─────────────────────────────────────── */
+.kpi{position:relative;overflow:hidden;padding:15px;border-radius:var(--r);border:1px solid var(--ln);
+  background:linear-gradient(150deg,rgba(15,19,46,.82),rgba(8,11,28,.7))}
+.kpi .n{font-size:26px;font-weight:900;line-height:1.2;color:transparent;
+  background:linear-gradient(90deg,#fff,var(--cy));-webkit-background-clip:text;background-clip:text}
+.kpi .l{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--mut)}
+.kpi::after{content:"";position:absolute;top:-30px;inset-inline-end:-30px;width:90px;height:90px;
+  border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.35),transparent 70%)}
+.chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:10px 0}
+.chart i{flex:1;min-height:6px;border-radius:6px 6px 2px 2px;opacity:.85;
+  background:var(--grad);animation:grow .6s ease}
+@keyframes grow{from{opacity:.2}}
+
+/* ── ۶. انیمه و اخبار ───────────────────────────────────────── */
+.anime{position:relative;overflow:hidden;border-radius:var(--r);border:1px solid var(--ln);transition:.28s}
+.anime:hover{transform:translateY(-5px) scale(1.02);border-color:var(--ln2);
+  box-shadow:0 20px 44px rgba(0,0,0,.55)}
+.anime .cover{height:190px;display:grid;place-items:center;font-size:52px;
+  background:linear-gradient(150deg,rgba(124,92,255,.44),rgba(255,79,216,.24) 60%,rgba(34,211,238,.26))}
+.anime .info{position:absolute;bottom:0;inset-inline:0;padding:12px;
+  background:linear-gradient(0deg,rgba(3,5,14,.96),transparent)}
+.news{display:flex;gap:12px;padding:13px;border-radius:var(--r);border:1px solid var(--ln);
+  background:rgba(9,12,30,.6);transition:.22s}
+.news:hover{border-color:var(--ln2);transform:translateX(-4px)}
+.news .thumb{width:86px;height:66px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;
+  font-size:26px;background:linear-gradient(135deg,rgba(34,211,238,.3),rgba(124,92,255,.3))}
+
+/* ── ۷. پروفایل ─────────────────────────────────────────────── */
+.prof{position:relative;overflow:hidden;border-radius:var(--rl);border:1px solid var(--ln2)}
+.prof .banner{height:132px;
+  background:linear-gradient(120deg,rgba(124,92,255,.6),rgba(255,79,216,.4) 50%,rgba(34,211,238,.5))}
+.prof .pinfo{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;margin-top:-38px;padding:0 18px 18px}
+.stats{display:flex;flex-wrap:wrap;gap:18px;font-size:12.5px}
+.stats b{display:block;font-size:17px;font-weight:900}
+.xpbar{height:9px;margin-top:7px;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.09)}
+.xpbar i{display:block;height:100%;border-radius:9px;background:var(--grad);transition:width .6s}
+
+/* ── ۸. اعلانها و رتبهبندی ────────────────────────────────── */
+.notif{display:flex;gap:11px;padding:12px;border-radius:13px;cursor:pointer;transition:.2s;
+  background:rgba(9,12,30,.6);border:1px solid var(--ln)}
+.notif:hover{border-color:var(--ln2);background:rgba(124,92,255,.12)}
+.notif.unread{border-color:rgba(124,92,255,.5);background:rgba(124,92,255,.14)}
+.lrow{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;
+  background:rgba(9,12,30,.55);border:1px solid var(--ln)}
+.lrow .rk{width:26px;text-align:center;font-weight:900;color:var(--gold)}
+
+/* ── ۹. کارتهای دسترسی سریع ────────────────────────────────── */
+.qc{position:relative;overflow:hidden;padding:16px;border-radius:var(--r);cursor:pointer;
+  border:1px solid var(--ln);transition:.25s;
+  background:linear-gradient(150deg,rgba(15,19,46,.78),rgba(8,11,28,.66))}
+.qc:hover{transform:translateY(-5px) rotate(-.6deg);border-color:var(--ln2);
+  box-shadow:0 20px 44px rgba(0,0,0,.5)}
+.qc .qi{font-size:27px}
+
+/* ── ۱۰. کاراکتر راهنمای انیمهای (نینجا) ───────────────────── */
+#gninja{position:fixed;z-index:90;bottom:96px;inset-inline-end:18px;width:86px;
+  text-align:center;cursor:pointer;user-select:none;animation:floaty 3.4s ease-in-out infinite;
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.6))}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#gninja svg{width:100%;height:auto}
+#gninja .nbub{position:absolute;bottom:calc(100% + 8px);inset-inline-end:0;
+  min-width:120px;max-width:215px;padding:8px 12px;border-radius:13px;text-align:start;
+  font-size:11.5px;font-weight:700;border:1px solid var(--ln2);
+  background:linear-gradient(150deg,rgba(18,23,54,.97),rgba(9,12,30,.97));
+  box-shadow:0 12px 28px rgba(0,0,0,.6);animation:mup .25s ease}
+#gninja .nbub.hide{display:none}
+#gninja .nbub::after{content:"";position:absolute;bottom:-6px;inset-inline-end:20px;
+  width:11px;height:11px;transform:rotate(45deg);background:rgba(14,18,44,.97);
+  border-inline-end:1px solid var(--ln2);border-bottom:1px solid var(--ln2)}
+@media (max-width:980px){
+  #gninja{width:64px;bottom:104px;inset-inline-end:12px}
+}
