@@ -1,915 +1,398 @@
 /* ═══════════════════════════════════════════════════════════════
-   RONIN ZERO  ·  ronin-zero.css   (v4 «DEEP SPACE»)
-   آسمان فضایی: سحابی رنگی، سه لایه ستاره، شهاب‌سنگ، سیاره‌ی حلقه‌دار
-   با نوارهای گازی در حال چرخش، و دو ماه.
-   فقط استایل — هیچ JS، هیچ canvas.
+   RONIN STORE — «ZERO» · v7 (نسخهٔ سبک)
+   PART 1: پس‌زمینهٔ فضایی
+   PART 2: تم لیمویی (روی استایل‌های پایه)
+
+   اصل طراحی: کارایی.
+   • هیچ filter:blur() و mix-blend-mode‌ای در کار نیست
+   • فقط ۲ انیمیشن، هر دو روی transform/opacity
+   • ستاره‌ها و سحابی‌ها گرادیان ثابت‌اند، نه لایه‌ی متحرک
+   • با prefers-reduced-motion همه‌چیز خاموش می‌شود
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── ۰. پالت و خاموش‌کردن پس‌زمینه‌ی قدیمی ──────────────────────── */
 :root {
-  --rz-void: #04060d;
-  --rz-vio: #7c5cff;
-  --rz-cy: #22d3ee;
-  --rz-mag: #ff4fd8;
-  --rz-amb: #ffbe5a;
-  --rz-ice: #d9ecff;
+  --z-accent: #bdee63;
+  --z-accent-h: #d4ff70;
+  --z-accent-ink: #0d1006;
+  --z-grad: linear-gradient(135deg, #d4ff70, #bdee63);
+  --z-soft: rgba(189, 238, 99, 0.16);
 }
 
-#city,
-#rcCanvas,
-#rcFog,
-#rcRain,
-#rcVig {
-  display: none !important;
-}
+/* ═══════════ PART 1 — پس‌زمینهٔ فضایی ═══════════ */
 
-/* ── ۱. بوم ───────────────────────────────────────────────────── */
-html {
-  background: var(--rz-void);
-}
-
-body {
-  background: transparent !important;
-}
-
+/* ── ۱. قاب اصلی ── */
 #rz {
   position: fixed;
   inset: 0;
   z-index: -1;
-  pointer-events: none;
   overflow: hidden;
-  contain: layout paint style;
-}
-
-/* آسمان پایه: چهار سحابی رنگی + گرادیان عمودی */
-#rz::before {
-  content: "";
-  position: absolute;
-  inset: 0;
+  pointer-events: none;
+  contain: layout paint;
   background:
-    radial-gradient(58% 46% at 14% -4%, rgba(124, 92, 255, 0.34), transparent 66%),
-    radial-gradient(52% 40% at 86% 2%, rgba(34, 211, 238, 0.24), transparent 68%),
-    radial-gradient(64% 50% at 74% 96%, rgba(255, 79, 216, 0.20), transparent 70%),
-    radial-gradient(48% 36% at 26% 82%, rgba(255, 190, 90, 0.10), transparent 72%),
-    linear-gradient(180deg, #06080f 0%, #070b1a 38%, #080d1e 68%, #04060e 100%);
+    radial-gradient(120% 90% at 78% -12%, #1b2450 0%, transparent 58%),
+    radial-gradient(90% 70% at 8% 108%, #241a44 0%, transparent 62%),
+    linear-gradient(180deg, #03050e 0%, #060a1c 45%, #0a0722 72%, #0d0a26 100%);
 }
 
-/* ── ۲. سحابی‌های شناور ────────────────────────────────────────── */
-.rz-neb {
+#rz > span {
   position: absolute;
   display: block;
-  border-radius: 50%;
-  filter: blur(58px);
-  opacity: 0.55;
-  mix-blend-mode: screen;
 }
 
-.rz-neb.a {
-  top: -18vmax;
-  inset-inline-start: -14vmax;
-  width: 70vmax;
-  height: 70vmax;
+/* ── ۲. سحابی‌ها ── */
+.rz-neb {
+  inset: -8%;
   background:
-    radial-gradient(circle at 40% 40%, rgba(124, 92, 255, 0.55), transparent 62%),
-    radial-gradient(circle at 66% 58%, rgba(34, 211, 238, 0.42), transparent 64%);
-  animation: rz-neb-a 44s ease-in-out infinite alternate;
+    radial-gradient(38% 30% at 24% 30%, rgba(124, 92, 255, 0.30), transparent 70%),
+    radial-gradient(32% 26% at 74% 62%, rgba(34, 211, 238, 0.16), transparent 72%),
+    radial-gradient(26% 22% at 58% 16%, rgba(189, 238, 99, 0.07), transparent 74%);
 }
 
 .rz-neb.b {
-  bottom: -24vmax;
-  inset-inline-start: 22vmax;
-  width: 62vmax;
-  height: 62vmax;
   background:
-    radial-gradient(circle at 50% 50%, rgba(255, 79, 216, 0.42), transparent 60%),
-    radial-gradient(circle at 30% 70%, rgba(255, 190, 90, 0.26), transparent 64%);
-  animation: rz-neb-b 36s ease-in-out infinite alternate;
+    radial-gradient(30% 24% at 84% 26%, rgba(255, 79, 216, 0.13), transparent 70%),
+    radial-gradient(34% 28% at 12% 72%, rgba(124, 92, 255, 0.20), transparent 72%);
+  opacity: 0.8;
 }
 
-@keyframes rz-neb-a {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.42;
-  }
-  to {
-    transform: translate3d(4vmax, 3vmax, 0) scale(1.14);
-    opacity: 0.68;
-  }
-}
-
-@keyframes rz-neb-b {
-  from {
-    transform: translate3d(0, 0, 0) scale(1.06);
-    opacity: 0.34;
-  }
-  to {
-    transform: translate3d(-5vmax, -3vmax, 0) scale(1);
-    opacity: 0.6;
-  }
-}
-
-/* ── ۳. ستاره‌ها ─────────────────────────────────────────────────
-   هر ستاره گرادیان با مرکز روشن و محو شدن نرم است. موقعیت‌ها پیکسلی
-   داخل یک tile تکرارشونده‌اند و حرکت هر لایه دقیقاً به اندازه‌ی tile
-   خودش است تا حلقه بی‌درز بماند.
-   ──────────────────────────────────────────────────────────────── */
+/* ── ۳. سه لایهٔ ستاره ── */
 .rz-stars {
-  position: absolute;
-  inset: -12%;
-  display: block;
+  inset: 0;
   background-repeat: repeat;
-  will-change: opacity, background-position;
 }
 
-/* لایه‌ی الف — انبوه و ریز */
 .rz-stars.a {
-  background-size: 240px 240px;
   background-image:
-    radial-gradient(circle at 18px 30px, #fff 0, rgba(255, 255, 255, 0.85) 1.1px, transparent 2.2px),
-    radial-gradient(circle at 84px 12px, #d9ecff 0, rgba(217, 236, 255, 0.8) 1px, transparent 2px),
-    radial-gradient(circle at 132px 82px, #fff 0, rgba(255, 255, 255, 0.72) 1.1px, transparent 2.1px),
-    radial-gradient(circle at 196px 44px, #e6dcff 0, rgba(230, 220, 255, 0.8) 1px, transparent 2px),
-    radial-gradient(circle at 58px 114px, #fff 0, rgba(255, 255, 255, 0.75) 1.2px, transparent 2.3px),
-    radial-gradient(circle at 158px 156px, #cfe6ff 0, rgba(207, 230, 255, 0.7) 1px, transparent 2px),
-    radial-gradient(circle at 228px 110px, #fff 0, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
-    radial-gradient(circle at 32px 194px, #ffe9cc 0, rgba(255, 233, 204, 0.7) 1.1px, transparent 2.1px),
-    radial-gradient(circle at 112px 228px, #fff 0, rgba(255, 255, 255, 0.7) 1px, transparent 2px),
-    radial-gradient(circle at 200px 196px, #d8f4ff 0, rgba(216, 244, 255, 0.75) 1px, transparent 2px),
-    radial-gradient(circle at 146px 26px, #fff 0, rgba(255, 255, 255, 0.6) 1px, transparent 1.9px),
-    radial-gradient(circle at 12px 140px, #fff 0, rgba(255, 255, 255, 0.55) 1px, transparent 1.9px),
-    radial-gradient(circle at 224px 168px, #e9f0ff 0, rgba(233, 240, 255, 0.6) 1px, transparent 1.9px),
-    radial-gradient(circle at 72px 62px, #fff 0, rgba(255, 255, 255, 0.5) 0.9px, transparent 1.8px),
-    radial-gradient(circle at 176px 214px, #fff 0, rgba(255, 255, 255, 0.55) 0.9px, transparent 1.8px),
-    radial-gradient(circle at 44px 232px, #d9f7ff 0, rgba(217, 247, 255, 0.55) 0.9px, transparent 1.8px);
-  opacity: 0.92;
-  animation: rz-tw-a 6s ease-in-out infinite alternate,
-    rz-drift-a 240s linear infinite;
+    radial-gradient(1.6px 1.6px at 20px 30px, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 92px 148px, #cfe6ff, transparent),
+    radial-gradient(1.3px 1.3px at 164px 82px, #fff, transparent),
+    radial-gradient(1px 1px at 232px 206px, #e9d8ff, transparent);
+  background-size: 268px 252px;
+  opacity: 0.55;
 }
 
-/* لایه‌ی ب — درشت‌تر و رنگارنگ با هاله */
 .rz-stars.b {
-  background-size: 400px 400px;
   background-image:
-    radial-gradient(circle at 46px 64px, #fff 0, rgba(206, 236, 255, 0.95) 1.6px, transparent 4px),
-    radial-gradient(circle at 182px 32px, #ffd9f2 0, rgba(255, 120, 220, 0.85) 1.5px, transparent 4px),
-    radial-gradient(circle at 292px 136px, #d6fbff 0, rgba(34, 211, 238, 0.9) 1.7px, transparent 4.2px),
-    radial-gradient(circle at 92px 216px, #efe6ff 0, rgba(160, 130, 255, 0.9) 1.6px, transparent 4px),
-    radial-gradient(circle at 352px 284px, #fff4dd 0, rgba(255, 200, 110, 0.85) 1.5px, transparent 4px),
-    radial-gradient(circle at 236px 356px, #fff 0, rgba(255, 255, 255, 0.9) 1.7px, transparent 4.2px),
-    radial-gradient(circle at 146px 122px, #eef6ff 0, rgba(190, 220, 255, 0.8) 1.4px, transparent 3.6px),
-    radial-gradient(circle at 376px 56px, #fff 0, rgba(255, 255, 255, 0.85) 1.5px, transparent 3.8px),
-    radial-gradient(circle at 24px 326px, #d8fbff 0, rgba(34, 211, 238, 0.7) 1.4px, transparent 3.6px),
-    radial-gradient(circle at 306px 226px, #fff 0, rgba(255, 255, 255, 0.8) 1.4px, transparent 3.6px),
-    radial-gradient(circle at 118px 388px, #ffe0f4 0, rgba(255, 79, 216, 0.7) 1.3px, transparent 3.4px),
-    radial-gradient(circle at 268px 74px, #fff 0, rgba(255, 255, 255, 0.7) 1.3px, transparent 3.4px);
-  opacity: 0.95;
-  animation: rz-tw-b 8.5s ease-in-out infinite alternate,
-    rz-drift-b 400s linear infinite;
+    radial-gradient(1.2px 1.2px at 44px 96px, #fff, transparent),
+    radial-gradient(1px 1px at 130px 24px, #dbe8ff, transparent),
+    radial-gradient(1.4px 1.4px at 206px 132px, #fff, transparent);
+  background-size: 186px 174px;
+  opacity: 0.42;
 }
 
-/* لایه‌ی ج — ستاره‌های قهرمان با درخشش */
+/* تنها لایهٔ متحرک ستاره‌ها: فقط opacity */
 .rz-stars.c {
-  background-size: 600px 600px;
   background-image:
-    radial-gradient(circle at 118px 92px, #fff 0, rgba(255, 255, 255, 0.95) 2.4px, transparent 7px),
-    radial-gradient(circle at 392px 58px, #fff 0, rgba(214, 236, 255, 0.95) 2.1px, transparent 6.4px),
-    radial-gradient(circle at 292px 312px, #fff 0, rgba(255, 236, 214, 0.95) 2.6px, transparent 7.6px),
-    radial-gradient(circle at 496px 392px, #fff 0, rgba(255, 190, 240, 0.9) 2.2px, transparent 6.6px),
-    radial-gradient(circle at 62px 456px, #fff 0, rgba(190, 245, 255, 0.9) 2px, transparent 6px),
-    radial-gradient(circle at 216px 522px, #fff 0, rgba(255, 255, 255, 0.9) 2px, transparent 6px),
-    radial-gradient(circle at 546px 168px, #fff 0, rgba(255, 224, 180, 0.85) 1.9px, transparent 5.8px);
-  animation: rz-tw-c 13s ease-in-out infinite alternate,
-    rz-drift-c 600s linear infinite;
-  filter: drop-shadow(0 0 3px rgba(210, 232, 255, 0.65));
+    radial-gradient(1.8px 1.8px at 58px 40px, #d4ff70, transparent),
+    radial-gradient(1.4px 1.4px at 176px 118px, #bff0ff, transparent),
+    radial-gradient(1.6px 1.6px at 118px 214px, #ffd9f6, transparent);
+  background-size: 236px 226px;
+  opacity: 0.35;
+  animation: rzTwinkle 9s ease-in-out infinite alternate;
 }
 
-@keyframes rz-tw-a {
-  from {
-    opacity: 0.48;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes rz-tw-b {
-  from {
-    opacity: 0.32;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes rz-tw-c {
-  from {
-    opacity: 0.42;
-    transform: scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-}
-
-@keyframes rz-drift-a {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: -240px 240px;
-  }
-}
-
-@keyframes rz-drift-b {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: -400px 400px;
-  }
-}
-
-@keyframes rz-drift-c {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: -600px 600px;
-  }
-}
-
-/* ── ۴. شهاب‌سنگ ───────────────────────────────────────────────── */
+/* ── ۴. شهاب‌سنگ ── */
 .rz-shoot {
-  position: absolute;
-  display: block;
-  width: 150px;
-  height: 2px;
-  border-radius: 2px;
+  top: 14%;
+  inset-inline-start: 72%;
+  width: 130px;
+  height: 1.5px;
+  border-radius: 3px;
   opacity: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35) 45%, #fff 92%, transparent);
-  filter: drop-shadow(0 0 6px rgba(190, 230, 255, 0.8));
-  rotate: -32deg;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(189, 238, 99, 0.45), transparent);
 }
 
-.rz-shoot.a {
-  top: 12%;
-  inset-inline-start: 8%;
-  animation: rz-shoot 13s linear infinite;
-}
+.rz-shoot.a { animation: rzShoot 14s ease-in 4s infinite; }
 
 .rz-shoot.b {
-  top: 30%;
-  inset-inline-start: 48%;
-  width: 110px;
-  animation: rz-shoot 21s linear infinite 7s;
+  top: 54%;
+  inset-inline-start: 10%;
+  width: 96px;
+  opacity: 0;
+  animation: rzShoot 19s ease-in 11s infinite;
 }
 
-@keyframes rz-shoot {
-  0% {
-    transform: translate3d(0, 0, 0) scaleX(0.2);
-    opacity: 0;
-  }
-  3% {
-    transform: translate3d(0, 0, 0) scaleX(1);
-    opacity: 1;
-  }
-  11% {
-    transform: translate3d(58vmax, 40vmax, 0) scaleX(1);
-    opacity: 0;
-  }
-  100% {
-    transform: translate3d(58vmax, 40vmax, 0) scaleX(1);
-    opacity: 0;
-  }
-}
-
-/* ── ۵. هاله‌ی افق ─────────────────────────────────────────────── */
-.rz-glow {
-  position: absolute;
-  inset-inline: -20vmax;
-  bottom: -34vmax;
-  height: 62vmax;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse at 50% 60%,
-    rgba(124, 92, 255, 0.30) 0%,
-    rgba(34, 211, 238, 0.16) 38%,
-    rgba(255, 79, 216, 0.10) 58%,
-    transparent 74%
-  );
-  filter: blur(42px);
-  animation: rz-breathe 14s ease-in-out infinite;
-}
-
-@keyframes rz-breathe {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.75;
-  }
-  50% {
-    transform: scale(1.06);
-    opacity: 1;
-  }
-}
-
-/* ── ۶. سیاره‌ی حلقه‌دار ────────────────────────────────────────── */
+/* ── ۵. سیاره و حلقه ── */
 .rz-world {
-  position: absolute;
-  inset-inline-end: -11vmax;
-  bottom: -16vmax;
-  width: min(50vmax, 600px);
-  height: min(50vmax, 600px);
-  display: block;
-  animation: rz-float 18s ease-in-out infinite alternate;
+  inset-inline-end: -12vw;
+  bottom: -16vh;
+  width: min(50vw, 560px);
+  aspect-ratio: 1 / 1;
 }
 
 .rz-planet {
   position: absolute;
   inset: 0;
-  display: block;
   border-radius: 50%;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 30% 24%, rgba(170, 220, 255, 0.55) 0%, rgba(70, 110, 200, 0.26) 22%, transparent 50%),
-    radial-gradient(circle at 72% 82%, rgba(255, 90, 200, 0.30) 0%, transparent 56%),
-    radial-gradient(circle at 42% 52%, #33407d 0%, #1c2757 34%, #0e1533 68%, #05070f 100%);
+  background: radial-gradient(circle at 34% 26%, #2b386f 0%, #171d44 48%, #0a0d20 82%);
   box-shadow:
-    inset -34px -30px 84px rgba(0, 0, 0, 0.94),
-    inset 18px 16px 68px rgba(120, 170, 255, 0.26),
-    0 0 120px 12px rgba(100, 130, 255, 0.20),
-    0 0 46px 6px rgba(34, 211, 238, 0.12);
+    inset -22px -26px 70px rgba(0, 0, 0, 0.9),
+    inset 10px 12px 46px rgba(124, 92, 255, 0.18),
+    0 0 90px rgba(124, 92, 255, 0.12);
+  opacity: 0.9;
 }
 
-/* نوارهای گازی در حال چرخش — دلیل دیده‌شدن حرکت سیاره */
-.rz-planet::before {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: repeating-linear-gradient(
-    124deg,
-    rgba(124, 92, 255, 0.18) 0 24px,
-    rgba(34, 211, 238, 0.11) 24px 48px,
-    rgba(255, 79, 216, 0.10) 48px 72px,
-    rgba(255, 190, 90, 0.05) 72px 96px,
-    transparent 96px 124px
-  );
-  animation: rz-spin 96s linear infinite;
-}
-
-/* ترمیناتور: نیمه‌ی تاریک و لبه‌ی نورانی */
-.rz-planet::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 74% 84%, transparent 44%, rgba(0, 0, 0, 0.66) 94%);
-  box-shadow:
-    inset 2px 2px 0 rgba(184, 214, 255, 0.28),
-    inset -3px -3px 0 rgba(0, 0, 0, 0.6);
-}
-
-/* حلقه‌ها: دو بیضی هم‌مرکز با شیب ملایم */
 .rz-rings {
   position: absolute;
-  inset: -22%;
-  display: block;
+  inset: -15% -27%;
   border-radius: 50%;
-  border: 2px solid rgba(206, 224, 255, 0.42);
-  transform: rotate(-19deg) scaleY(0.26);
-  box-shadow: 0 0 26px rgba(140, 180, 255, 0.28);
-}
-
-.rz-rings::before {
-  content: "";
-  position: absolute;
-  inset: 7%;
-  border-radius: 50%;
-  border: 5px solid rgba(34, 211, 238, 0.26);
-  box-shadow: inset 0 0 18px rgba(124, 92, 255, 0.35);
-}
-
-.rz-rings::after {
-  content: "";
-  position: absolute;
-  inset: 14%;
-  border-radius: 50%;
-  border: 1px dashed rgba(255, 79, 216, 0.30);
-}
-
-@keyframes rz-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes rz-float {
-  from {
-    transform: translate3d(0, 16px, 0) rotate(-1.6deg);
-  }
-  to {
-    transform: translate3d(0, -24px, 0) rotate(1.6deg);
-  }
-}
-
-/* ── ۷. سیاره‌ی دور (کوچک، بالا-چپ) ─────────────────────────────── */
-.rz-far {
-  position: absolute;
-  top: 9vmax;
-  inset-inline-start: 7vmax;
-  width: clamp(54px, 7vmax, 104px);
-  height: clamp(54px, 7vmax, 104px);
-  display: block;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 34% 30%, rgba(255, 226, 190, 0.55), transparent 46%),
-    radial-gradient(circle at 48% 50%, #5a4a7a 0%, #2b2344 56%, #120e22 100%);
+  border: 2px solid rgba(189, 238, 99, 0.20);
+  transform: rotate(-22deg) scaleY(0.34);
   box-shadow:
-    inset -10px -8px 24px rgba(0, 0, 0, 0.85),
-    0 0 40px 6px rgba(124, 92, 255, 0.18);
-  opacity: 0.85;
-  animation: rz-far-drift 52s ease-in-out infinite alternate;
+    0 0 0 9px rgba(189, 238, 99, 0.045),
+    0 0 0 20px rgba(124, 92, 255, 0.05);
 }
 
-@keyframes rz-far-drift {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(2vmax, 3vmax, 0);
-  }
-}
-
-/* ── ۸. دو ماه ─────────────────────────────────────────────────── */
+/* ── ۶. دو ماه ── */
 .rz-moon {
-  position: absolute;
-  display: block;
   border-radius: 50%;
-  width: clamp(40px, 5vmax, 82px);
-  height: clamp(40px, 5vmax, 82px);
-  background: radial-gradient(circle at 32% 26%, #fbf7ff 0%, #d6d2ec 44%, #8d88b1 78%, #4b4770 100%);
-  box-shadow: 0 0 28px 5px rgba(196, 210, 255, 0.26);
-}
-
-.rz-moon::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 70% 76%, transparent 48%, rgba(0, 0, 0, 0.46) 96%);
-}
-
-.rz-moon.m1 {
-  inset-inline-end: 26vmax;
-  bottom: 31vmax;
-  animation: rz-orbit-1 48s ease-in-out infinite alternate;
-}
-
-.rz-moon.m2 {
-  inset-inline-end: 46vmax;
-  bottom: 12vmax;
-  width: clamp(24px, 3vmax, 46px);
-  height: clamp(24px, 3vmax, 46px);
+  background: radial-gradient(circle at 36% 32%, #dfe6ff 0%, #98a4cf 52%, #4b5480 90%);
+  box-shadow: 0 0 34px rgba(207, 226, 255, 0.22);
   opacity: 0.8;
-  animation: rz-orbit-2 64s ease-in-out infinite alternate;
 }
 
-@keyframes rz-orbit-1 {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-8vmax, -6vmax, 0);
-  }
+.rz-moon.m1 { top: 16%; inset-inline-start: 12%; width: 46px; height: 46px; }
+.rz-moon.m2 { top: 34%; inset-inline-start: 26%; width: 20px; height: 20px; opacity: 0.55; }
+
+/* ── ۷. هاله و کهکشان دور ── */
+.rz-glow {
+  inset: 0;
+  background: radial-gradient(120% 100% at 50% 0%, transparent 42%, rgba(3, 5, 14, 0.68) 100%);
 }
 
-@keyframes rz-orbit-2 {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(6vmax, -9vmax, 0);
-  }
+.rz-far {
+  inset: 0;
+  opacity: 0.5;
+  background: linear-gradient(114deg, transparent 34%, rgba(124, 92, 255, 0.07) 46%, rgba(34, 211, 238, 0.05) 54%, transparent 66%);
 }
 
-/* ── ۹. کاهش حرکت ──────────────────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  #rz *,
-  #rz *::before,
-  #rz *::after {
-    animation: none !important;
-  }
-  .rz-shoot {
-    display: none;
-  }
+/* ── ۸. کی‌فریم‌ها ── */
+@keyframes rzTwinkle {
+  from { opacity: 0.18; }
+  to { opacity: 0.48; }
 }
 
-/* ── ۱۰. حالت کم‌مصرف ──────────────────────────────────────────── */
-body.lite .rz-neb,
-body.lite .rz-stars.b,
-body.lite .rz-stars.c,
-body.lite .rz-shoot,
-body.lite .rz-far,
-body.lite .rz-moon.m2,
-body.lite .rz-rings::after {
-  display: none;
+@keyframes rzShoot {
+  0%, 86% { opacity: 0; transform: translate3d(0, 0, 0) rotate(16deg) scaleX(0.35); }
+  88% { opacity: 0.85; }
+  96% { opacity: 0.15; }
+  100% { opacity: 0; transform: translate3d(-44vw, 30vh, 0) rotate(16deg) scaleX(1); }
 }
 
-body.lite .rz-stars.a {
-  animation: none;
-  opacity: 0.82;
-}
-
-body.lite .rz-planet::before,
-body.lite .rz-glow,
-body.lite .rz-world,
-body.lite .rz-moon.m1 {
-  animation: none;
-}
-
-/* ── ۱۱. موبایل ────────────────────────────────────────────────── */
-@media (max-width: 760px) {
-  .rz-neb {
-    filter: blur(40px);
-    opacity: 0.42;
-  }
-  .rz-stars.c,
-  .rz-shoot.b,
-  .rz-moon.m2 {
-    display: none;
-  }
-  .rz-stars.a {
-    opacity: 0.78;
-  }
-  .rz-world {
-    inset-inline-end: -22vmax;
-    bottom: -24vmax;
-    width: min(82vmax, 460px);
-    height: min(82vmax, 460px);
-  }
-  .rz-rings {
-    inset: -18%;
-  }
-  .rz-glow {
-    height: 54vmax;
-    bottom: -30vmax;
-  }
-  .rz-moon.m1 {
-    inset-inline-end: 12vmax;
-    bottom: 36vmax;
-  }
-  .rz-far {
-    top: 6vmax;
-    inset-inline-start: 4vmax;
-  }
-}
-
-/* ── ۱۲. تم روشن ───────────────────────────────────────────────── */
-html[data-theme="light"] #rz::before,
-html.light #rz::before,
-body.light #rz::before {
+/* ── ۹. تم روشن ── */
+html[data-theme="light"] #rz {
   background:
-    radial-gradient(58% 46% at 14% -4%, rgba(124, 92, 255, 0.16), transparent 66%),
-    radial-gradient(52% 40% at 86% 2%, rgba(34, 150, 205, 0.14), transparent 68%),
-    radial-gradient(60% 44% at 70% 98%, rgba(255, 79, 216, 0.10), transparent 70%),
-    linear-gradient(180deg, #f7f9ff 0%, #eef1fa 48%, #e8ecf7 100%);
+    radial-gradient(120% 90% at 78% -12%, #dfe4ff 0%, transparent 58%),
+    radial-gradient(90% 70% at 8% 108%, #efe6ff 0%, transparent 62%),
+    linear-gradient(180deg, #f6f7ff 0%, #eef0ff 48%, #e9e6ff 78%, #e6e2ff 100%);
 }
 
+html[data-theme="light"] .rz-neb { opacity: 0.55; }
 html[data-theme="light"] .rz-stars,
-html.light .rz-stars,
-body.light .rz-stars {
-  filter: invert(1) hue-rotate(180deg);
-  opacity: 0.55;
+html[data-theme="light"] .rz-shoot { display: none; }
+html[data-theme="light"] .rz-planet { opacity: 0.35; }
+
+html[data-theme="light"] .rz-glow {
+  background: radial-gradient(120% 100% at 50% 0%, transparent 45%, rgba(246, 247, 255, 0.7) 100%);
 }
 
-html[data-theme="light"] .rz-neb,
-html.light .rz-neb,
-body.light .rz-neb {
-  opacity: 0.28;
-  mix-blend-mode: multiply;
+/* ═══════════ PART 2 — تم لیمویی ═══════════ */
+
+/* ── ۱۰. ناوبری و هدر ── */
+#top .nav a { transition: color 0.18s ease, background-color 0.18s ease; }
+#top .nav a:hover { color: var(--z-accent-h); }
+#top .nav a.on { color: var(--z-accent-ink); background: var(--z-grad); }
+
+#top .brandmark {
+  color: var(--z-accent);
+  text-shadow: 0 0 18px rgba(189, 238, 99, 0.45);
 }
 
-html[data-theme="light"] .rz-glow,
-html.light .rz-glow,
-body.light .rz-glow {
-  background: radial-gradient(
-    ellipse at 50% 60%,
-    rgba(124, 92, 255, 0.18) 0%,
-    rgba(34, 150, 205, 0.12) 40%,
-    transparent 72%
-  );
+/* ── ۱۱. دکمه‌ها ── */
+html body .btn.p {
+  border: 0;
+  color: var(--z-accent-ink);
+  background: var(--z-grad);
+  box-shadow: 0 10px 26px rgba(189, 238, 99, 0.26);
+  transition: transform 0.16s ease, box-shadow 0.2s ease;
 }
 
-html[data-theme="light"] .rz-planet,
-html.light .rz-planet,
-body.light .rz-planet {
-  background:
-    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.7) 0%, rgba(150, 170, 235, 0.35) 24%, transparent 52%),
-    radial-gradient(circle at 72% 82%, rgba(255, 150, 220, 0.34) 0%, transparent 58%),
-    radial-gradient(circle at 42% 52%, #aab6ea 0%, #8d9ad6 38%, #6d79ba 70%, #4b5490 100%);
-  box-shadow:
-    inset -28px -24px 70px rgba(40, 50, 100, 0.45),
-    0 0 90px 8px rgba(124, 92, 255, 0.16);
+html body .btn.p:hover {
+  box-shadow: 0 14px 32px rgba(189, 238, 99, 0.42);
+  transform: translateY(-2px);
 }
 
-html[data-theme="light"] .rz-planet::before,
-html.light .rz-planet::before,
-body.light .rz-planet::before {
-  opacity: 0.7;
+html body .btn.p:active { transform: translateY(1px); }
+
+html body .btn.gd {
+  color: var(--z-accent-ink);
+  background: linear-gradient(135deg, #eaffb0, var(--z-accent));
 }
 
-html[data-theme="light"] .rz-rings,
-html.light .rz-rings,
-body.light .rz-rings {
-  border-color: rgba(90, 100, 160, 0.4);
-  box-shadow: 0 0 20px rgba(124, 92, 255, 0.18);
-}
-
-html[data-theme="light"] .rz-shoot,
-html.light .rz-shoot,
-body.light .rz-shoot {
-  background: linear-gradient(90deg, transparent, rgba(90, 100, 160, 0.4) 45%, #6a70a8 92%, transparent);
-}
-
-/* ── ۱۳. پرینت ─────────────────────────────────────────────────── */
-@media print {
-  #rz {
-    display: none !important;
-  }
-  body {
-    background: #fff !important;
-  }
-}
-/* ═══════════════════════════════════════════════════════════════
-   PART 3 — پولیش لیمویی
-   بیست ریزه‌کاری که تم را زنده و «خفن» می‌کند: براقی دکمه‌ها،
-   حلقه‌ی نور کارت‌ها، شفق هیرو، پالس آیکن‌ها، خط نور هدر و…
-   هیچ مارک‌آپ جدیدی لازم نیست.
-   ═══════════════════════════════════════════════════════════════ */
-
-:root {
-  --z-accent-rgb: 189, 238, 99;
-  --z-grad: linear-gradient(135deg, var(--z-accent-h), var(--z-accent));
-  --z-ring: 0 0 0 1px rgba(189, 238, 99, 0.25), 0 0 34px -10px rgba(189, 238, 99, 0.55);
-}
-
-/* ── ۱. اسکرول‌بار فایرفاکس ───────────────────────────────────── */
-html {
-  scrollbar-color: rgba(189, 238, 99, 0.75) transparent;
-  scrollbar-width: thin;
-}
-
-/* ── ۲. نوار پیشرفت، دکمه‌ی بالا و اسپلش لیمویی ───────────────── */
-#rprog {
-  background: linear-gradient(90deg, var(--z-accent), #8ff0c6, var(--z-accent-h)) !important;
-}
-#rstop {
-  background: var(--z-grad) !important;
-  color: var(--z-accent-ink) !important;
-  box-shadow: 0 14px 34px -16px rgba(189, 238, 99, 0.9) !important;
-}
-#rsplash b {
-  text-shadow: 0 0 34px rgba(189, 238, 99, 0.9) !important;
-}
-#rsplash i {
-  background: var(--z-grad) !important;
-}
-
-/* ── ۳. خط نور نفس‌کش روی لبه‌ی هدر ───────────────────────────── */
-#top::after {
-  content: "";
-  position: absolute;
-  inset-inline: 18%;
-  bottom: -1px;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(189, 238, 99, 0.8), transparent);
-  opacity: 0.45;
-  animation: zGlowLine 6s ease-in-out infinite;
-}
-
-/* ── ۴. لوگوی برند ────────────────────────────────────────────── */
-.brandmark {
-  transition: transform 0.35s var(--z-spring);
-}
-.brand:hover .brandmark {
-  transform: rotate(-6deg) scale(1.06);
-}
-
-/* ── ۵. دکمه‌ها: براقی متحرک و حس فشردن ────────────────────────── */
-html body .btn {
-  position: relative !important;
-  overflow: hidden !important;
-}
-html body .btn.p::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  inset-inline-start: -60%;
-  width: 45%;
-  pointer-events: none;
-  transform: skewX(-18deg);
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-}
-html body .btn.p:hover::before {
-  animation: zShine 0.85s var(--z-ease);
-}
-html body .btn:active {
-  transform: translateY(1px) scale(0.985) !important;
-}
-
-/* ── ۶. کارت‌ها: حلقه‌ی نور لیمویی روی هاور ───────────────────── */
-html body .card::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgba(189, 238, 99, 0);
-  transition: box-shadow 0.3s var(--z-ease);
-}
-html body .card:hover::after {
-  box-shadow:
-    inset 0 0 0 1px rgba(189, 238, 99, 0.35),
-    inset 0 1px 0 rgba(212, 255, 112, 0.25),
-    0 0 44px -20px rgba(189, 238, 99, 0.75);
-}
-
-/* ── ۷. دسترسی سریع: پالس حلقه دور آیکن ───────────────────────── */
-html body .qc:hover .qi {
-  animation: zRing 1.4s ease-out infinite;
-}
-
-/* ── ۸. هیرو: شفق لیمویی متحرک ────────────────────────────────── */
-html body .hero::after {
-  content: "";
-  position: absolute;
-  inset: -30%;
-  pointer-events: none;
-  background:
-    radial-gradient(45% 40% at 20% 30%, rgba(189, 238, 99, 0.18), transparent 70%),
-    radial-gradient(40% 36% at 80% 70%, rgba(212, 255, 112, 0.12), transparent 72%);
-  filter: blur(44px);
-  mix-blend-mode: screen;
-  animation: zAurora 18s ease-in-out infinite alternate;
-}
-
-/* ── ۹. میله‌ی تیتر بخش‌ها: نفس‌کشیدن ──────────────────────────── */
-.head .h2::before {
-  animation: zBarPulse 4.5s ease-in-out infinite;
-}
-
-/* ── ۱۰. آیتم فعال منوی کناری: درخشش ملایم ────────────────────── */
-html body .ditem.on {
-  animation: zBreath 3.6s ease-in-out infinite;
-}
-
-/* ── ۱۱. نوار پایین موبایل: جهش نرم ───────────────────────────── */
-#dock a.on {
-  animation: zBob 2.8s ease-in-out infinite;
-}
-
-/* ── ۱۲. تب فعال: هاله ────────────────────────────────────────── */
+/* ── ۱۲. تب، چیپ، آیتم فعال ── */
 html body .tab.on {
-  box-shadow: var(--z-ring) !important;
+  color: var(--z-accent-h);
+  border-color: rgba(189, 238, 99, 0.45);
+  background: rgba(189, 238, 99, 0.10);
 }
 
-/* ── ۱۳. قیمت: درخشش لیمویی ───────────────────────────────────── */
-html body .price {
-  text-shadow: 0 0 18px rgba(189, 238, 99, 0.55) !important;
-}
-
-/* ── ۱۴. مودال: خط نور بالای کارت ─────────────────────────────── */
-html body .modal .box {
-  position: relative !important;
-}
-html body .modal .box::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  inset-inline: 16%;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--z-accent), transparent);
-  opacity: 0.7;
-}
-
-/* ── ۱۵. توست: نوار لیمویی کنار ───────────────────────────────── */
-html body .toast {
-  border-inline-start: 2px solid var(--z-accent) !important;
-}
-
-/* ── ۱۶. کارت انیمه: زوم آرام پوستر ────────────────────────────── */
-html body .anime {
-  overflow: hidden !important;
-}
-html body .anime .cover img {
-  transition: transform 0.5s var(--z-ease);
-}
-html body .anime:hover .cover img {
-  transform: scale(1.06);
-}
-
-/* ── ۱۷. چیپ‌ها: هاور لیمویی ───────────────────────────────────── */
-html body .chip {
-  transition: border-color 0.2s var(--z-ease), color 0.2s var(--z-ease);
-}
+html body .chip.cy,
 html body .chip:hover {
-  border-color: rgba(189, 238, 99, 0.55) !important;
-  color: var(--z-accent-h) !important;
+  border-color: rgba(189, 238, 99, 0.45);
+  color: var(--z-accent-h);
 }
 
-/* ── ۱۸. فوکوس صفحه‌کلید: هاله‌ی نرم ───────────────────────────── */
-:focus-visible {
-  box-shadow: 0 0 0 5px rgba(189, 238, 99, 0.1);
+html body .ditem.on {
+  color: var(--z-accent-h);
+  background: rgba(189, 238, 99, 0.10);
+  border-inline-start-color: var(--z-accent);
 }
 
-/* ── ۱۹. کی‌فریم‌ها ────────────────────────────────────────────── */
-@keyframes zGlowLine {
-  0%,
-  100% {
-    opacity: 0.28;
-    transform: scaleX(0.86);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scaleX(1);
-  }
+html body #dock a.on { color: var(--z-accent-h); }
+html body #dock a.on::before { background: var(--z-grad); }
+
+/* ── ۱۳. قیمت، نوار پیشرفت، اسپلش ── */
+html body .price { color: var(--z-accent-h); }
+#rprog { background: linear-gradient(90deg, var(--z-accent), #8ff0c6); }
+#rstop { color: var(--z-accent-ink); background: var(--z-grad); }
+#rsplash i { background: var(--z-grad); }
+#rsplash b { color: var(--z-accent-h); }
+
+/* ── ۱۴. کارت، مودال، توست ── */
+html body .card:hover { border-color: rgba(189, 238, 99, 0.30); }
+
+html body .modal .box {
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(189, 238, 99, 0.10);
 }
 
-@keyframes zShine {
-  from {
-    transform: translateX(-40%) skewX(-18deg);
+html body .toast { border-inline-start: 2px solid var(--z-accent); }
+
+/* ── ۱۵. فوکوس و انتخاب ── */
+html body :focus-visible { outline: 2px solid var(--z-accent); outline-offset: 2px; }
+html body ::selection { background: var(--z-accent); color: var(--z-accent-ink); }
+html { scrollbar-color: rgba(189, 238, 99, 0.7) #070a1a; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--z-accent), #7fb03a); }
+
+/* ═══════════ PART 3 — دسترس‌پذیری ═══════════ */
+
+/* ── ۱۷. کاهش حرکت ── */
+@media (prefers-reduced-motion: reduce) {
+  #rz .rz-stars.c,
+  #rz .rz-shoot,
+  html body .btn.p {
+    animation: none !important;
+    transition: none !important;
   }
-  to {
-    transform: translateX(320%) skewX(-18deg);
-  }
+  .rz-shoot { display: none; }
 }
 
-@keyframes zRing {
-  0% {
-    outline: 2px solid rgba(189, 238, 99, 0.55);
-    outline-offset: 0;
-  }
-  100% {
-    outline: 2px solid rgba(189, 238, 99, 0);
-    outline-offset: 12px;
-  }
+/* ── ۱۸. موبایل ── */
+@media (max-width: 720px) {
+  .rz-stars.b,
+  .rz-far { display: none; }
+  .rz-world { width: 78vw; inset-inline-end: -26vw; bottom: -20vh; }
+  .rz-moon.m2 { display: none; }
 }
 
-@keyframes zAurora {
-  from {
-    transform: translate3d(-3%, 2%, 0) scale(1);
-    opacity: 0.55;
-  }
-  to {
-    transform: translate3d(3%, -2%, 0) scale(1.08);
-    opacity: 0.9;
-  }
-}
-
-@keyframes zBarPulse {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0 transparent);
-  }
-  50% {
-    filter: drop-shadow(0 0 8px rgba(189, 238, 99, 0.85));
-  }
-}
-
-@keyframes zBreath {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.08) drop-shadow(0 6px 20px rgba(189, 238, 99, 0.45));
-  }
-}
-
-@keyframes zBob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
-/* ── ۲۰. حالت لمسی: هاورهای سنگین خاموش ──────────────────────── */
+/* ── ۱۹. حالت لمسی ── */
 @media (hover: none) {
-  html body .card:hover,
-  html body .qc:hover {
-    transform: none !important;
-  }
-  html body .btn.p:hover::before {
-    animation: none;
-  }
+  html body .btn.p:hover { transform: none; }
+}
+
+/* ── ۲۰. چاپ ── */
+@media print {
+  #rz { display: none; }
+}
+
+/* ── ۲۱. آیکن‌های هدر ── */
+html body #top .tools { gap: 5px; }
+
+html body #top .icobtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(189, 238, 99, 0.14);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--ink);
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+html body #top .icobtn:hover {
+  border-color: rgba(189, 238, 99, 0.5);
+  color: var(--z-accent-h);
+  background: rgba(189, 238, 99, 0.10);
+}
+
+html body #top #rnLangCur { color: var(--z-accent); font-weight: 800; }
+
+/* ── ۲۲. دکمه‌های تاییدی ── */
+html body .btn.ok {
+  border: 0;
+  color: var(--z-accent-ink);
+  background: linear-gradient(135deg, #e6ff9e, var(--z-accent));
+  box-shadow: 0 10px 26px rgba(189, 238, 99, 0.22);
+}
+
+html body .btn.ok:hover {
+  box-shadow: 0 14px 32px rgba(189, 238, 99, 0.36);
+  transform: translateY(-2px);
+}
+
+/* ── ۲۳. نوار پایین ── */
+html body #dock .dwrap > a { transition: color 0.18s ease; }
+html body #dock .dwrap > a.on { color: var(--z-accent); }
+html body #dock .dwrap > a.on i { filter: drop-shadow(0 0 8px rgba(189, 238, 99, 0.55)); }
+
+/* ── ۲۴. نوار پایین روی گوشی ── */
+@media (max-width: 420px) {
+  html body #dock a { font-size: 9px; gap: 2px; }
+  html body #dock a i { font-size: 16px; }
+}
+
+/* ═══════════ PART 4 — پاس کارایی ═══════════ */
+
+/* ── ۲۵. حذف بلور شیشه‌ای ── */
+html body #top,
+html body #rail,
+html body #dock .dwrap,
+html body .card,
+html body .qc,
+html body .chat,
+html body .modal .box,
+html body .sheet {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* سطح مات جای بلور */
+html body #top {
+  background: linear-gradient(135deg, rgba(12, 16, 38, 0.97), rgba(8, 11, 26, 0.95)) !important;
+}
+
+html body #dock .dwrap { background: rgba(8, 11, 26, 0.96) !important; }
+html body #rail { background: rgba(9, 12, 28, 0.97) !important; }
+html body .modal .box { background: rgba(10, 13, 30, 0.98) !important; }
+
+html body .card {
+  background: linear-gradient(150deg, rgba(16, 21, 46, 0.94), rgba(10, 14, 32, 0.92)) !important;
+}
+
+html[data-theme="light"] body #top {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 246, 252, 0.97)) !important;
+}
+
+html[data-theme="light"] body #dock .dwrap,
+html[data-theme="light"] body #rail { background: rgba(250, 251, 255, 0.98) !important; }
+
+html[data-theme="light"] body .modal .box { background: #ffffff !important; }
+
+html[data-theme="light"] body .card {
+  background: linear-gradient(150deg, #ffffff, #f0f2f8) !important;
+}
+
+/* ── ۲۶. پردهٔ ورود بعد از پایان ── */
+#rnIntro.out,
+#rnIntro.out * {
+  animation: none !important;
 }
