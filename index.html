@@ -62,7 +62,7 @@
   <script src="ronin-intro.js?v=1"></script>
 
   <!-- ── پس‌زمینه‌ی فضایی — باید آخرین استایل باشد ───────────── -->
-  <link rel="stylesheet" href="ronin-zero.css?v=9">
+  <link rel="stylesheet" href="ronin-zero.css?v=11">
 
 
 </head>
@@ -99,16 +99,16 @@
 
   <nav class="nav">
     <a data-go="home" class="on">خانه</a>
-    <a data-go="community">انجمن</a>
+    <a data-go="discover">کاوش</a>
+    <a data-go="community">جامعه</a>
     <a data-go="market">فروشگاه</a>
-    <a data-go="premium">💎 پرمیوم</a>
   </nav>
 
   <div class="tools">
-    <button class="icobtn" id="searchBtn" title="جستجو">🔍</button>
-    <button class="icobtn" id="bellBtn" title="اعلان‌ها">🔔<span class="dot hide" id="bellDot"></span></button>
-    <button class="icobtn" data-go="chat" title="چت">💬</button>
-    <button class="icobtn" data-go="profile" title="پروفایل"><span data-me-av>؟</span></button>
+    <button class="icobtn" id="searchBtn" type="button" title="جستجو" aria-label="جستجو">🔍</button>
+    <button class="icobtn" id="bellBtn" type="button" title="اعلان‌ها" aria-label="اعلان‌ها">🔔<span class="dot hide" id="bellDot"></span></button>
+    <button class="icobtn" id="cartBtn" type="button" title="سبد خرید" aria-label="سبد خرید">🛒<span class="cbadge hide" id="cartBadge">0</span></button>
+    <button class="icobtn" data-go="profile" type="button" title="پروفایل" aria-label="پروفایل"><span data-me-av>؟</span></button>
     <button class="btn mini" data-guest data-authopen="login">ورود</button>
     <button class="btn p mini" data-guest data-authopen="reg">ثبت‌نام</button>
     <button class="btn mini hide" data-auth data-logout>خروج</button>
@@ -445,10 +445,10 @@
 <nav id="dock">
   <div class="dwrap">
     <a data-go="home" class="on"><i>🏠</i>خانه</a>
+    <a data-go="discover"><i>🧭</i>کاوش</a>
     <a data-go="chat"><i>💬</i>چت عمومی</a>
+    <a data-cart="1"><i>🛒</i>سبد خرید<span class="cbadge hide" id="dockCartBadge">0</span></a>
     <a data-go="profile"><i>👤</i>پروفایل</a>
-    <a data-go="bulletin"><i>📣</i>اطلاعیه</a>
-    <a data-trailer="1"><i>🎬</i>تریلر</a>
   </div>
 </nav>
 
@@ -633,30 +633,38 @@
 <script src="ronin-footer.js?v=1"></script>
 <script src="ronin-about.js?v=1"></script>
 
-<!-- ═══════════ دکمهٔ تریلر در نوار پایین ═══════════ -->
+<!-- ═══════════ سبد خرید در داک موبایل ═══════════ -->
 <script>
 (function () {
-  function goTrailer() {
-    if (window.R && R.go) R.go('bulletin');
-    var a = document.querySelector('#dock [data-trailer]');
-    if (a) {
-      var all = document.querySelectorAll('#dock a');
-      for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
-      a.classList.add('on');
-    }
-    var tries = 0;
-    (function jump() {
-      var tab = document.querySelector('#sec-bulletin [data-bulk="trailer"]');
-      if (tab) { tab.click(); return; }
-      if (tries++ < 24) setTimeout(jump, 150);
-    })();
+  function count() {
+    try {
+      if (window.R && R.cart && R.cart.count) return R.cart.count();
+      var c = JSON.parse(localStorage.getItem("ronin-cart-v1") || "{}"), n = 0;
+      for (var k in c) n += parseInt(c[k], 10) || 0;
+      return n;
+    } catch (e) { return 0; }
   }
-  document.addEventListener('click', function (e) {
-    var t = e.target.closest ? e.target.closest('[data-trailer]') : null;
+  function paint() {
+    var b = document.getElementById("dockCartBadge");
+    if (!b) return;
+    var n = count();
+    b.textContent = n > 99 ? "99+" : (window.R && R.fa ? R.fa(n) : String(n));
+    b.classList.toggle("hide", n <= 0);
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target.closest("[data-cart]") : null;
     if (!t) return;
     e.preventDefault();
-    goTrailer();
+    if (window.R && R.cart && R.cart.open) R.cart.open();
+    setTimeout(paint, 80);
   });
+  /* هر کلیک/تغییر ذخیره‌سازی، شمارنده را به‌روز می‌کند */
+  document.addEventListener("click", function () { setTimeout(paint, 120); }, true);
+  window.addEventListener("storage", paint);
+  window.addEventListener("load", paint);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  setTimeout(paint, 900);
 })();
 </script>
 
