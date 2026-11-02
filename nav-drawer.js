@@ -1,9 +1,8 @@
-/* ═══ RONIN NAV-DRAWER v1 — منوی کنارِ مرتب + هدر چهارتایی ═══
+/* ═══ RONIN NAV-DRAWER v1 — منوی کنارِ مرتب + هدر خلوت ═══
    فایل افزودنی: هیچ فایل قبلی عوض نمی‌شود.
-   - هدر: جستجو، اعلان، سبد، پروفایل (۴ چیز مهم)؛ بقیه داخل منو
-   - نوار پایین گوشی: خانه، انیمه، انجمن، من (۴ آیتم)
-   - همبرگر بیرون هدر و به‌شکل تب شناور لبهٔ صفحه؛ منو از کنار باز می‌شود
-   - منوی دسته‌بندی‌شده: کاوش / جامعه / بازار / حساب من / مدیریت / ابزارها
+   - همبرگر از هدر بیرون می‌رود و دکمهٔ شناور لبهٔ صفحه می‌شود (منو از کنار باز می‌شود)
+   - منوی کنار دسته‌بندی شده: کاوش / جامعه / بازار / حساب من / مدیریت / ابزارها
+   - آیکون‌های شلوغ هدر (جستجو، سبد، تم، زبان، چت، خروج) داخل منو می‌آیند
 */
 "use strict";
 (function () {
@@ -43,14 +42,14 @@
     s.id = "nvCss";
     s.textContent =
       /* هدر: دقیقاً چهار چیز مهم (جستجو، اعلان، سبد، پروفایل)؛ بقیه در منو */
-      "#top .tools>#themeToggle,#top .tools>#rnLang,#top .tools>#railBtn," +
-      "#top .tools>[data-go=\"chat\"],#top .tools>[data-authopen]," +
-      "#top .tools>[data-logout]{display:none!important}" +
+      "#top .tools>[data-authopen],#top .tools>[data-logout]{display:none!important}" +
+      "#top .tools>{gap:4px}" +
       "@media (max-width:640px){#top{gap:8px;padding:0 10px}#top .tools{gap:5px}" +
         "#top .tools .icobtn{width:34px;height:34px;font-size:15px}#top .brandtx small{display:none}}" +
-      /* نوار پایین گوشی: فقط چهار آیتم */
-      "#dock .dwrap>a:not([data-go=\"home\"]):not([data-go=\"anime\"])" +
-        ":not([data-go=\"community\"]):not([data-go=\"profile\"]){display:none!important}" +
+      /* نوار پایین گوشی: دقیقاً پنج آیتم — خانه، کاوش، چت عمومی، سبد، پروفایل */
+      "#dock .dwrap>a:not([data-go=\"home\"]):not([data-go=\"discover\"])" +
+        ":not([data-go=\"chat\"]):not([data-cart]):not([data-go=\"profile\"])" +
+        "{display:none!important}" +
 
       /* دکمهٔ شناور لبه — بیرون از هدر */
       "#railBtn{position:fixed!important;z-index:58;top:50%;inset-inline-start:0!important;" +
@@ -204,7 +203,7 @@
     nav.appendChild(takeItem("home"));
 
     var g1 = group("🧭", "کاوش", true);
-    ["anime", "news", "bulletin", "discover", "rank", "events"].forEach(function (k) {
+    ["bulletin", "discover", "rank", "events"].forEach(function (k) {
       g1.body.appendChild(takeItem(k));
     });
     nav.appendChild(g1.root);
@@ -232,15 +231,18 @@
 
     var g4 = group("👤", "حساب من", true);
     ["profile", "myworld", "premium", "settings"].forEach(function (k) {
-      g4.body.appendChild(takeItem(k));
+      var it = takeItem(k);
+      if (k === "myworld" && !railItem("myworld") && !it) return;
+      g4.body.appendChild(it);
     });
 
     /* ورود / ثبت‌نام / خروج */
     if (R.ME) {
-      g4.body.appendChild(makeRow("🚪", "خروج از حساب", function () {
+      var out = makeRow("🚪", "خروج از حساب", function () {
         var b = document.querySelector("#top [data-logout]") || document.querySelector("[data-logout]");
         if (b) b.click();
-      }));
+      });
+      g4.body.appendChild(out);
     } else {
       g4.body.appendChild(makeRow("🔑", "ورود", function () {
         var b = document.querySelector("#top [data-authopen=\"login\"]") || document.querySelector("[data-authopen=\"login\"]");
@@ -273,15 +275,15 @@
     bellRow.appendChild(bellBadge);
     g6.body.appendChild(bellRow);
 
-    var themeRow = makeRow("🌙", "تم: تیره", function () {
+    var themeRow = makeRow("🌙", "تم: تیره", function (row) {
       var b = el("themeToggle");
       if (b) b.click();
-      setTimeout(syncTools, 80);
+      setTimeout(function () { syncTools(); }, 80);
     });
     themeRow.id = "nvdTheme";
     g6.body.appendChild(themeRow);
 
-    var langRow = makeRow("🌐", "زبان: فارسی", function () {
+    var langRow = makeRow("🌐", "زبان: فارسی", function (row) {
       if (!R.i18n || !R.i18n.set) return;
       var langs = R.i18n.langs || ["fa"];
       var cur = R.i18n.get ? R.i18n.get() : "fa";
@@ -349,15 +351,15 @@
   var prevIn = R.onLogin;
   R.onLogin = function () {
     if (prevIn) { try { prevIn(); } catch (e) {} }
-    setTimeout(buildNav, 200);
+    setTimeout(function () { buildNav(); }, 200);
   };
   var prevOut = R.onLogout;
   R.onLogout = function () {
     if (prevOut) { try { prevOut(); } catch (e) {} }
-    setTimeout(buildNav, 200);
+    setTimeout(function () { buildNav(); }, 200);
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
-  [1200, 2400, 4200, 5600, 7200].forEach(function (ms) { setTimeout(boot, ms); });
+  setTimeout(boot, 1400);
 })();
