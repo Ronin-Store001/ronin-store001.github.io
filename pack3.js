@@ -36,8 +36,7 @@ var QL = {
   post:  { n: "یک پست در انجمن بگذار",      xp: 20, ic: "📝" },
   cmt:   { n: "روی یک پست کامنت بنویس",     xp: 10, ic: "💬" },
   chat:  { n: "در چت عمومی یک پیام بفرست",  xp: 10, ic: "🗨" },
-  like:  { n: "یک پست را لایک کن",          xp: 5,  ic: "❤️" },
-  anime: { n: "یک انیمه را باز کن",         xp: 10, ic: "🎬" }
+  like:  { n: "یک پست را لایک کن",          xp: 5,  ic: "❤️" }
 };
 
 function txt(id, v) { var e = R.$(id); if (e) e.textContent = v; }
@@ -99,7 +98,7 @@ R.achList = function () {
     { n: "عضو تیم",      d: "مدیر یا کارمند شو",       ic: "🛡", on: !!R.team },
     { n: "همراه ویژه",   d: "یک همراه پرمیوم انتخاب کن", ic: "🥷",
       on: !!(R.USER && R.USER.npcChar && R.USER.npcChar !== "ninja") },
-    { n: "روز پرکار",    d: "همه ماموریت‌های امروز",   ic: "🎯", on: qd >= 5 },
+    { n: "روز پرکار",    d: "همه ماموریت‌های امروز",   ic: "🎯", on: qd >= 4 },
     { n: "مالک رونین",   d: "مالک سایت باش",           ic: "👑", on: !!R.isOwner() }
   ];
 };
@@ -234,7 +233,7 @@ document.addEventListener("click", function (e) {
 
 /* ── تشخیص خودکار فعالیت برای ماموریت‌ها ──────────────────── */
 var MAP = { createPost: "post", addCmt: "cmt", sendChat: "chat",
-            like: "like", openAnime: "anime" };
+            like: "like" };
 Object.keys(MAP).forEach(function (fn) {
   var o = R[fn];
   if (typeof o !== "function") return;
