@@ -1,7 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
-   RONIN STORE — COMPANION CORE (pack2) v4
+   RONIN STORE — COMPANION CORE (pack2) v5
    🥷 کاراکتر راهنما + 🥷 آرشیو همراه
-   ۶ اسکین — هر کدام شخصیت، احساسات و حرکت خودش را دارد
+   ۶ اسکین — هر کدام شخصیت (عصبی / سرد / پرجنب‌وجوش / شیطان / خواب‌آلود)،
+   احساسات و حرکت خودش را دارد
    نینجای زرد قبلی (ناروتو) هم در پیش‌فرض‌ها هست
    ═══════════════════════════════════════════════════════════════ */
 "use strict";
@@ -14,8 +15,12 @@ if (!document.getElementById("pack2-css")) {
   st.id = "pack2-css";
   st.textContent =
     "#gninja svg{filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}" +
+    "#gninja svg{transform-origin:50% 100%;will-change:transform}" +
     "#njHead{transform-box:fill-box;transform-origin:50% 100%}" +
     "#njArm{transform-box:fill-box;transform-origin:50% 94%}" +
+    /* چراغ‌قوه در حالت عادی در دست نیست؛ فقط وقتی روشن شود دیده می‌شود */
+    "#gninja .nTorch{opacity:0;transition:opacity .18s}" +
+    "#gninja.torch-on .nTorch{opacity:1}" +
     /* کارت آرشیو */
     ".carc{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;" +
       "padding:12px 9px;border-radius:18px;background:rgba(11,13,35,.7);" +
@@ -79,8 +84,13 @@ var THEME = {
 
 /* ── ۲. شخصیت هر همراه (نام، لقب، حالت روحی، حرف‌ها، حرکت‌ها) ─ */
 var CAST = {
+  /* عصبی • سرد • پرجنب‌وجوش • شیطان • خواب‌آلود • محاسبه‌گر
+     trait = شخصیت، tempo = چند وقت یک‌بار حال عوض شود،
+     err/ok = واکنش به خطا و موفقیت، moodLines = حرف‌های هر احساس */
   naruto: {
-    n: "ناروتو", r: "رایگان", p: false, mood: "پرانرژی",
+    n: "ناروتو", r: "رایگان", p: false,
+    trait: "پرجنب‌وجوش", mood: "پرجنب‌وجوش",
+    tempo: 24000, err: "angry", ok: "happy",
     move: "p2jump", emo: ["happy", "wow"],
     lines: [
       "داتِ‌بایو! 🍥",
@@ -88,10 +98,18 @@ var CAST = {
       "بریم جلو، با هم قوی می‌شیم!",
       "بعد از ماموریت، رامن 🍜",
       "یه بار دیگه هم تلاش می‌کنم!"
-    ]
+    ],
+    moodLines: {
+      happy: ["آفرین! بریم مرحلهٔ بعد 🍥", "دیدی؟ گفتم می‌تونم!"],
+      angry: ["هی! چرا نشد؟ 😤", "ولم کن، دوباره امتحان می‌کنم!"],
+      wow: ["واو! این دیگه چیه؟! 🤩", "چه باحال! دوباره بزن!"],
+      sad: ["بی‌خیال… دفعهٔ بعد حتماً"]
+    }
   },
   ninja: {
-    n: "رونین", r: "رایگان", p: false, mood: "آرام",
+    n: "رونین", r: "رایگان", p: false,
+    trait: "سرد و آرام", mood: "سرد و آرام",
+    tempo: 60000, err: "nod", ok: "happy",
     move: "p2nod", emo: ["happy"],
     lines: [
       "آرام باش، راه هست 🍃",
@@ -99,47 +117,85 @@ var CAST = {
       "هر قدم یک تمرین است",
       "قانون رونین: احترام 🥷",
       "نفس بگیر، بعد بزن"
-    ]
+    ],
+    moodLines: {
+      happy: ["خوب شد. آرام ادامه بده 🍃"],
+      angry: ["عصبانی نشو؛ راهش را پیدا کن"],
+      wow: ["جالب بود… ولی آرام باش"],
+      sad: ["سکوت، بهترین جواب است"]
+    }
   },
   kitsune: {
-    n: "کیتسونه", r: "پرمیوم", p: true, mood: "شیطان",
+    n: "کیتسونه", r: "پرمیوم", p: true,
+    trait: "شیطان و بازیگوش", mood: "شیطان",
+    tempo: 32000, err: "wow", ok: "happy",
     move: "p2spin", emo: ["happy", "wow"],
     lines: [
       "روباه همیشه یک نقشه دارد 🦊",
       "چشم‌هات رو ببند… حالا باز کن ✨",
       "من رنگ سرخ شبه‌ام 🔥",
       "آتش من گرم است، نه سوزان"
-    ]
+    ],
+    moodLines: {
+      happy: ["دیدی؟ نقشه جواب داد 🦊"],
+      angry: ["هه، من که گفتم! 😏"],
+      wow: ["چه جالب… بذار بازی کنیم ✨"],
+      sad: ["غصه نخور، نقشهٔ بعدی رو دارم"]
+    }
   },
   neko: {
-    n: "نِکو", r: "پرمیوم", p: true, mood: "خواب‌آلود",
+    n: "نِکو", r: "پرمیوم", p: true,
+    trait: "خواب‌آلود و لوس", mood: "خواب‌آلود",
+    tempo: 70000, err: "nod", ok: "happy",
     move: "p2bounce", emo: ["happy"],
     lines: [
       "میو… پنج دقیقه دیگه 🐾",
       "گوش‌هام همه صداها رو می‌شنوه 🐱",
       "دمم رو تکون بدم؟ 🎀",
       "چرت می‌زنم، صدام کن 💤"
-    ]
+    ],
+    moodLines: {
+      happy: ["میو… خوب بود 🐾"],
+      angry: ["میو… حوصله ندارم 😾"],
+      wow: ["اوه… پنج دقیقه بیدار شدم 🐱"],
+      sad: ["باشه… من می‌خوابم 💤"]
+    }
   },
   yuki: {
-    n: "یوکی", r: "پرمیوم", p: true, mood: "سرد و آرام",
+    n: "یوکی", r: "پرمیوم", p: true,
+    trait: "سرد و شاعرانه", mood: "سرد",
+    tempo: 64000, err: "nod", ok: "wow",
     move: "p2floatmv", emo: ["wow"],
     lines: [
       "برف آرام می‌بارد ❄️",
       "سکوت، بلندترین صداست",
       "من از زمستان آمده‌ام",
       "نفس سرد، قلب گرم 🌨"
-    ]
+    ],
+    moodLines: {
+      happy: ["سرد است، اما درست است ❄️"],
+      angry: ["خشم، برف را آب نمی‌کند"],
+      wow: ["زمستان هم گاهی شگفت‌زده می‌شود 🌨"],
+      sad: ["سکوت کن؛ برف همه‌چیز را می‌پوشاند"]
+    }
   },
   meka: {
-    n: "مِکا", r: "پرمیوم", p: true, mood: "محاسبه‌گر",
+    n: "مِکا", r: "پرمیوم", p: true,
+    trait: "عصبی و طعنه‌زن", mood: "عصبی",
+    tempo: 26000, err: "angry", ok: "wow",
     move: "p2shake", emo: ["angry", "wow"],
     lines: [
       "سیستم آماده است ⚙️",
       "خطا: صفر — سرعت: بیشینه",
       "اسکن کامل شد 🛰",
       "پروتکل رونین فعال 🔋"
-    ]
+    ],
+    moodLines: {
+      happy: ["عملیات موفق. کارایی: قابل قبول ⚙️"],
+      angry: ["خطا! خطا! این را دوست ندارم 😤"],
+      wow: ["پردازش… نتیجه غیرمنتظره 🛰"],
+      sad: ["حالت ایمن فعال شد… بی‌فایده"]
+    }
   }
 };
 
@@ -343,29 +399,60 @@ R.npcMove = function (kind) {
   var pf = R.npcPersona();
   var k = kind || pf.move;
   if (!MOVES[k]) k = pf.move;
+  /* حرکت روی خود بدن کاراکتر، نه روی حباب گفتگو یا منوی همراه */
+  var body = n.querySelector("svg") || n;
   try {
-    n.style.animation = "none";
-    void n.offsetWidth;                        /* ری‌استارت انیمیشن */
-    n.style.animation = k + " " + (MOVES[k] / 1000) + "s ease-in-out";
+    body.style.animation = "none";
+    void body.offsetWidth;                     /* ری‌استارت انیمیشن */
+    body.style.animation = k + " " + (MOVES[k] / 1000) + "s ease-in-out";
   } catch (e) { return; }
   clearTimeout(R._mvT);
   R._mvT = setTimeout(function () {
-    try { n.style.animation = ""; } catch (e) {}
+    try { body.style.animation = ""; } catch (e) {}
   }, MOVES[k] + 80);
 };
 
 /* احساس + حرکت + حرف، یک‌جا */
 R.npcFeel = function (kind, line) {
   var pf = R.npcPersona();
-  if (R.npcEmo) { try { R.npcEmo(kind, 1700); } catch (e) {} }
-  R.npcMove({ happy: pf.move, wow: "p2spin", angry: "p2shake", sad: "p2nod" }[kind] || pf.move);
+  var k = kind || "happy";
+  if (R.npcEmo) { try { R.npcEmo(k, 1700); } catch (e) {} }
+  R.npcMove({ happy: pf.move, wow: "p2spin", angry: "p2shake", sad: "p2nod" }[k] || pf.move);
   if (line !== false && R.npcSay) {
-    R.npcSay(line || pf.lines[Math.floor(Math.random() * pf.lines.length)], 3400);
+    var pool = (pf.moodLines && pf.moodLines[k]) || pf.lines;
+    R.npcSay(line || pool[Math.floor(Math.random() * pool.length)], 3400);
   }
 };
 
+/* واکنش خودکار به موفقیت/خطا — با لحن شخصیت خودش */
+if (!R.__p2toast) {
+  R.__p2toast = true;
+  var p2toast0 = R.toast;
+  if (typeof p2toast0 === "function") {
+    R.toast = function (msg, kind) {
+      try {
+        var pf = R.npcPersona();
+        if (kind === "err") R.npcFeel(pf.err || "angry");
+        else if (Math.random() < 0.4) R.npcFeel(pf.ok || "happy");
+      } catch (e) {}
+      return p2toast0.apply(this, arguments);
+    };
+  }
+}
+
 /* تشویق — برای موفقیت‌ها و آنلاک‌ها */
 R.npcCheer = function (txt) { R.npcFeel("happy", txt || false); };
+
+/* با هر جابه‌جایی بین بخش‌ها یک حرکت کوتاه هم انجام بده */
+if (!R.__p2go && typeof R.go === "function") {
+  R.__p2go = true;
+  var p2go0 = R.go;
+  R.go = function () {
+    var out = p2go0.apply(this, arguments);
+    try { R.npcMove(); } catch (e) {}
+    return out;
+  };
+}
 
 /* تپ روی کاراکتر → حرکت و حرف شخصیت خودش */
 R.npcFun = function () {
@@ -375,17 +462,20 @@ R.npcFun = function () {
   if (R.npcEmo) { try { R.npcEmo(pf.emo[Math.floor(Math.random() * pf.emo.length)], 1400); } catch (e) {} }
 };
 
-/* حال‌وهوای خودکار — هر ۴۸ ثانیه یک احساس از شخصیت */
+/* حال‌وهوای خودکار — ریتمش را شخصیت تعیین می‌کند */
 if (!R._moodT) {
   R._moodT = setInterval(function () {
     try {
       if (document.hidden || slow()) return;
       var pf = R.npcPersona();
       if (!pf || !pf.emo || !pf.emo.length) return;
+      /* هر شخصیت ریتم خودش را دارد: پرجنب‌وجوش زودتر، سرد دیرتر */
+      if (Date.now() - (R._moodAt || 0) < (pf.tempo || 45000)) return;
+      R._moodAt = Date.now();
       if (R.npcEmo) R.npcEmo(pf.emo[Math.floor(Math.random() * pf.emo.length)], 2600);
       if (Math.random() < 0.45) R.npcMove(pf.move);
     } catch (e) {}
-  }, 48000);
+  }, 8000);
 }
 
 /* ── ۷. نقاشی آرشیو ──────────────────────────────────────── */
@@ -446,6 +536,43 @@ R.npcApply = function () {
   } catch (e) { console.error("[pack2]", e); }
 };
 
+/* ── ۹.۵ آیتم «آرشیو همراه» در منوی همبرگر ─────────────── */
+/* منو با ورود/خروج و باز شدن دوباره ساخته می‌شود؛ این تابع
+   آیتم را هر بار سر جایش برمی‌گرداند تا گم نشود */
+function ensureArchive() {
+  var rail = R.$("rail");
+  if (!rail) return;
+  var cur = rail.querySelector('.ditem[data-go="archive"]');
+  var old = R.$("archItem");
+  if (cur) {
+    if (old && old !== cur && old.parentNode) old.parentNode.removeChild(old);
+    return;
+  }
+  if (old && old.parentNode) old.parentNode.removeChild(old);
+  var it = document.createElement("div");
+  it.className = "ditem"; it.id = "archItem";
+  it.setAttribute("data-go", "archive");
+  it.innerHTML = "<i>🥷</i>آرشیو همراه";
+  /* اول داخل گروه «حساب من» (کنار تنظیمات)، وگرنه کنار پرمیوم/چت */
+  var prof = rail.querySelector('.rgroup .ditem[data-go="profile"]');
+  var body = prof && prof.closest ? prof.closest(".rgbody") : null;
+  var base = rail.querySelector('.ditem[data-go="premium"]') ||
+    rail.querySelector('.ditem[data-go="chat"]') || R.$("dmItem");
+  if (body) body.appendChild(it);
+  else if (base && base.parentNode) base.parentNode.insertBefore(it, base.nextSibling);
+  else rail.appendChild(it);
+}
+var railObs = null;
+function watchRail() {
+  var rail = R.$("rail");
+  if (!rail || !window.MutationObserver || railObs) return;
+  railObs = new MutationObserver(function () { try { ensureArchive(); } catch (e) {} });
+  railObs.observe(rail, { childList: true, subtree: true });
+}
+if (!R._archT) {
+  R._archT = setInterval(function () { try { ensureArchive(); } catch (e) {} }, 2500);
+}
+
 /* ── ۱۰. بخش آرشیو + آیتم منو ────────────────────────────── */
 function build() {
   if (!R.$("sec-archive")) {
@@ -463,18 +590,8 @@ function build() {
     if (ref && ref.parentNode) ref.parentNode.insertBefore(s, ref.nextSibling);
     else document.body.appendChild(s);
   }
-  var rail = R.$("rail");
-  if (rail && !R.$("archItem")) {
-    var it = document.createElement("div");
-    it.className = "ditem"; it.id = "archItem";
-    it.setAttribute("data-go", "archive");
-    it.innerHTML = "<i>🥷</i>آرشیو همراه";
-    var base = R.$("dmItem") ||
-      rail.querySelector('.ditem[data-go="premium"]') ||
-      rail.querySelector('.ditem[data-go="chat"]');
-    if (base && base.parentNode) base.parentNode.insertBefore(it, base.nextSibling);
-    else rail.appendChild(it);
-  }
+  ensureArchive();
+  watchRail();
   if (R.paintArchive) R.paintArchive();
 }
 
@@ -512,5 +629,5 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", start);
 } else { start(); }
 
-console.log("%c🥷 RONIN COMPANION CORE v4 ready", "color:#a78bfa;font-weight:900");
+console.log("%c🥷 RONIN COMPANION CORE v5 ready", "color:#a78bfa;font-weight:900");
 })();
