@@ -1,10 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════
-   RONIN GROUPS+ v1 — گروه چتِ واتساپی
+   RONIN GROUPS+ v2 — گروه چت کامل (تمیزکاری‌شده)
    • اعضا و نقش‌ها (سازنده / مدیر / عضو)
+   • 🔒 قفل / 🔓 باز کردن گروه (سازنده یا مدیر)
    • لینک دعوت (کپی + واتساپ + ساخت لینک جدید)
-   • ارسال عکس در گروه (با کپشن)
-   • فوروارد پیام + ریپلای
-   • نمایش عکس با اندازهٔ بزرگ
+   • ارسال عکس در گروه (با کپشن) + نمایش بزرگ
+   • فوروارد پیام + ریپلای (ریپلای از chat-plus می‌آید)
+   • نشانه‌های وضعیت روی کارت گروه (باز/قفل • تعداد اعضا • عضو)
    (افزودنی — همه چیز روی R.hooks و R.chatRow سوار می‌شود)
    ═══════════════════════════════════════════════════════════════ */
 "use strict";
@@ -22,6 +23,7 @@
     pending: null     /* گروهِ در انتظار پیوستن از لینک دعوت */
   };
 
+  /* ── ۰. کمکی‌ها ─────────────────────────────────────────── */
   function esc(s) { return R.esc ? R.esc(s) : String(s == null ? "" : s); }
   function el(id) { return document.getElementById(id); }
   function fa(n) { return R.fa ? R.fa(String(n)) : String(n); }
@@ -30,19 +32,22 @@
   function now() { return Date.now(); }
   function memberCount(g) { return g && g.members ? Object.keys(g.members).length : 0; }
   function isMemberMode(g) { return memberCount(g) > 0; }
+  function gObj(gid) { return (G.all && G.all[gid]) || {}; }
 
-  /* ── ۱. استایل ───────────────────────────────────────────── */
+  /* ── ۱. استایل ──────────────────────────────────────────── */
   (function () {
     if (el("gpCss")) return;
     var s = document.createElement("style");
     s.id = "gpCss";
     s.textContent =
+      /* پیام عکس‌دار */
       ".cpmsg .bub.gmsgimg{padding:6px}" +
       ".gmsgimg img{max-width:230px;max-height:230px;border-radius:13px;display:block;cursor:zoom-in;" +
         "border:1px solid rgba(255,255,255,.14);object-fit:cover}" +
       ".gcap{margin-top:7px;font-size:13px;line-height:1.7;opacity:.94}" +
       ".gfw{font-size:10.5px;opacity:.75;margin-bottom:5px;padding-inline-start:7px;" +
         "border-inline-start:2px solid #2fe6ff}" +
+      /* پنل اعضا */
       "#gpMod .box{max-width:520px}" +
       ".gpmem{display:flex;align-items:center;gap:10px;padding:9px 4px;" +
         "border-bottom:1px solid rgba(255,255,255,.07)}" +
@@ -54,26 +59,39 @@
         "border:1px solid rgba(255,255,255,.18);opacity:.9}" +
       ".gprole.admin{color:#ffd76a;border-color:rgba(255,206,86,.5)}" +
       ".gprole.owner{color:#2fe6ff;border-color:rgba(47,230,255,.5)}" +
+      /* لینک دعوت */
       "#gpInviteBox{display:flex;gap:6px;flex-wrap:wrap;align-items:center}" +
       "#gpInviteBox input{flex:1 1 190px;min-width:0;direction:ltr;font-size:11px}" +
+      /* نمایش بزرگ عکس */
       ".gplight{position:fixed;inset:0;z-index:9996;background:rgba(3,5,12,.94);" +
         "display:grid;place-items:center;padding:14px;cursor:zoom-out}" +
       ".gplight img{max-width:100%;max-height:88vh;border-radius:16px;" +
         "box-shadow:0 20px 60px rgba(0,0,0,.8)}" +
       ".gplight .x{position:absolute;top:16px;inset-inline-end:16px}" +
+      /* کارت دعوت */
       ".gpjoinhead{display:flex;align-items:center;gap:12px;margin-bottom:12px}" +
       ".gpjoinhead .gic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;" +
-        "font-size:26px;background:linear-gradient(150deg,rgba(124,92,255,.35),rgba(47,230,255,.25));" +
+        "overflow:hidden;font-size:26px;" +
+        "background:linear-gradient(150deg,rgba(124,92,255,.35),rgba(47,230,255,.25));" +
         "border:1px solid rgba(255,255,255,.14)}" +
+      ".gpjoinhead .gic img{width:100%;height:100%;object-fit:cover;display:block}" +
+      /* قفل */
       "#gpLockHint{display:none;align-items:center;gap:8px;margin:6px 4px;padding:8px 11px;" +
         "border-radius:12px;font-size:12px;background:rgba(255,206,86,.1);" +
         "border:1px solid rgba(255,206,86,.32);color:#ffe7a8}" +
-      "#gpLockHint.on{display:flex}";
+      "#gpLockHint.on{display:flex}" +
+      "#gpLockChip{white-space:nowrap}" +
+      /* نشانه‌های کارت گروه */
+      ".gstat{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}" +
+      ".gpill{font-size:9.5px;padding:1px 7px;border-radius:999px;" +
+        "border:1px solid rgba(255,255,255,.16);opacity:.9}" +
+      ".gpill.op{color:#7fe9ff;border-color:rgba(47,230,255,.45)}" +
+      ".gpill.lk{color:#ffe7a8;border-color:rgba(255,206,86,.45)}" +
+      ".gpill.me{color:#bdee63;border-color:rgba(189,238,99,.45)}";
     document.head.appendChild(s);
   })();
 
-  /* ── ۲. وضعیت عضویت ──────────────────────────────────────── */
-  function gObj(gid) { return (G.all && G.all[gid]) || {}; }
+  /* ── ۲. نقش و وضعیت عضویت ───────────────────────────────── */
   function isOwnerOf(gid) {
     var g = gObj(gid), m = (g.members && g.members[R.ME]) || null;
     return !!R.ME && (g.by === R.ME || (m && m.role === "owner"));
@@ -86,15 +104,45 @@
     var g = gObj(gid);
     return !!(R.ME && g.members && g.members[R.ME]);
   }
+
+  /* وضعیت گروه:
+     open===true  → باز: هر کاربر واردشده می‌تواند پیام بدهد
+     open===false → قفل: فقط اعضا
+     بدون فیلد open و بدون عضو → گروه قدیمی، مثل قبل عمومی */
+  function isOpen(g) {
+    if (!g) return false;
+    if (g.open === true) return true;
+    if (g.open === false) return false;
+    return !isMemberMode(g);
+  }
+  R.grpIsOpen = isOpen;
+
   function maySend(gid) {
     var g = gObj(gid);
-    if (!isMemberMode(g)) return true;      /* گروه قدیمی/عمومی: مثل قبل */
+    if (isOpen(g)) return !!R.ME;
     return isMemberOf(gid);
   }
   /* groups.js قبل از فرستادن می‌پرسد */
   R.grpGate = function (gid) { return maySend(gid); };
 
-  /* ── ۳. لیست گروه‌ها (برای نقش‌ها و فوروارد) ─────────────── */
+  /* قفل / باز کردن گروه — فقط سازنده یا مدیر */
+  function toggleLock(gid) {
+    gid = gid || R.gcur;
+    if (!gid) return R.toast("اول یه گروه را باز کن", "err");
+    if (!R.ME) return R.needLogin("قفل گروه");
+    if (!isAdminOf(gid)) return R.toast("فقط سازنده یا مدیر می‌تواند قفل کند 🔒", "err");
+    var g = gObj(gid), to = !isOpen(g);
+    R.upd("groups/" + gid, { open: to }).then(function () {
+      if (G.all[gid]) G.all[gid].open = to;
+      R.toast(to
+        ? "گروه باز شد 🔓 — هر کاربر واردشده می‌تواند پیام بدهد"
+        : "گروه قفل شد 🔒 — فقط اعضا می‌بینند و پیام می‌دهند", "ok");
+      paintHeader(); filterList(); decorate();
+      if (el("gpMod") && el("gpMod").classList.contains("on")) openInfo(gid);
+    }).catch(function (e) { R.toast("نشد: " + e.message, "err"); });
+  }
+
+  /* ── ۳. لیست گروه‌ها ────────────────────────────────────── */
   function watchAll() {
     if (!R.db || G.watch) return;
     G.watch = R.db.ref("groups").orderByChild("t").limitToLast(200);
@@ -102,15 +150,16 @@
       G.all = s.val() || {};
       paintHeader();
       filterList();
+      decorate();
     }, function (e) { console.warn("[groups+] groups:", e.message); });
   }
 
-  /* گروه‌های خصوصی برای غیرعضو توی لیست دیده نمی‌شوند */
+  /* گروه‌های قفل‌شده برای غیرعضو توی لیست دیده نمی‌شوند */
   function filterList() {
     var box = el("grpList"); if (!box) return;
     R.qa("[data-gopen]", box).forEach(function (card) {
       var gid = card.getAttribute("data-gopen"), g = gObj(gid);
-      var hide = isMemberMode(g) && !isMemberOf(gid);
+      var hide = !isOpen(g) && !isMemberOf(gid);
       card.style.display = hide ? "none" : "";
     });
   }
@@ -121,26 +170,36 @@
     box._gpObs.observe(box, { childList: true });
   }
 
-  /* ── ۴. دکمه‌های گروه (اعضا / لینک / عکس) ─────────────────── */
+  /* ── ۴. هدر و دکمه‌های گروه ─────────────────────────────── */
   function injectHeader() {
     var chat = el("grpChat"); if (!chat) return;
     var bar = chat.querySelector(".between"); if (!bar) return;
     if (el("gpCount")) return;
-    var back = el("grpBack");
+
+    var make = function (id, txt, cls, title) {
+      var b = document.createElement("button");
+      b.type = "button"; b.id = id; b.title = title || "";
+      b.className = cls || "icobtn"; b.textContent = txt;
+      return b;
+    };
+    var lockChip = document.createElement("span");
+    lockChip.id = "gpLockChip"; lockChip.className = "chip xs"; lockChip.style.display = "none";
     var cnt = document.createElement("span");
     cnt.id = "gpCount"; cnt.className = "chip cy xs";
-    var info = document.createElement("button");
-    info.type = "button"; info.className = "icobtn"; info.id = "gpInfoBtn";
-    info.title = "اعضا و دعوت"; info.textContent = "👥";
-    var inv = document.createElement("button");
-    inv.type = "button"; inv.className = "icobtn"; inv.id = "gpInviteBtn";
-    inv.title = "لینک دعوت"; inv.textContent = "🔗";
+
     var box = document.createElement("span");
     box.className = "row"; box.style.gap = "4px";
-    box.appendChild(cnt); box.appendChild(info); box.appendChild(inv);
+    box.appendChild(lockChip);
+    box.appendChild(make("gpLockBtn", "🔓", "icobtn", "قفل / باز کردن گروه"));
+    box.appendChild(cnt);
+    box.appendChild(make("gpInfoBtn", "👥", "icobtn", "اعضا و دعوت"));
+    box.appendChild(make("gpInviteBtn", "🔗", "icobtn", "لینک دعوت"));
+
+    var back = el("grpBack");
     if (back && back.parentNode === bar) bar.insertBefore(box, back);
     else bar.appendChild(box);
   }
+
   function injectPhoto() {
     var chat = el("grpChat"); if (!chat) return;
     if (!el("gpFile")) {
@@ -164,6 +223,7 @@
     var inp = el("grpIn");
     if (inp) bar.insertBefore(b, inp); else bar.appendChild(b);
   }
+
   function paintHeader() {
     var gid = R.gcur, g = gObj(gid), c = el("gpCount");
     if (c) {
@@ -171,8 +231,28 @@
       c.textContent = n ? "👥 " + fa(n) : "";
       c.style.display = n ? "" : "none";
     }
+    var op = isOpen(g);
+    var lc = el("gpLockChip");
+    if (lc) {
+      if (!gid) lc.style.display = "none";
+      else {
+        lc.style.display = "";
+        lc.textContent = op ? "🔓 باز" : "🔒 قفل";
+        lc.className = "chip xs " + (op ? "cy" : "gd");
+      }
+    }
+    var lb = el("gpLockBtn");
+    if (lb) {
+      lb.textContent = op ? "🔒" : "🔓";
+      lb.title = op
+        ? "قفل کردن گروه (فقط اعضا پیام بدهند)"
+        : "باز کردن گروه (هر کاربر واردشده پیام بدهد)";
+      lb.style.display = isAdminOf(gid) ? "" : "none";
+    }
     paintLock();
   }
+
+  /* اگر گروه قفل است و کاربر عضو نیست، نوار «پیوستن» نشان بده */
   function paintLock() {
     var chat = el("grpChat"), gid = R.gcur;
     if (!chat) return;
@@ -189,7 +269,7 @@
     h.classList.add("on");
   }
 
-  /* ── ۵. ردیف پیام: عکس + فوروارد + دکمهٔ فوروارد ─────────── */
+  /* ── ۵. ردیف پیام (عکس + فوروارد) ───────────────────────── */
   var _row = R.chatRow;
   if (typeof _row === "function") {
     R.chatRow = function (m, path) {
@@ -221,7 +301,7 @@
     };
   }
 
-  /* ── ۶. عکس: فشرده‌سازی و ارسال ───────────────────────────── */
+  /* ── ۶. عکس: فشرده‌سازی و ارسال ─────────────────────────── */
   function compress(file, cb) {
     var fr = new FileReader();
     fr.onload = function () {
@@ -264,7 +344,10 @@
     if (now() - G.lastSend < 1200) return R.toast("یه کم آرام‌تر ⏳", "err");
     G.lastSend = now();
     var inp = el("grpIn"), cap = "";
-    if (inp) { cap = R.clean ? R.clean(inp.value, 300) : String(inp.value || "").trim().slice(0, 300); inp.value = ""; }
+    if (inp) {
+      cap = R.clean ? R.clean(inp.value, 300) : String(inp.value || "").trim().slice(0, 300);
+      inp.value = "";
+    }
     R.add("groupMsgs/" + gid, {
       uid: R.ME, n: myName(), av: myAv(), text: cap, img: img, g: gid
     }).then(function () {
@@ -272,7 +355,7 @@
     }).catch(function (e) { R.toast("عکس نرفت: " + e.message, "err"); });
   }
 
-  /* ── ۷. نمایش بزرگ عکس ───────────────────────────────────── */
+  /* ── ۷. نمایش بزرگ عکس ──────────────────────────────────── */
   function lightbox(src) {
     var w = document.createElement("div");
     w.className = "gplight";
@@ -281,7 +364,7 @@
     document.body.appendChild(w);
   }
 
-  /* ── ۸. لینک دعوت ───────────────────────────────────────── */
+  /* ── ۸. لینک دعوت ──────────────────────────────────────── */
   var ABC = "abcdefghjkmnpqrstuvwxyz23456789";
   function newCode() {
     var s = "";
@@ -340,11 +423,13 @@
         '<input class="inp" id="gpInviteInput" readonly value="' + esc(link) + '">' +
         '<button class="btn mini" type="button" data-gpcopy="' + esc(link) + '">📋 کپی</button>' +
         '<button class="btn mini" type="button" data-gpwa="' + esc(link) + '">واتساپ</button>' +
-        (isAdminOf(gid) ? '<button class="btn gd mini" type="button" data-gprenew="' + esc(gid) + '">لینک جدید</button>' : "");
+        (isAdminOf(gid)
+          ? '<button class="btn gd mini" type="button" data-gprenew="' + esc(gid) + '">لینک جدید</button>'
+          : "");
     });
   }
 
-  /* ── ۹. مودال‌ها ─────────────────────────────────────────── */
+  /* ── ۹. مودال‌ها ────────────────────────────────────────── */
   function modal(id) {
     var m = el(id);
     if (!m) {
@@ -369,16 +454,30 @@
     m = m || {};
     var role = m.role || "member", mine = uid === R.ME, btns = "";
     if (canAdmin && role !== "owner" && !mine) {
-      if (role === "member") btns += '<button class="btn mini" type="button" data-gpprom="' + esc(uid) + '">مدیر کن</button>';
-      else btns += '<button class="btn mini" type="button" data-gpdemote="' + esc(uid) + '">عضو کن</button>';
+      if (role === "member") {
+        btns += '<button class="btn mini" type="button" data-gpprom="' + esc(uid) + '">مدیر کن</button>';
+      } else {
+        btns += '<button class="btn mini" type="button" data-gpdemote="' + esc(uid) + '">عضو کن</button>';
+      }
       btns += '<button class="btn gd mini" type="button" data-gprem="' + esc(uid) + '">حذف</button>';
     }
     return '<div class="gpmem">' +
       R.avHTML({ name: m.n, av: m.av }, "sm") +
-      '<div class="grow"><b>' + esc(m.n || "کاربر") + (mine ? ' <span class="xs cy">(تو)</span>' : "") + "</b>" +
+      '<div class="grow"><b>' + esc(m.n || "کاربر") +
+        (mine ? ' <span class="xs cy">(تو)</span>' : "") + "</b>" +
       roleChip(role) + "</div>" +
       '<div class="row" style="gap:5px">' + btns + "</div></div>";
   }
+
+  /* آواتار گروه در هدر پنل: عکس یا ایموجی */
+  function gAvatarHTML(g) {
+    if (R.grpAvHTML) {
+      var h = R.grpAvHTML(g);
+      if (h) return h;
+    }
+    return esc(g.icon || "🏯");
+  }
+
   function openInfo(gid) {
     gid = gid || R.gcur;
     if (!gid) return R.toast("اول یه گروه را باز کن", "err");
@@ -390,25 +489,44 @@
       var w = { owner: 0, admin: 1, member: 2 };
       return (w[ra] || 2) - (w[rb] || 2);
     });
-    var h = '<div class="between mb"><h3 class="h2">' + esc(g.icon || "🏯") + " " + esc(g.n || "گروه") + "</h3>" +
+    var av = gAvatarHTML(g);
+    var h = '<div class="between mb"><h3 class="h2">' +
+        (String(av).indexOf("<") === 0 ? av : esc(av)) + " " + esc(g.n || "گروه") + "</h3>" +
       '<button class="icobtn" type="button" data-gpclose>✕</button></div>';
     if (g.desc) h += '<div class="sm mut mb">' + esc(g.desc) + "</div>";
     h += '<div class="xs mut mb">سازنده: ' + esc(g.byn || "کاربر") + " • " + fa(uids.length) + " عضو</div>";
 
+    /* کارت قفل / باز */
+    if (admin) {
+      var op = isOpen(g);
+      h += '<div class="card mb" style="padding:12px;border-color:rgba(255,206,86,.28)">' +
+        '<div class="between" style="gap:10px"><div>' +
+        '<div class="sm b">' + (op ? "🔓 گروه باز است" : "🔒 گروه قفل است") + "</div>" +
+        '<div class="xs mut">' + (op
+          ? "هر کاربر واردشده می‌تواند این گروه را ببیند و پیام بدهد. با قفل کردن، فقط اعضا اجازه دارند."
+          : "فقط اعضا می‌توانند پیام بدهند و گروه در لیست بقیه دیده نمی‌شود.") + "</div></div>" +
+        '<button class="btn mini" type="button" data-gplock="' + esc(gid) + '">' +
+        (op ? "🔒 قفل کن" : "🔓 باز کن") + "</button></div></div>";
+    }
+
+    /* لینک دعوت */
     var canInvite = admin || isMemberOf(gid) || !isMemberMode(g);
     if (canInvite) {
       h += '<div class="card mb" style="padding:12px"><div class="sm b mb">🔗 لینک دعوت</div>' +
         '<div class="xs mut mb">هر کس این لینک را باز کند عضو گروه می‌شود.</div>' +
         '<div id="gpInviteBox"></div></div>';
     } else {
-      h += '<div class="card mb" style="padding:12px"><div class="xs mut">🔒 لینک دعوت فقط برای اعضای گروه است.</div></div>';
+      h += '<div class="card mb" style="padding:12px"><div class="xs mut">' +
+        "🔒 لینک دعوت فقط برای اعضای گروه است.</div></div>";
     }
 
+    /* اعضا */
     h += '<div class="sm b mb">👥 اعضا</div><div id="gpMemList">';
     if (!uids.length) {
       h += '<div class="empty">این گروه قبل از سیستم عضویت ساخته شده — عضوی ثبت نشده.</div>';
       if (owner) {
-        h += '<button class="btn p mini mt" type="button" data-gpenable="' + esc(gid) + '">فعال‌کردن مدیریت اعضا</button>' +
+        h += '<button class="btn p mini mt" type="button" data-gpenable="' + esc(gid) + '">' +
+          "فعال‌کردن مدیریت اعضا</button>" +
           '<div class="xs mut mt">بعد از فعال‌سازی فقط اعضا می‌توانند پیام بدهند؛ لینک دعوت را برای بقیه بفرست.</div>';
       }
     } else {
@@ -426,7 +544,7 @@
     paintInviteBox(gid);
   }
 
-  /* ── ۱۱. تغییر نقش‌ها ───────────────────────────────────── */
+  /* ── ۱۱. نقش‌ها و مدیریت اعضا ───────────────────────────── */
   function setRole(gid, uid, role) {
     if (!R.ME) return R.needLogin();
     if (!isAdminOf(gid)) return R.toast("فقط مدیرها می‌توانند نقش عوض کنند 🔒", "err");
@@ -443,7 +561,10 @@
     if (uid === gObj(gid).by) return R.toast("سازنده را نمی‌شود حذف کرد 👑", "err");
     if (!window.confirm("این عضو از گروه حذف شود؟")) return;
     R.db.ref("groups/" + gid + "/members/" + uid).remove()
-      .then(function () { R.toast("حذف شد", "ok"); setTimeout(function () { openInfo(gid); }, 250); })
+      .then(function () {
+        R.toast("حذف شد", "ok");
+        setTimeout(function () { openInfo(gid); }, 250);
+      })
       .catch(function (e) { R.toast("نشد: " + e.message, "err"); });
   }
   function leaveGroup(gid) {
@@ -485,9 +606,13 @@
       .catch(function (e) { R.toast("نشد: " + e.message, "err"); });
   }
 
-  /* ── ۱۲. پیوستن به گروه ─────────────────────────────────── */
+  /* ── ۱۲. پیوستن به گروه ────────────────────────────────── */
   function joinGroup(gid, cb) {
-    if (!R.ME) { R.toast("برای پیوستن اول وارد حساب شو 🔑", "err"); if (R.openAuth) R.openAuth("login"); return; }
+    if (!R.ME) {
+      R.toast("برای پیوستن اول وارد حساب شو 🔑", "err");
+      if (R.openAuth) R.openAuth("login");
+      return;
+    }
     if (isMemberOf(gid)) { if (cb) cb(); return; }
     R.db.ref("groups/" + gid + "/members/" + R.ME)
       .set({ n: myName(), av: myAv(), role: "member", t: now() })
@@ -507,12 +632,13 @@
     boxOf("gpJoinMod").innerHTML =
       '<div class="between mb"><h3 class="h2">دعوت به گروه</h3>' +
       '<button class="icobtn" type="button" data-gpclose="gpJoinMod">✕</button></div>' +
-      '<div class="gpjoinhead"><div class="gic">' + esc(g.icon || "🏯") + "</div>" +
+      '<div class="gpjoinhead"><div class="gic">' + gAvatarHTML(g) + "</div>" +
       "<div><b>" + esc(g.n || "گروه") + "</b>" +
       '<div class="xs mut">' + (n ? fa(n) + " عضو" : "گروه عمومی") +
       " • سازنده: " + esc(g.byn || "کاربر") + "</div></div></div>" +
       (g.desc ? '<div class="sm mut mb">' + esc(g.desc) + "</div>" : "") +
-      '<button class="btn p blk" type="button" data-gpjoin="' + esc(gid) + '" data-gpcode="' + esc(code) + '">' +
+      '<button class="btn p blk" type="button" data-gpjoin="' + esc(gid) +
+        '" data-gpcode="' + esc(code) + '">' +
       (isMemberOf(gid) ? "باز کردن گروه" : "پیوستن به گروه") + "</button>";
     show("gpJoinMod");
   }
@@ -531,7 +657,7 @@
     }).catch(function () {});
   }
 
-  /* ── ۱۳. فوروارد ────────────────────────────────────────── */
+  /* ── ۱۳. فوروارد ───────────────────────────────────────── */
   function openForward(path) {
     if (!R.ME) return R.needLogin("فوروارد");
     var m = (R.cpIndex && R.cpIndex[path]) || null;
@@ -544,13 +670,14 @@
       rows += '<div class="sm b mt mb">گروه‌ها</div><div class="card" style="padding:0">';
       gids.forEach(function (gid) {
         var g = G.all[gid];
-        if (isMemberMode(g) && !isMemberOf(gid)) return;
+        if (!isOpen(g) && !isMemberOf(gid)) return;
         rows += '<button class="btn blk" type="button" data-gpfwto="groupMsgs/' + esc(gid) + '">' +
           esc(g.icon || "🏯") + " " + esc(g.n || "گروه") + "</button>";
       });
       rows += "</div>";
     }
-    var prev = m.img ? '<img src="' + esc(m.img) + '" style="max-width:120px;border-radius:10px;margin-top:6px">'
+    var prev = m.img
+      ? '<img src="' + esc(m.img) + '" style="max-width:120px;border-radius:10px;margin-top:6px">'
       : '<div class="sm mut" style="margin-top:6px">' + esc(String(m.text || "").slice(0, 90)) + "</div>";
     boxOf("gpFwMod").innerHTML =
       '<div class="between mb"><h3 class="h2">↪ فوروارد</h3>' +
@@ -572,11 +699,11 @@
     }).catch(function (e) { R.toast("فوروارد نشد: " + e.message, "err"); });
   }
 
-  /* ── ۱۴. کلیک‌ها ────────────────────────────────────────── */
+  /* ── ۱۴. کلیک‌ها ───────────────────────────────────────── */
   document.addEventListener("click", function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
-    var x, gid;
+    var x;
 
     if (t.classList && t.classList.contains("modal")) {
       if (t.id === "gpMod" || t.id === "gpFwMod" || t.id === "gpJoinMod") t.classList.remove("on");
@@ -594,6 +721,7 @@
       openInfo();
       return;
     }
+    if (t.closest("#gpLockBtn")) { e.preventDefault(); return toggleLock(); }
     if (t.closest("#gpJoinNow")) {
       e.preventDefault();
       if (!R.gcur) return;
@@ -609,52 +737,26 @@
       e.preventDefault();
       var link = x.getAttribute("data-gpwa");
       var g1 = gObj(R.gcur);
-      window.open("https://wa.me/?text=" + encodeURIComponent("به گروه «" + ((g1 && g1.n) || "رونین") + "» دعوت شدی 🏯\n" + link), "_blank");
+      window.open("https://wa.me/?text=" + encodeURIComponent(
+        "به گروه «" + ((g1 && g1.n) || "رونین") + "» دعوت شدی 🏯\n" + link), "_blank");
       return;
     }
-    if ((x = t.closest("[data-gprenew]"))) {
-      e.preventDefault();
-      return renewCode(x.getAttribute("data-gprenew"));
-    }
-    if ((x = t.closest("[data-gpenable]"))) {
-      e.preventDefault();
-      return enableMembers(x.getAttribute("data-gpenable"));
-    }
-    if ((x = t.closest("[data-gpprom]"))) {
-      e.preventDefault();
-      gid = R.gcur;
-      return setRole(gid, x.getAttribute("data-gpprom"), "admin");
-    }
-    if ((x = t.closest("[data-gpdemote]"))) {
-      e.preventDefault();
-      return setRole(R.gcur, x.getAttribute("data-gpdemote"), "member");
-    }
-    if ((x = t.closest("[data-gprem]"))) {
-      e.preventDefault();
-      return removeMem(R.gcur, x.getAttribute("data-gprem"));
-    }
-    if ((x = t.closest("[data-gpleave]"))) {
-      e.preventDefault();
-      return leaveGroup(x.getAttribute("data-gpleave"));
-    }
-    if ((x = t.closest("[data-gpdel]"))) {
-      e.preventDefault();
-      return deleteGroup(x.getAttribute("data-gpdel"));
-    }
+    if ((x = t.closest("[data-gprenew]"))) { e.preventDefault(); return renewCode(x.getAttribute("data-gprenew")); }
+    if ((x = t.closest("[data-gpenable]"))) { e.preventDefault(); return enableMembers(x.getAttribute("data-gpenable")); }
+    if ((x = t.closest("[data-gplock]"))) { e.preventDefault(); return toggleLock(x.getAttribute("data-gplock")); }
+    if ((x = t.closest("[data-gpprom]"))) { e.preventDefault(); return setRole(R.gcur, x.getAttribute("data-gpprom"), "admin"); }
+    if ((x = t.closest("[data-gpdemote]"))) { e.preventDefault(); return setRole(R.gcur, x.getAttribute("data-gpdemote"), "member"); }
+    if ((x = t.closest("[data-gprem]"))) { e.preventDefault(); return removeMem(R.gcur, x.getAttribute("data-gprem")); }
+    if ((x = t.closest("[data-gpleave]"))) { e.preventDefault(); return leaveGroup(x.getAttribute("data-gpleave")); }
+    if ((x = t.closest("[data-gpdel]"))) { e.preventDefault(); return deleteGroup(x.getAttribute("data-gpdel")); }
     if ((x = t.closest("[data-gpjoin]"))) {
       e.preventDefault();
       var jid = x.getAttribute("data-gpjoin");
       if (isMemberOf(jid)) { hide("gpJoinMod"); return openGroupAfterJoin(jid); }
       return joinGroup(jid, function () { hide("gpJoinMod"); openGroupAfterJoin(jid); });
     }
-    if ((x = t.closest("[data-gpfwd]"))) {
-      e.preventDefault();
-      return openForward(x.getAttribute("data-gpfwd"));
-    }
-    if ((x = t.closest("[data-gpfwto]"))) {
-      e.preventDefault();
-      return doForward(x.getAttribute("data-gpfwto"));
-    }
+    if ((x = t.closest("[data-gpfwd]"))) { e.preventDefault(); return openForward(x.getAttribute("data-gpfwd")); }
+    if ((x = t.closest("[data-gpfwto]"))) { e.preventDefault(); return doForward(x.getAttribute("data-gpfwto")); }
     if (t.closest(".gmsgimg img")) {
       var im = t.closest(".gmsgimg img");
       e.preventDefault();
@@ -662,7 +764,27 @@
     }
   }, false);
 
-  /* ── ۱۵. حلقهٔ همگام‌سازی UI ─────────────────────────────── */
+  /* ── ۱۵. نشانه‌های وضعیت روی کارت گروه ─────────────────── */
+  function decorate() {
+    var box = el("grpList"); if (!box) return;
+    R.qa("[data-gopen]", box).forEach(function (card) {
+      var gid = card.getAttribute("data-gopen"), g = gObj(gid);
+      var n = memberCount(g), op = isOpen(g), me = isMemberOf(gid);
+      var d = card.querySelector(".gstat");
+      if (!d) {
+        d = document.createElement("div");
+        d.className = "gstat";
+        card.appendChild(d);
+      }
+      var html = '<span class="gpill ' + (op ? "op" : "lk") + '">' +
+        (op ? "🔓 باز" : "🔒 قفل") + "</span>" +
+        (n ? '<span class="gpill">👥 ' + fa(n) + "</span>" : "") +
+        (me ? '<span class="gpill me">عضو</span>' : "");
+      if (d.innerHTML !== html) d.innerHTML = html;
+    });
+  }
+
+  /* ── ۱۶. حلقهٔ همگام‌سازی UI ────────────────────────────── */
   function sync() {
     if (R.gcur && R.gcur !== G.cur) {
       G.cur = R.gcur;
@@ -671,6 +793,7 @@
     if (R.cur === "groups" && R.gcur) { injectHeader(); injectPhoto(); }
     obsList();
     filterList();
+    decorate();
     paintHeader();
   }
 
@@ -680,16 +803,18 @@
     started = true;
     watchAll();
     sync();
-    setInterval(sync, 800);
+    setInterval(function () { if (!document.hidden) sync(); }, 3000);
     setTimeout(checkInvite, 1200);
   }
 
-  if (!R.hooks) R.hooks = {};
+  /* ── ۱۷. اتصال به بقیهٔ برنامه ──────────────────────────── */
+  R.hooks = R.hooks || {};
   var prevHook = R.hooks.groups;
   R.hooks.groups = function () {
     if (typeof prevHook === "function") { try { prevHook(); } catch (e) {} }
     sync();
   };
+
   if (R.auth && R.auth.onAuthStateChanged) {
     R.auth.onAuthStateChanged(function () {
       setTimeout(function () {
@@ -703,6 +828,7 @@
       }, 900);
     });
   }
+
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
   setTimeout(start, 1800);
