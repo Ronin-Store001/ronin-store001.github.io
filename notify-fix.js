@@ -80,7 +80,25 @@
     };
   }
 
-  /* ── ۳. وصل‌شدن اعلان‌ها بعد از ورود ─────────────────────── */
+  /* ── ۳. اعلان به خود کاربر (قبلاً بی‌صدا دور ریخته می‌شد) ── */
+  var notify0 = R.notify;
+  if (typeof notify0 === "function") {
+    R.notify = function (toUid, text, kind, link, cat) {
+      if (!toUid) return;
+      if (toUid !== R.ME) return notify0.apply(R, arguments);
+      /* R.notify اصلی و notif-prefs هر دو اعلان به خود را حذف می‌کنند؛
+         پس نتیجهٔ پرمیوم، یادآوری تمدید و ... هیچ‌وقت نمی‌رسید. */
+      var p = (R.USER && R.USER.notifPrefs) || {};
+      if (cat && p[cat] === false) return;
+      try {
+        R.add("notifs/" + toUid, {
+          text: text, kind: kind || "info", link: link || "", from: "system", cat: cat || ""
+        }).catch(function () {});
+      } catch (e) {}
+    };
+  }
+
+  /* ── ۴. وصل‌شدن اعلان‌ها بعد از ورود ─────────────────────── */
   var watching = null;
   function watch() {
     if (!R.ME || !R.db) return;
@@ -106,7 +124,7 @@
     try { if (R.paintBell) R.paintBell(); } catch (e) {}
   };
 
-  /* ── ۴. راه‌اندازی ───────────────────────────────────────── */
+  /* ── ۵. راه‌اندازی ───────────────────────────────────────── */
   function boot() {
     try { paintDot(); } catch (e) {}
     watch();
