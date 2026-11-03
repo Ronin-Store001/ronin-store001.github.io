@@ -8,6 +8,7 @@
     { k: "like",    ic: "❤️", t: "لایکها",       d: "وقتی کسی پستت را لایک میکند" },
     { k: "comment", ic: "💬", t: "کامنتها",       d: "وقتی کسی کامنت میگذارد" },
     { k: "follow",  ic: "👤", t: "دنبالکنندهها", d: "وقتی کسی دنبالت میکند" },
+    { k: "post",    ic: "📝", t: "پست تازه",     d: "وقتی کسی که دنبالش می‌کنی پست می‌گذارد" },
     { k: "order",   ic: "🛒", t: "سفارشها",       d: "سفارش جدید برای محصولاتت" },
     { k: "premium", ic: "💎", t: "پرمیوم و نقش",  d: "فعال شدن پرمیوم یا تغییر نقش" },
     { k: "mod",     ic: "🛡", t: "مدیریت",        d: "گزارشها و تایید محتوا", staff: true },
@@ -30,16 +31,21 @@
   }
 
   /* خواندن تفضیلات یک کاربر (کشدار؛ خطا = اجازه بده) */
+  /* کش با تاریخ انقضا (پیش‌فرض ۵ دقیقه) تا خاموش‌کردن دسته توسط گیرنده دیر نشود */
   function prefsFor(uid, cb) {
     if (!window.R || !R.db || !uid) return cb({});
     if (uid === MYUID) return cb(ME);
-    if (cache[uid]) return cb(cache[uid]);
+    var ttl = typeof R.__nprefTTL === "number" ? R.__nprefTTL : 300000;
+    var c = cache[uid];
+    if (c && (Date.now() - c.t) < ttl) return cb(c.p);
     R.db.ref("users/" + uid + "/notifPrefs").once("value").then(function (s) {
-      cache[uid] = s.val() || {}; cb(cache[uid]);
-    }).catch(function () { cache[uid] = {}; cb(cache[uid]); });
+      cache[uid] = { p: s.val() || {}, t: Date.now() }; cb(cache[uid].p);
+    }).catch(function () {
+      cache[uid] = { p: {}, t: Date.now() }; cb(cache[uid].p);
+    });
   }
 
-  /* ── بستهبندی R.notify: اگر گیرنده خاموشش کرده باشد، اعلان ساخته نمیشود ── */
+  /* ── بسته‌بندی R.notify: اگر گیرنده خاموشش کرده باشد، اعلان ساخته نمی‌شود ── */
   var orig = R.notify;
   if (typeof orig === "function") {
     R.notify = function (toUid, text, kind, link, cat) {
@@ -47,7 +53,12 @@
       var c = catOf(kind, text, cat);
       prefsFor(toUid, function (p) {
         if (p && p[c] === false) return;                 // خاموش → نساز
-        try { orig.call(R, toUid, text, kind, link); } catch (e) {}
+        /* مثل R.notify اصلی می‌نویسیم، به‌علاوهٔ دسته تا بعداً قابل گروه‌بندی باشد */
+        try {
+          R.add("notifs/" + toUid, {
+            text: text, kind: kind || "info", link: link || "", from: R.ME || "", cat: c
+          }).catch(function () {});
+        } catch (e) {}
       });
     };
   }
@@ -63,8 +74,8 @@
     card.style.display = "none";
     card.innerHTML =
       '<div class="between mb">' +
-        '<div><div class="sm b">🔔 تنظیمات اعلانها</div>' +
-        '<div class="xs mut">انتخاب کن چه اعلانهایی بگیری</div></div>' +
+        '<div><div class="sm b">🔔 تنظیمات اعلان‌ها</div>' +
+        '<div class="xs mut">انتخاب کن چه اعلان‌هایی بگیری</div></div>' +
         '<button class="btn mini" id="npAll" type="button">همه روشن</button>' +
       '</div><div id="npList" class="col"></div>';
     var head = sec.querySelector(".head");
@@ -109,7 +120,7 @@
 
   function setPref(cat, val) {
     if (!R.ME || !R.db) return;
-    ME[cat] = val; cache[MYUID] = ME; paint();
+    ME[cat] = val; cache[MYUID] = { p: ME, t: Date.now() }; paint();
     R.db.ref("users/" + R.ME + "/notifPrefs/" + cat).set(val).catch(function () {});
   }
 
@@ -127,9 +138,9 @@
       e.preventDefault();
       if (!R.ME || !R.db) return;
       var o = {}; CATS.forEach(function (c) { o[c.k] = true; });
-      ME = o; cache[MYUID] = ME; paint();
+      ME = o; cache[MYUID] = { p: ME, t: Date.now() }; paint();
       R.db.ref("users/" + R.ME + "/notifPrefs").set(o).catch(function () {});
-      if (R.toast) R.toast("همه اعلانها روشن شد ✅", "ok");
+      if (R.toast) R.toast("همه اعلان‌ها روشن شد ✅", "ok");
     }
   });
 
@@ -142,7 +153,9 @@
       MYUID = uid; ME = {};
       if (uid) {
         prefRef = R.db.ref("users/" + uid + "/notifPrefs");
-        prefRef.on("value", function (s) { ME = s.val() || {}; cache[uid] = ME; paint(); },
+        prefRef.on("value", function (s) {
+          ME = s.val() || {}; cache[uid] = { p: ME, t: Date.now() }; paint();
+        },
                    function () {});
       }
     }
