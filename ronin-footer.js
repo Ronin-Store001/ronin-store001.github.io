@@ -1,26 +1,18 @@
-/* ═══════════════════════════════════════════════════════════════
-   RONIN STORE — FOOTER v3  ·  ronin-footer.js   (سه‌زبانه)
-   فوتر کامل: درباره ما • قوانین • حریم خصوصی • شرایط استفاده •
-   پرسش‌های پرتکرار • لینک‌های سریع • فرم ارسال پیام به مالک
-   ───────────────────────────────────────────────────────────────
-   🆕 هر متن فوتر با تغییر زبان سایت (فارسی/English/Türkçe)
-      بلافاصله عوض می‌شود — از دکمهٔ 🌐 هدر یا سوییچ زبان خود فوتر.
-   پیام‌ها در contact ذخیره می‌شوند و مالک در پنل + زنگ 🔔 می‌بیند.
-   این فایل جایگزین نسخهٔ قبلی است (همان نام، همان مسیر).
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ RONIN STORE — FOOTER v4 · ronin-footer.js · سهزبانه و کامل
+   درباره • قوانین • حریم خصوصی • شرایط • پرسشها • لینک سریع • حساب من
+   فرم پیام به مالک • کارت پیامها در پنل مالک • سوییچ زبان • وضعیت اتصال
+   اشتراک سایت • بازگشت به بالا — همهٔ متنها با زبان سایت عوض میشوند. */
 "use strict";
 (function () {
   var MSG = "contact", CFG = "settings/contact", LS = "ronin_contact_at";
-  var LANGS = ["fa", "en", "tr"];
-  var LNAMES = { fa: "فارسی", en: "English", tr: "Türkçe" };
-  var lastLang = null;
+  var LANGS = ["fa", "en", "tr"], LNAMES = { fa: "فارسی", en: "English", tr: "Türkçe" };
+  var VER = "v4", lastLang = null;
 
   function el(i) { return document.getElementById(i); }
   function esc(s) { return (window.R && R.esc) ? R.esc(s) : String(s == null ? "" : s); }
   function clean(s, n) { return (window.R && R.clean) ? R.clean(s, n || 200) : String(s || "").slice(0, n || 200); }
   function toast(m, k) { if (window.R && R.toast) R.toast(m, k || "ok"); }
-
-  /* ── ۱. زبان ────────────────────────────────────────────── */
+  function count(o) { return o ? Object.keys(o).length : 0; }
   function lang() {
     try {
       if (window.R && R.i18n && R.i18n.get) {
@@ -32,73 +24,71 @@
   }
   function isFa() { return lang() === "fa"; }
   function t(k) { var x = T[k]; return x ? (x[lang()] || x.fa) : k; }
-  function num(n) {
-    var s = String(n);
-    return (isFa() && window.R && R.fa) ? R.fa(s) : s;
-  }
+  function num(n) { return (isFa() && window.R && R.fa) ? R.fa(String(n)) : String(n); }
   function when(ts) {
     if (!ts) return "";
     if (isFa() && window.R && R.time) return R.time(ts);
-    try { return new Date(ts).toLocaleDateString(lang() === "tr" ? "tr-TR" : "en-GB"); }
-    catch (e) { return ""; }
+    try { return new Date(ts).toLocaleDateString(lang() === "tr" ? "tr-TR" : "en-GB"); } catch (e) { return ""; }
   }
 
-  /* ── ۲. دیکشنری سه‌زبانه ────────────────────────────────── */
   var T = {
     tagline: {
-      fa: "دنیای انیمه: کشف انیمه، خبر و تریلر، انجمن و چت، فروشگاه و آگهی، و دنیای پرمیوم — جایی که خودت می‌سازی.",
-      en: "Anime world: discover anime, news and trailers, community and chat, store and listings, plus premium — a world you build yourself.",
-      tr: "Anime dünyası: anime keşfet, haber ve fragman, topluluk ve sohbet, mağaza ve ilanlar, premium dünya — kendi kurduğun bir yer."
+      fa: "دنیای انیمه: کشف انیمه، خبر و تریلر، انجمن و چت، فروشگاه و آگهی، و دنیای پرمیوم — جایی که خودت میسازی.",
+      en: "Anime world: discover anime, news and trailers, community and chat, store and listings, plus premium.",
+      tr: "Anime dünyası: anime, haber ve fragman, topluluk ve sohbet, mağaza ve ilanlar, premium dünya."
     },
     colRonin: { fa: "رونین", en: "Ronin", tr: "Ronin" },
     colQuick: { fa: "دسترسی سریع", en: "Quick access", tr: "Hızlı erişim" },
+    colMe: { fa: "حساب من", en: "My account", tr: "Hesabım" },
     colHelp: { fa: "پشتیبانی", en: "Support", tr: "Destek" },
-
     about: { fa: "درباره ما", en: "About us", tr: "Hakkımızda" },
     rules: { fa: "قوانین انجمن", en: "Community rules", tr: "Topluluk kuralları" },
     privacy: { fa: "حریم خصوصی", en: "Privacy", tr: "Gizlilik" },
     terms: { fa: "شرایط استفاده", en: "Terms of use", tr: "Kullanım Şartları" },
-    faq: { fa: "پرسش‌های پرتکرار", en: "FAQ", tr: "SSS" },
-
+    faq: { fa: "پرسشهای پرتکرار", en: "FAQ", tr: "SSS" },
     anime: { fa: "انیمه", en: "Anime", tr: "Anime" },
     news: { fa: "اخبار", en: "News", tr: "Haberler" },
     bulletin: { fa: "اطلاعیه و تریلر", en: "Announcements & trailers", tr: "Duyurular ve fragmanlar" },
     community: { fa: "انجمن", en: "Community", tr: "Topluluk" },
     market: { fa: "فروشگاه", en: "Store", tr: "Mağaza" },
-
+    premium: { fa: "پرمیوم", en: "Premium", tr: "Premium" },
+    profile: { fa: "پروفایل", en: "Profile", tr: "Profil" },
+    settings: { fa: "تنظیمات", en: "Settings", tr: "Ayarlar" },
+    inbox: { fa: "صندوق پیام", en: "Inbox", tr: "Gelen kutusu" },
+    archive: { fa: "آرشیو", en: "Archive", tr: "Arşiv" },
+    login: { fa: "ورود / ثبتنام", en: "Log in / Sign up", tr: "Giriş / Kayıt" },
     ownerMail: { fa: "ایمیل مالک", en: "Owner email", tr: "Yönetici e-postası" },
     ownerMailAlt: { fa: "ایمیل مالک", en: "Email the owner", tr: "Yöneticiye e-posta" },
     sendMsg: { fa: "ارسال پیام به مالک", en: "Message the owner", tr: "Yöneticiye mesaj gönder" },
     chatUsers: { fa: "چت با کاربران", en: "Chat with users", tr: "Kullanıcılarla sohbet" },
-    langLabel: { fa: "زبان", en: "Language", tr: "Dil" },
-
     yourName: { fa: "نام شما", en: "Your name", tr: "Adınız" },
     yourContact: { fa: "ایمیل یا راه ارتباطی", en: "Email or contact", tr: "E-posta veya iletişim" },
     msgBody: { fa: "پیامت را بنویس…", en: "Write your message…", tr: "Mesajını yaz…" },
     send: { fa: "ارسال پیام", en: "Send message", tr: "Mesaj gönder" },
     clear: { fa: "پاک کردن", en: "Clear", tr: "Temizle" },
     note: {
-      fa: "پیامت مستقیم به مالک می‌رسد. ایمیلت جایی منتشر نمی‌شود.",
+      fa: "پیامت مستقیم به مالک میرسد. ایمیلت جایی منتشر نمیشود.",
       en: "Your message goes straight to the owner. Your email is never published.",
       tr: "Mesajın doğrudan yöneticiye gider. E-postan hiçbir yerde yayınlanmaz."
     },
-
     sub1: { fa: "پیشنهاد", en: "Suggestion", tr: "Öneri" },
     sub2: { fa: "گزارش مشکل", en: "Report a problem", tr: "Sorun bildir" },
     sub3: { fa: "تبلیغات و همکاری", en: "Ads & partnership", tr: "Reklam ve iş birliği" },
     sub4: { fa: "شکایت", en: "Complaint", tr: "Şikayet" },
     sub5: { fa: "درخواست پرمیوم", en: "Premium request", tr: "Premium talebi" },
     sub6: { fa: "سایر", en: "Other", tr: "Diğer" },
-
     rights: { fa: "همه حقوق محفوظ است", en: "All rights reserved", tr: "Tüm hakları saklıdır" },
-    madeWith: { fa: "ساخته‌شده با ❤ برای دنیای انیمه", en: "Made with ❤ for the anime world", tr: "Anime dünyası için ❤ ile yapıldı" },
-
+    madeWith: { fa: "ساختهشده با ❤ برای دنیای انیمه", en: "Made with ❤ for the anime world", tr: "Anime dünyası için ❤ ile yapıldı" },
     statUsers: { fa: "کاربران", en: "Users", tr: "Kullanıcılar" },
-    statPosts: { fa: "پست‌ها", en: "Posts", tr: "Gönderiler" },
-    statAds: { fa: "آگهی‌ها", en: "Listings", tr: "İlanlar" },
-
+    statPosts: { fa: "پستها", en: "Posts", tr: "Gönderiler" },
+    statAds: { fa: "آگهیها", en: "Listings", tr: "İlanlar" },
+    onNet: { fa: "آنلاین", en: "online", tr: "çevrimiçi" },
+    offNet: { fa: "آفلاین", en: "offline", tr: "çevrimdışı" },
+    toTop: { fa: "بالا", en: "Top", tr: "Yukarı" },
+    share: { fa: "اشتراک سایت", en: "Share site", tr: "Siteyi paylaş" },
+    shareOk: { fa: "🔗 لینک کپی شد", en: "🔗 Link copied", tr: "🔗 Bağlantı kopyalandı" },
     errConn: { fa: "اتصال برقرار نشد ❌", en: "Connection failed ❌", tr: "Bağlantı kurulamadı ❌" },
-    errWait: { fa: "کمی صبر کن، بعد دوباره بفرست ⏳", en: "Please wait a moment before sending again ⏳", tr: "Biraz bekle, sonra tekrar gönder ⏳" },
+    errWait: { fa: "کمی صبر کن، بعد دوباره بفرست ⏳", en: "Please wait before sending again ⏳", tr: "Biraz bekle, sonra gönder ⏳" },
     errName: { fa: "نامت را بنویس", en: "Please write your name", tr: "Lütfen adını yaz" },
     errContact: { fa: "راه ارتباطی را بنویس", en: "Please add a contact", tr: "Lütfen iletişim bilgisi ekle" },
     errShort: { fa: "پیامت خیلی کوتاه است", en: "Your message is too short", tr: "Mesajın çok kısa" },
@@ -111,10 +101,9 @@
     deleted: { fa: "حذف شد 🗑", en: "Deleted 🗑", tr: "Silindi 🗑" },
     npcSent: { fa: "پیامت به مالک رسید! 📨", en: "Your message reached the owner! 📨", tr: "Mesajın yöneticiye ulaştı! 📨" },
     notifNew: { fa: "📨 پیام جدید از ", en: "📨 New message from ", tr: "📨 Yeni mesaj: " },
-
-    ownerCardTitle: { fa: "📨 پیام‌های تماس", en: "📨 Contact messages", tr: "📨 İletişim mesajları" },
+    ownerCardTitle: { fa: "📨 پیامهای تماس", en: "📨 Contact messages", tr: "📨 İletişim mesajları" },
     ownerCardDesc: {
-      fa: "پیام‌هایی که کاربران از فرم پایین سایت می‌فرستند.",
+      fa: "پیامهایی که کاربران از فرم پایین سایت میفرستند.",
       en: "Messages users send from the form at the bottom of the site.",
       tr: "Kullanıcıların sitenin altındaki formdan gönderdiği mesajlar."
     },
@@ -130,141 +119,108 @@
     userFallback: { fa: "کاربر", en: "User", tr: "Kullanıcı" }
   };
 
-  /* ── ۳. صفحه‌های ثابت (سه‌زبانه) ─────────────────────────── */
   var PAGES = {
     about: {
       fa: { t: "🏯 درباره رونین استور", p: [
-        "رونین استور یک دنیای دیجیتال برای عاشقان انیمه است: کشف انیمه، خبر و تریلر، انجمن و چت، فروشگاه و آگهی، و دنیای پرمیوم.",
-        "هدف ما ساختن جایی است که هم انیمه ببینی، هم رفیق پیدا کنی، هم چیز یاد بگیری و هم بتونی خودت محتوا بسازی.",
-        "رونین استور یک <b>پلتفرم تبلیغاتی</b> هم هست: فروشندگان آگهی می‌گذارند و خریدار مستقیم با فروشنده در تماس می‌شود."
+        "رونین استور دنیای دیجیتال عاشقان انیمه است: کشف انیمه، خبر و تریلر، انجمن و چت، فروشگاه و آگهی، و دنیای پرمیوم.",
+        "اینجا هم انیمه میبینی، هم رفیق پیدا میکنی و هم خودت محتوا میسازی. فروشندگان آگهی میگذارند و خریدار مستقیم با آنها تماس میگیرد."
       ] },
       en: { t: "🏯 About Ronin Store", p: [
-        "Ronin Store is a digital world for anime fans: discover anime, news and trailers, community and chat, store and listings, plus a premium world.",
-        "Our goal is a place where you can watch anime, find friends, learn something new and create your own content.",
-        "Ronin Store is also an <b>advertising platform</b>: sellers post listings and buyers contact them directly."
+        "Ronin Store is a digital world for anime fans: anime discovery, news and trailers, community and chat, store and listings, plus premium.",
+        "Watch anime, find friends and create your own content. Sellers post listings and buyers contact them directly."
       ] },
       tr: { t: "🏯 Ronin Store Hakkında", p: [
-        "Ronin Store, anime severler için dijital bir dünya: anime keşfi, haber ve fragmanlar, topluluk ve sohbet, mağaza ve ilanlar, premium dünya.",
-        "Amacımız anime izleyebileceğin, arkadaş bulabileceğin, bir şeyler öğrenebileceğin ve kendi içeriğini üretebileceğin bir yer.",
-        "Ronin Store aynı zamanda bir <b>reklam platformudur</b>: satıcılar ilan verir, alıcı doğrudan satıcıyla iletişime geçer."
+        "Ronin Store anime severler için dijital bir dünya: anime keşfi, haber ve fragman, topluluk ve sohbet, mağaza ve ilanlar, premium.",
+        "Anime izle, arkadaş bul, kendi içeriğini üret. Satıcılar ilan verir, alıcı doğrudan iletişime geçer."
       ] }
     },
     rules: {
       fa: { t: "📜 قوانین انجمن", p: [
-        "۱. توهین، توهین قومی، تهدید و آزار ممنوع است.",
-        "۲. اسپم و تبلیغ بی‌ربط در پست‌ها و چت ممنوع است.",
-        "۳. محتوای کپی‌رایت‌دار را بدون اجازه منتشر نکنید.",
-        "۴. هر پست حاوی فروش کالا باید از مسیر «فروشگاه» ثبت شود.",
-        "۵. تخلف = حذف محتوا یا محدودیت حساب.",
-        "۶. گزارش تخلف: از دکمه 🚩 روی محتوا یا فرم پایین سایت استفاده کن."
+        "توهین، تهدید و آزار ممنوع است. اسپم و تبلیغ بیربط در پست و چت ممنوع است.",
+        "محتوای کپیرایتدار را بدون اجازه منتشر نکنید؛ فروش کالا فقط از مسیر «فروشگاه».",
+        "تخلف = حذف محتوا یا محدودیت حساب. گزارش: دکمهٔ 🚩 یا فرم پایین سایت."
       ] },
       en: { t: "📜 Community rules", p: [
-        "1. Insults, hate speech, threats and harassment are forbidden.",
-        "2. Spam and unrelated promotion in posts and chat are forbidden.",
-        "3. Do not publish copyrighted content without permission.",
-        "4. Any post selling goods must go through the Store.",
-        "5. Violation = content removal or account restriction.",
-        "6. Report abuse with the 🚩 button or the form at the bottom of the site."
+        "Insults, threats and harassment are forbidden. No spam or unrelated promotion in posts or chat.",
+        "Do not publish copyrighted content; selling goods only through the Store.",
+        "Violation = content removal or account restriction. Report via 🚩 or the form below."
       ] },
       tr: { t: "📜 Topluluk kuralları", p: [
-        "1. Hakaret, nefret söylemi, tehdit ve taciz yasaktır.",
-        "2. Gönderilerde ve sohbette spam ve alakasız tanıtım yasaktır.",
-        "3. Telif hakkı olan içeriği izinsiz yayınlamayın.",
-        "4. Ürün satışı içeren her gönderi Mağaza üzerinden yapılmalıdır.",
-        "5. İhlal = içeriğin kaldırılması veya hesabın kısıtlanması.",
-        "6. İhlal bildirimi: içerikteki 🚩 düğmesi veya sitenin altındaki form."
+        "Hakaret, tehdit ve taciz yasaktır. Gönderi ve sohbette spam ve alakasız tanıtım yasaktır.",
+        "Telif hakkı olan içeriği izinsiz yayınlamayın; ürün satışı yalnızca Mağaza üzerinden.",
+        "İhlal = içeriğin kaldırılması veya hesap kısıtı. Bildirim: 🚩 veya aşağıdaki form."
       ] }
     },
     privacy: {
       fa: { t: "🔒 حریم خصوصی", p: [
-        "چه چیزی ذخیره می‌کنیم: نام نمایشی، ایمیل، پروفایل و محتوایی که خودت می‌سازی.",
-        "چه چیزی نمایش داده می‌شود: نام نمایشی، آواتار، پست‌ها و آمار عمومی (لایک/دنبال‌کننده).",
-        "ایمیل شما هرگز به‌صورت عمومی نمایش داده نمی‌شود.",
-        "رمز عبور شما نزد ما نیست — ورود از طریق سرویس امن فایربیس انجام می‌شود.",
-        "می‌توانی هر وقت خواستی حساب و محتوات را حذف کنی؛ از فرم پایین پیام بده."
+        "ذخیره میکنیم: نام نمایشی، ایمیل، پروفایل و محتوایی که میسازی. عمومی است: نام، آواتار، پستها و آمار (لایک/دنبالکننده).",
+        "ایمیل هرگز عمومی نمیشود و رمز نزد ما نیست — ورود با سرویس امن فایربیس است.",
+        "هر وقت بخواهی میتوانی حساب و محتوات را حذف کنی؛ از فرم پایین پیام بده."
       ] },
       en: { t: "🔒 Privacy", p: [
-        "What we store: display name, email, profile and the content you create.",
-        "What is public: display name, avatar, posts and public stats (likes/followers).",
-        "Your email is never shown publicly.",
-        "We never store your password — sign-in is handled by Firebase's secure service.",
-        "You can delete your account and content at any time; message us via the form below."
+        "We store: display name, email, profile and your content. Public: name, avatar, posts and stats (likes/followers).",
+        "Your email is never public and we never store your password — sign-in uses Firebase.",
+        "You can delete your account and content anytime; message us below."
       ] },
       tr: { t: "🔒 Gizlilik", p: [
-        "Neyi saklıyoruz: görünen ad, e-posta, profil ve oluşturduğun içerik.",
-        "Neyi herkes görür: görünen ad, avatar, gönderiler ve genel istatistikler (beğeni/takipçi).",
-        "E-postan hiçbir zaman herkese açık gösterilmez.",
-        "Şifreni biz saklamıyoruz — giriş Firebase'in güvenli servisiyle yapılır.",
+        "Sakladıklarımız: görünen ad, e-posta, profil ve içeriğin. Herkese açık: ad, avatar, gönderiler ve istatistikler.",
+        "E-postan asla herkese açık olmaz, şifreni saklamayız — giriş Firebase ile yapılır.",
         "Hesabını ve içeriğini istediğin zaman silebilirsin; aşağıdaki formdan yaz."
       ] }
     },
     terms: {
       fa: { t: "⚖️ شرایط استفاده", p: [
-        "با ساخت حساب، با قوانین رونین موافقت می‌کنی.",
-        "مسئولیت محتوایی که منتشر می‌کنی با خودت است.",
+        "با ساخت حساب با قوانین رونین موافقت میکنی و مسئولیت محتوایی که منتشر میکنی با خودت است.",
         "معاملات فروشگاه بین خریدار و فروشنده است؛ رونین استور فقط پلتفرم آگهی است.",
-        "هر وقت لازم باشد، محتوای خلاف قوانین حذف و دسترسی محدود می‌شود.",
-        "مدیریت رونین می‌تواند قوانین را با اطلاع‌رسانی در سایت به‌روزرسانی کند."
+        "محتوای خلاف قوانین حذف و دسترسی محدود میشود؛ تغییر قوانین در سایت اطلاعرسانی میشود."
       ] },
       en: { t: "⚖️ Terms of use", p: [
-        "By creating an account you agree to the Ronin rules.",
-        "You are responsible for the content you publish.",
-        "Store deals happen between buyer and seller; Ronin Store is only a listings platform.",
-        "When needed, content that breaks the rules is removed and access is limited.",
-        "Ronin's team may update these terms and will announce it on the site."
+        "By creating an account you accept the Ronin rules and you are responsible for your content.",
+        "Store deals are between buyer and seller; Ronin Store is only a listings platform.",
+        "Rule-breaking content is removed and access limited; changes are announced on the site."
       ] },
       tr: { t: "⚖️ Kullanım Şartları", p: [
-        "Hesap oluşturarak Ronin kurallarını kabul etmiş olursun.",
-        "Yayınladığın içerikten sen sorumlusun.",
-        "Mağaza alışverişi alıcı ve satıcı arasındadır; Ronin Store yalnızca bir ilan platformudur.",
-        "Gerektiğinde kurallara aykırı içerik kaldırılır ve erişim kısıtlanır.",
-        "Ronin yönetimi şartları güncelleyebilir ve bunu sitede duyurur."
+        "Hesap açarak Ronin kurallarını kabul edersin ve içeriğinden sen sorumlusun.",
+        "Mağaza alışverişi alıcı ile satıcı arasındadır; Ronin Store yalnızca ilan platformudur.",
+        "Kurallara aykırı içerik kaldırılır, erişim kısıtlanır; değişiklikler sitede duyurulur."
       ] }
     },
     faq: {
-      fa: { t: "❓ پرسش‌های پرتکرار", p: [
-        "<b>چطور پرمیوم شوم؟</b> از بخش 💎 پرمیوم درخواست بده؛ مالک بعد از بررسی فعال می‌کند.",
-        "<b>چطور آگهی بگذارم؟</b> منو → بازار رونین → تبلیغات و آگهی.",
-        "<b>آگهی‌ام چرا دیده نمی‌شود؟</b> آگهی‌ها بعد از تایید مالک منتشر می‌شوند.",
-        "<b>چطور گروه چت بسازم؟</b> با پرمیوم یا اجازه مالک — از بخش گروه‌های چت.",
-        "<b>رمزمو فراموش کردم؟</b> از صفحه ورود، «رمزت را فراموش کردی؟» را بزن.",
-        "<b>مشکلی داشتم؟</b> همین پایین فرم پیام به مالک را پر کن."
+      fa: { t: "❓ پرسشهای پرتکرار", p: [
+        "<b>پرمیوم؟</b> از بخش 💎 پرمیوم درخواست بده؛ مالک بعد از بررسی فعال میکند.",
+        "<b>آگهی؟</b> منو → بازار رونین → تبلیغات و آگهی. آگهی بعد از تایید مالک منتشر میشود.",
+        "<b>گروه چت؟</b> با پرمیوم یا اجازه مالک — از بخش گروههای چت.",
+        "<b>رمز را فراموش کردم؟</b> در صفحهٔ ورود «رمزت را فراموش کردی؟» را بزن."
       ] },
       en: { t: "❓ FAQ", p: [
-        "<b>How do I get premium?</b> Request it from 💎 Premium; the owner activates it after review.",
-        "<b>How do I post a listing?</b> Menu → Ronin Market → Ads & listings.",
-        "<b>Why is my listing not visible?</b> Listings are published after the owner approves them.",
-        "<b>How do I create a chat group?</b> With premium or the owner's permission — from Chat Groups.",
-        "<b>I forgot my password?</b> On the login screen tap “Forgot your password?”.",
-        "<b>I have a problem.</b> Fill in the message form below."
+        "<b>Premium?</b> Request it in 💎 Premium; the owner activates it after review.",
+        "<b>Listing?</b> Menu → Ronin Market → Ads & listings. Listings go live after approval.",
+        "<b>Chat group?</b> With premium or the owner's permission — from Chat Groups.",
+        "<b>Forgot password?</b> On the login screen tap “Forgot your password?”."
       ] },
       tr: { t: "❓ SSS", p: [
-        "<b>Premium nasıl alırım?</b> 💎 Premium bölümünden talep et; yönetici incelemeden sonra açar.",
-        "<b>Nasıl ilan veririm?</b> Menü → Ronin Pazarı → Reklam ve ilan.",
-        "<b>İlanım neden görünmüyor?</b> İlanlar yönetici onayından sonra yayınlanır.",
-        "<b>Sohbet grubu nasıl oluştururum?</b> Premium veya yönetici izniyle — Sohbet Grupları bölümünden.",
-        "<b>Şifremi unuttum.</b> Giriş ekranında “Şifreni mi unuttun?” seçeneğine dokun.",
-        "<b>Bir sorunum var.</b> Aşağıdaki mesaj formunu doldur."
+        "<b>Premium?</b> 💎 Premium bölümünden talep et; yönetici incelemeden sonra açar.",
+        "<b>İlan?</b> Menü → Ronin Pazarı → Reklam ve ilan. İlanlar onaydan sonra yayınlanır.",
+        "<b>Sohbet grubu?</b> Premium veya yönetici izniyle — Sohbet Grupları bölümünden.",
+        "<b>Şifremi unuttum?</b> Giriş ekranında “Şifreni mi unuttun?” seçeneğine dokun."
       ] }
     }
   };
 
   function page(k) {
-    var p = PAGES[k];
-    if (!p) return null;
+    var p = PAGES[k]; if (!p) return null;
     var v = p[lang()] || p.fa;
     return { t: v.t, h: v.p.map(function (x) { return "<p>" + x + "</p>"; }).join("") };
   }
 
-  /* ── ۴. استایل ──────────────────────────────────────────── */
   function css() {
     if (el("ftCss")) return;
     var s = document.createElement("style"); s.id = "ftCss";
     s.textContent =
       "#rnFoot{margin-top:34px;border-top:1px solid rgba(140,160,255,.18);padding:22px 4px 14px}" +
-      ".ftGrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:18px}" +
-      "@media (max-width:900px){.ftGrid{grid-template-columns:1fr 1fr}}" +
-      "@media (max-width:520px){.ftGrid{grid-template-columns:1fr;gap:14px}}" +
+      ".ftGrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:16px}" +
+      "@media (max-width:980px){.ftGrid{grid-template-columns:1fr 1fr 1fr}}" +
+      "@media (max-width:640px){.ftGrid{grid-template-columns:1fr 1fr;gap:14px}}" +
       ".ftCol{display:flex;flex-direction:column;gap:7px;min-width:0}" +
       ".ftCol>b{font-size:12.5px;font-weight:900;opacity:.95;margin-bottom:2px}" +
       ".ftCol a{cursor:pointer;font-size:12.5px;opacity:.8;text-decoration:none;transition:.2s;width:fit-content}" +
@@ -279,6 +235,11 @@
       ".ftLang button.on{background:linear-gradient(135deg,#7c5cff,#22d3ee);color:#fff;border-color:transparent}" +
       ".ftStats{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:11px;opacity:.68}" +
       ".ftStats b{display:block;font-size:13px;opacity:1}" +
+      ".ftNet{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;padding:3px 9px;" +
+      "border-radius:20px;border:1px solid rgba(140,160,255,.22);background:rgba(255,255,255,.04);" +
+      "margin-top:6px;opacity:.85;width:fit-content}" +
+      ".ftNet b{width:7px;height:7px;border-radius:50%;background:#5df0b0;box-shadow:0 0 8px #5df0b0}" +
+      ".ftNet.off b{background:#ff8fa3;box-shadow:0 0 8px #ff8fa3}" +
       ".ftPanel{margin-top:16px;border:1px solid rgba(140,160,255,.2);border-radius:16px;overflow:hidden;" +
       "background:rgba(255,255,255,.035);display:none}" +
       ".ftPanel.on{display:block}" +
@@ -286,7 +247,11 @@
       "border-bottom:1px solid rgba(140,160,255,.16);font-size:13px;font-weight:800}" +
       ".ftPanel .ftPb{padding:13px}" +
       ".ftBar{margin-top:16px;padding-top:12px;border-top:1px solid rgba(140,160,255,.14);" +
-      "display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11.5px;opacity:.7}" +
+      "display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;font-size:11.5px;opacity:.75}" +
+      ".ftBar .side{display:flex;gap:7px;align-items:center;flex-wrap:wrap}" +
+      ".ftMini{border:1px solid rgba(140,160,255,.22);background:rgba(255,255,255,.04);color:inherit;" +
+      "font:inherit;font-size:10.5px;padding:4px 9px;border-radius:20px;cursor:pointer}" +
+      ".ftMini:hover{border-color:rgba(124,92,255,.6);background:rgba(124,92,255,.14)}" +
       "#ftOwnerList .ftm{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border-radius:12px;" +
       "border:1px solid rgba(140,160,255,.16);background:rgba(255,255,255,.03);margin-top:7px}" +
       "#ftOwnerList .ftm.un{border-color:rgba(34,211,238,.55)}" +
@@ -294,8 +259,6 @@
     document.head.appendChild(s);
   }
 
-  /* ── ۵. آمار کوچک ───────────────────────────────────────── */
-  function count(o) { return o ? Object.keys(o).length : 0; }
   function statsHTML() {
     var u = count(window.R && R.USERS), p = count(window.R && R.POSTS);
     var a = count(window.R && (R.PRODUCTS || R.PENDING)) || 0;
@@ -305,69 +268,76 @@
       (a ? box(a, "statAds") : "") + "</div>";
   }
 
-  /* ── ۶. بدنهٔ فوتر ──────────────────────────────────────── */
+  function accountHTML() {
+    if (!(window.R && R.ME)) return '<a data-authopen="login">' + esc(t("login")) + "</a>";
+    return '<a data-ftgo="profile">👤 ' + esc(t("profile")) + "</a>" +
+      '<a data-ftgo="inbox">📥 ' + esc(t("inbox")) + "</a>" +
+      '<a data-ftgo="settings">⚙ ' + esc(t("settings")) + "</a>" +
+      '<a data-ftgo="archive">🗂 ' + esc(t("archive")) + "</a>";
+  }
+
+  function netHTML() {
+    var off = !navigator.onLine;
+    return '<div class="ftNet' + (off ? " off" : "") + '" id="ftNet"><b></b>' +
+      "<span>" + esc(t(off ? "offNet" : "onNet")) + "</span></div>";
+  }
+
   function bodyHTML() {
-    var year = new Date().getFullYear();
+    var y = new Date().getFullYear();
     return '<div class="ftGrid">' +
-        '<div class="ftCol">' +
-          '<div class="ftLogo"><i>忍</i><b>RONIN STORE</b></div>' +
-          '<p class="ftTx">' + esc(t("tagline")) + "</p>" +
-          statsHTML() +
+        '<div class="ftCol"><div class="ftLogo"><i>忍</i><b>RONIN STORE</b></div>' +
+          '<p class="ftTx">' + esc(t("tagline")) + "</p>" + statsHTML() + netHTML() +
           '<div class="ftLang">' + LANGS.map(function (l) {
             return '<button type="button" data-ftlang="' + l + '" class="' + (l === lang() ? "on" : "") +
               '">' + LNAMES[l] + "</button>";
-          }).join("") + "</div>" +
-        "</div>" +
+          }).join("") + "</div></div>" +
         '<div class="ftCol"><b>' + esc(t("colRonin")) + "</b>" +
           '<a data-ftpage="about">' + esc(t("about")) + "</a>" +
           '<a data-ftpage="rules">' + esc(t("rules")) + "</a>" +
           '<a data-ftpage="privacy">' + esc(t("privacy")) + "</a>" +
-          '<a data-ftpage="terms">' + esc(t("terms")) + "</a>" +
-        "</div>" +
+          '<a data-ftpage="terms">' + esc(t("terms")) + "</a></div>" +
         '<div class="ftCol"><b>' + esc(t("colQuick")) + "</b>" +
           '<a data-ftgo="anime">' + esc(t("anime")) + "</a>" +
           '<a data-ftgo="news">' + esc(t("news")) + "</a>" +
           '<a data-ftgo="bulletin">' + esc(t("bulletin")) + "</a>" +
           '<a data-ftgo="community">' + esc(t("community")) + "</a>" +
           '<a data-ftgo="market">' + esc(t("market")) + "</a>" +
-        "</div>" +
+          '<a data-ftgo="premium">💎 ' + esc(t("premium")) + "</a></div>" +
+        '<div class="ftCol"><b>' + esc(t("colMe")) + "</b>" + accountHTML() + "</div>" +
         '<div class="ftCol"><b>' + esc(t("colHelp")) + "</b>" +
           '<a data-ftpage="faq">' + esc(t("faq")) + "</a>" +
           '<a id="ftMail" href="#">✉️ ' + esc(t("ownerMail")) + "</a>" +
           '<a data-ftopen="1">📨 ' + esc(t("sendMsg")) + "</a>" +
-          '<a data-ftgo="chat">💬 ' + esc(t("chatUsers")) + "</a>" +
-        "</div>" +
+          '<a data-ftgo="chat">💬 ' + esc(t("chatUsers")) + "</a></div>" +
       "</div>" +
       '<div class="ftPanel" id="ftPanel">' +
         '<div class="ftPh"><span>📨 ' + esc(t("sendMsg")) + "</span>" +
         '<button class="icobtn" type="button" id="ftClose">✕</button></div>' +
-        '<div class="ftPb">' +
-          '<div class="grid g2 mb">' +
+        '<div class="ftPb"><div class="grid g2 mb">' +
             '<input class="inp" id="ftName" placeholder="' + esc(t("yourName")) + '" maxlength="40">' +
             '<input class="inp" id="ftContact" placeholder="' + esc(t("yourContact")) + '" dir="ltr" maxlength="80">' +
           "</div>" +
           '<select class="sel mb" id="ftSubject">' +
             ["sub1", "sub2", "sub3", "sub4", "sub5", "sub6"].map(function (k) {
               return "<option>" + esc(t(k)) + "</option>";
-            }).join("") +
-          "</select>" +
+            }).join("") + "</select>" +
           '<textarea class="area mb" id="ftText" placeholder="' + esc(t("msgBody")) + '" maxlength="1200"></textarea>' +
           '<input type="text" id="ftHp" style="display:none" tabindex="-1" autocomplete="off">' +
           '<div class="row" style="gap:8px;flex-wrap:wrap">' +
             '<button class="btn p mini" type="button" id="ftSend">🚀 ' + esc(t("send")) + "</button>" +
             '<button class="btn mini" type="button" id="ftClear">' + esc(t("clear")) + "</button>" +
           "</div>" +
-          '<div class="xs mut mt" id="ftNote">' + esc(t("note")) + "</div>" +
-        "</div>" +
+          '<div class="xs mut mt" id="ftNote">' + esc(t("note")) + "</div></div>" +
       "</div>" +
-      '<div class="ftBar">' +
-        "<span>© " + (isFa() ? (window.R && R.fa ? R.fa(year) : year) : year) +
-          " RONIN STORE — " + esc(t("rights")) + "</span>" +
-        "<span>" + esc(t("madeWith")) + "</span>" +
+      '<div class="ftBar"><span>© ' + (isFa() && window.R && R.fa ? R.fa(y) : y) + " RONIN STORE — " +
+        esc(t("rights")) + "</span>" +
+        '<div class="side"><span>' + esc(t("madeWith")) + "</span>" +
+          '<button class="ftMini" type="button" data-ftshare="1">🔗 ' + esc(t("share")) + "</button>" +
+          '<button class="ftMini" type="button" data-fttop="1">↑ ' + esc(t("toTop")) + "</button>" +
+          '<span class="ftMini" style="cursor:default;opacity:.7">' + VER + "</span></div>" +
       "</div>";
   }
 
-  /* ── ۷. ساخت و رندر دوباره ──────────────────────────────── */
   function render() {
     if (!window.R || !el("stage")) return;
     css();
@@ -375,14 +345,13 @@
     if (!f) {
       f = document.createElement("footer");
       f.id = "rnFoot";
-      f.setAttribute("data-noi18n", "");      /* متن‌ها را خودمان ترجمه می‌کنیم */
+      f.setAttribute("data-noi18n", "");
       el("stage").appendChild(f);
       lastLang = lang();
       f.innerHTML = bodyHTML();
       loadCfg();
       return;
     }
-    /* نگه‌داشتن چیزی که کاربر تایپ کرده و حالت بازِ فرم */
     var keep = {
       name: el("ftName") ? el("ftName").value : "",
       contact: el("ftContact") ? el("ftContact").value : "",
@@ -390,14 +359,12 @@
       subject: el("ftSubject") ? el("ftSubject").selectedIndex : 0,
       open: !!(el("ftPanel") && el("ftPanel").classList.contains("on"))
     };
-    lastLang = lang();
     f.innerHTML = bodyHTML();
+    lastLang = lang();
     if (el("ftName")) el("ftName").value = keep.name;
     if (el("ftContact")) el("ftContact").value = keep.contact;
     if (el("ftText")) el("ftText").value = keep.text;
-    if (el("ftSubject") && keep.subject < el("ftSubject").options.length) {
-      el("ftSubject").selectedIndex = keep.subject;
-    }
+    if (el("ftSubject") && keep.subject < el("ftSubject").options.length) el("ftSubject").selectedIndex = keep.subject;
     if (keep.open && el("ftPanel")) el("ftPanel").classList.add("on");
     loadCfg();
   }
@@ -407,7 +374,6 @@
     if (lang() !== lastLang) render();
   }
 
-  /* ── ۸. ایمیل/راه ارتباطی مالک ─────────────────────────── */
   function loadCfg() {
     if (!window.R || !R.get) return;
     R.get(CFG).then(function (v) {
@@ -422,7 +388,6 @@
     }).catch(function () {});
   }
 
-  /* ── ۹. فرم پیام ────────────────────────────────────────── */
   function open() {
     var p = el("ftPanel"); if (!p) return;
     p.classList.add("on");
@@ -431,37 +396,28 @@
   }
   function close() { var p = el("ftPanel"); if (p) p.classList.remove("on"); }
   function reset() {
-    ["ftName", "ftContact", "ftText", "ftHp"].forEach(function (i) {
-      var x = el(i); if (x) x.value = "";
-    });
+    ["ftName", "ftContact", "ftText", "ftHp"].forEach(function (i) { var x = el(i); if (x) x.value = ""; });
     if (el("ftSubject")) el("ftSubject").selectedIndex = 0;
   }
 
   function send() {
     if (!window.R || !R.db) return toast(t("errConn"), "err");
-    if (el("ftHp") && el("ftHp").value) return;                 /* تله اسپم */
+    if (el("ftHp") && el("ftHp").value) return;
     var last = 0;
     try { last = parseInt(localStorage.getItem(LS) || "0", 10) || 0; } catch (e) {}
     if (Date.now() - last < 45000) return toast(t("errWait"), "err");
-
     var nm = clean(el("ftName") ? el("ftName").value : "", 40);
     var ct = clean(el("ftContact") ? el("ftContact").value : "", 80);
     var tx = clean(el("ftText") ? el("ftText").value : "", 800);
     if (nm.length < 2) return toast(t("errName"), "err");
     if (ct.length < 3) return toast(t("errContact"), "err");
     if (tx.length < 10) return toast(t("errShort"), "err");
-
     var subj = el("ftSubject") ? el("ftSubject").value : "";
     var b = el("ftSend");
     if (b) { b.disabled = true; b.textContent = t("sending"); }
     R.add(MSG, {
-      t: Date.now(),
-      name: nm,
-      contact: ct,
-      subject: clean(subj, 30),
-      text: tx,
-      by: R.ME || "",
-      read: false
+      t: Date.now(), name: nm, contact: ct,
+      subject: clean(subj, 30), text: tx, by: R.ME || "", read: false
     }).then(function () {
       try { localStorage.setItem(LS, String(Date.now())); } catch (e) {}
       toast(t("sent"), "ok");
@@ -477,7 +433,6 @@
     });
   }
 
-  /* ── ۱۰. کارت پیام‌ها در پنل مالک ───────────────────────── */
   function ownerCard() {
     var sec = el("sec-owner");
     if (!sec || el("ftOwnerCard")) return;
@@ -493,8 +448,7 @@
       '<div class="grid g2 mb">' +
         '<input class="inp" id="ftMailIn" placeholder="' + esc(t("ownerMailIn")) + '" dir="ltr" maxlength="80">' +
         '<button class="btn p mini" type="button" id="ftMailSave">' + esc(t("saveMail")) + "</button>" +
-      "</div>" +
-      '<div id="ftOwnerList"></div>';
+      '</div><div id="ftOwnerList"></div>';
     var head = sec.querySelector(".tabs");
     if (head && head.parentNode) head.parentNode.insertBefore(d, head);
     else sec.appendChild(d);
@@ -514,24 +468,19 @@
   }
 
   function renderOwner(v) {
-    var box = el("ftOwnerList");
-    if (!box) return;
+    var box = el("ftOwnerList"); if (!box) return;
     var arr = Object.keys(v).map(function (k) { var m = v[k] || {}; m.id = k; return m; })
       .sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
     var un = arr.filter(function (m) { return !m.read; }).length;
-    if (el("ftOwnerCnt")) {
-      el("ftOwnerCnt").textContent = num(un) + " " + t("unread") + " / " + num(arr.length);
-    }
+    if (el("ftOwnerCnt")) el("ftOwnerCnt").textContent = num(un) + " " + t("unread") + " / " + num(arr.length);
     if (!arr.length) { box.innerHTML = '<div class="empty">' + esc(t("noMsg")) + "</div>"; return; }
     box.innerHTML = arr.map(function (m) {
       return '<div class="ftm' + (m.read ? "" : " un") + '">' +
-        '<div style="font-size:18px">📨</div>' +
-        '<div class="grow">' +
+        '<div style="font-size:18px">📨</div><div class="grow">' +
           '<b class="sm">' + esc(m.name || t("userFallback")) + " — " + esc(m.subject || t("msgFallback")) + "</b>" +
           '<div class="xs mut" dir="ltr">' + esc(m.contact || "") + "</div>" +
           '<div class="sm mt" style="white-space:pre-wrap">' + esc(m.text || "") + "</div>" +
-          '<div class="xs mut mt">' + esc(when(m.t)) + "</div>" +
-        "</div>" +
+          '<div class="xs mut mt">' + esc(when(m.t)) + "</div></div>" +
         '<div class="col" style="gap:5px">' +
           (m.read ? "" : '<button class="btn mini" type="button" data-ftread="' + esc(m.id) + '">✓</button>') +
           '<button class="btn mini d" type="button" data-ftdel="' + esc(m.id) + '">🗑</button>' +
@@ -539,11 +488,36 @@
     }).join("");
   }
 
-  /* ── ۱۱. کلیک‌ها ────────────────────────────────────────── */
+  function share() {
+    var url = location.origin + location.pathname, txt = "RONIN STORE — " + url;
+    if (navigator.share) {
+      try {
+        var p = navigator.share({ title: "RONIN STORE", text: txt, url: url });
+        if (p && p.catch) p.catch(function () {});
+        return;
+      } catch (e) {}
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(function () { toast(t("shareOk"), "ok"); },
+        function () { toast(url, "info"); });
+      return;
+    }
+    toast(url, "info");
+  }
+  function toTop() {
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+  }
+  function paintNet() {
+    var n = el("ftNet"); if (!n) return;
+    var off = !navigator.onLine;
+    n.classList.toggle("off", off);
+    var s = n.querySelector("span");
+    if (s) s.textContent = t(off ? "offNet" : "onNet");
+  }
+
   document.addEventListener("click", function (e) {
     var t0 = e.target;
     if (!t0 || !t0.closest) return;
-
     var lg = t0.closest("[data-ftlang]");
     if (lg) {
       e.preventDefault();
@@ -564,10 +538,12 @@
     var go = t0.closest("[data-ftgo]");
     if (go) {
       e.preventDefault();
-      var gg = go.getAttribute("data-ftgo");
-      if (window.R && R.go) R.go(gg);
+      if (window.R && R.go) R.go(go.getAttribute("data-ftgo"));
       return;
     }
+    if (t0.closest("[data-authopen]")) return;
+    if (t0.closest("[data-ftshare]")) { e.preventDefault(); return share(); }
+    if (t0.closest("[data-fttop]")) { e.preventDefault(); return toTop(); }
     if (t0.closest("[data-ftopen]")) {
       e.preventDefault();
       var pn = el("ftPanel");
@@ -575,4 +551,79 @@
       return;
     }
     if (t0.closest("#ftClose")) { e.preventDefault(); return close(); }
-    if (t0.closest("#
+    if (t0.closest("#ftClear")) { e.preventDefault(); return reset(); }
+    if (t0.closest("#ftSend")) { e.preventDefault(); return send(); }
+    if (t0.closest("#ftMailSave")) {
+      e.preventDefault();
+      var v = clean(el("ftMailIn") ? el("ftMailIn").value : "", 80);
+      R.upd(CFG, { mail: v }).then(function () {
+        toast(t("saved"), "ok");
+        loadCfg();
+      }).catch(function (er) { toast(t("saveFail") + er.message, "err"); });
+      return;
+    }
+    var rd = t0.closest("[data-ftread]");
+    if (rd) {
+      e.preventDefault();
+      if (!R.isOwner()) return;
+      R.upd(MSG + "/" + rd.getAttribute("data-ftread"), { read: true });
+      return;
+    }
+    var dl = t0.closest("[data-ftdel]");
+    if (dl) {
+      e.preventDefault();
+      if (!R.isOwner()) return toast(t("ownerOnly"), "err");
+      R.db.ref(MSG + "/" + dl.getAttribute("data-ftdel")).remove()
+        .then(function () { toast(t("deleted"), "ok"); });
+      return;
+    }
+  }, true);
+
+  window.addEventListener("online", paintNet);
+  window.addEventListener("offline", paintNet);
+
+  function hookI18n() {
+    if (!window.R || !R.i18n || !R.i18n.set || R.i18n.set.__ft) return;
+    var orig = R.i18n.set;
+    var wrapped = function () {
+      var out = orig.apply(R.i18n, arguments);
+      try { render(); } catch (e) {}
+      return out;
+    };
+    wrapped.__ft = true;
+    R.i18n.set = wrapped;
+  }
+
+  function boot() {
+    render();
+    ownerCard();
+    hookI18n();
+    paintNet();
+  }
+
+  var prevLogin = window.R && R.onLogin;
+  if (window.R) {
+    R.onLogin = function () {
+      if (prevLogin) { try { prevLogin(); } catch (e) {} }
+      setTimeout(boot, 800);
+    };
+  }
+  var prevOut = window.R && R.onLogout;
+  if (window.R) {
+    R.onLogout = function () {
+      if (prevOut) { try { prevOut(); } catch (e) {} }
+      setTimeout(render, 300);
+    };
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+  [800, 1800, 3200, 5200].forEach(function (ms) { setTimeout(boot, ms); });
+  setInterval(function () {
+    if (!el("rnFoot")) return;
+    hookI18n();
+    sync();
+  }, 1200);
+
+  window.RoninFooter = { render: render, pages: page, t: t, lang: lang, share: share, toTop: toTop, ver: VER };
+})();
