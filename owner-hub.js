@@ -664,8 +664,8 @@
       '<input class="inp" id="setAnn" maxlength="120" placeholder="متن اعلان…" value="' +
       esc((R.SITE && R.SITE.ann) || "") + '">' +
       '<button class="btn p mini mt" data-saveann="1">ذخیره اعلان</button></div>' +
+        '<div id="apicoHost" class="mb"></div>' +
       '<div class="card"><div class="sm b mb">🔐 یادآوری امنیت</div>' +
-       '<div id="apicoHost" class="mb"></div>' +
       '<div class="xs mut">قوانین Firebase باید Publish شده باشند؛ وگرنه هیچ‌کس نمی‌تواند بنویسد.</div></div>';
   }
 
