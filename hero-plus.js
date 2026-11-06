@@ -14,6 +14,9 @@
 
   var LANGS = ["fa", "en", "tr"];
   var ROOT = "#sec-home", BOX = "#hpRoot";
+  /* عکس داخل «سیاره»: یا لینک عکس را همینجا بگذار، یا در تنظیمات سایت
+     مقدار orbImg را ذخیره کن (R.SITE.orbImg). خالی باشد → کانجی 忍 */
+  var ORB_IMG = "";
   var lastLang = null, rotI = 0, spotI = 0;
   var ticker = null, rotTimer = null, spotTimer = null;
 
@@ -68,18 +71,18 @@
     h1a: { fa: "به دنیای رونین", en: "Welcome to Ronin", tr: "Ronin dünyasına" },
     h1b: { fa: "خوش آمدی", en: "universe", tr: "hoş geldin" },
     rotLead: { fa: "اینجا:", en: "Here:", tr: "Burada:" },
-    rot1: { fa: "انیمه و تریلر", en: "anime & trailers", tr: "anime ve fragman" },
+    rot1: { fa: "دورآوازی و اپ", en: "patches & OST", tr: "parçalar ve OST" },
     rot2: { fa: "خبرهای داغ", en: "hot news", tr: "sıcak haberler" },
     rot3: { fa: "فروشگاه و آگهی", en: "store & listings", tr: "mağaza ve ilanlar" },
     rot4: { fa: "انجمن و چت", en: "community & chat", tr: "topluluk ve sohbet" },
     rot5: { fa: "دنیای پرمیوم", en: "the premium world", tr: "premium dünya" },
     lead: {
-      fa: "همه‌چیز در یک صفحه: انیمه ببین، خبر بخوان، پست بگذار، آگهی بفروش و با بچه‌های رونین چت کن.",
-      en: "Everything on one page: watch anime, read news, post, sell listings and chat with the Ronin crew.",
-      tr: "Her şey tek sayfada: anime izle, haber oku, paylaş, ilan ver ve Ronin ekibiyle sohbet et."
+      fa: "همه‌چیز در یک صفحه: انجمن و چت زنده، فروشگاه و آگهی، اطلاعیه‌ها و دنیای پرمیوم — همه با هم.",
+      en: "Everything on one page: community and live chat, store and listings, bulletins and the premium world.",
+      tr: "Her şey tek sayfada: topluluk ve canlı sohbet, mağaza ve ilanlar, duyurular ve premium dünya."
     },
     cta1: { fa: "شروع ماجراجویی", en: "Start the journey", tr: "Yolculuğa başla" },
-    cta2: { fa: "کاوش انیمه", en: "Explore anime", tr: "Animeyi keşfet" },
+    cta2: { fa: "کشف تازه‌ها", en: "Discover", tr: "Keşfet" },
     cta3: { fa: "فروشگاه", en: "Store", tr: "Mağaza" },
     online: { fa: "آنلاین", en: "online", tr: "çevrimiçi" },
     news: { fa: "اخبار", en: "News", tr: "Haberler" },
@@ -91,6 +94,7 @@
     sUsers: { fa: "کاربر", en: "users", tr: "kullanıcı" },
     sPosts: { fa: "پست", en: "posts", tr: "gönderi" },
     sAnime: { fa: "انیمه", en: "anime", tr: "anime" },
+    sItems: { fa: "کالا", en: "items", tr: "ürün" },
     prem: { fa: "پرمیوم", en: "premium", tr: "premium" },
     live: { fa: "زنده", en: "live", tr: "canlı" },
     ticker: {
@@ -101,7 +105,15 @@
     dock: { fa: "کاوش سریع", en: "Quick explore", tr: "Hızlı keşif" },
     all: { fa: "همه", en: "All", tr: "Tümü" },
     dAnime: { fa: "کتابخانه و تریلر", en: "Library & trailers", tr: "Kütüphane ve fragman" },
-    dNews: { fa: "تازه‌های دنیای انیمه", en: "Anime world updates", tr: "Anime dünyasından" },
+    bulletin: { fa: "اطلاعیه‌ها", en: "Bulletins", tr: "Duyurular" },
+    dBul: { fa: "خبر، تریلر، اعلان", en: "News, trailers, drops", tr: "Haber, fragman, duyuru" },
+    rank: { fa: "رتبه‌بندی", en: "Ranking", tr: "Sıralama" },
+    dRank: { fa: "بهترین اعضای رونین", en: "Top Ronin members", tr: "En iyi Ronin üyeleri" },
+    explore: { fa: "کشف", en: "explore", tr: "keşfet" },
+    pickMarket: { fa: "از فروشگاه", en: "From the store", tr: "Mağazadan" },
+    pickUser: { fa: "عضو برتر رونین", en: "Top Ronin member", tr: "En iyi Ronin üyesi" },
+    pickChat: { fa: "از چت زنده", en: "From live chat", tr: "Canlı sohbetten" },
+    pickRank: { fa: "تازه‌ترین آگهی", en: "Fresh listings", tr: "Yeni ilanlar" },
     dComm: { fa: "پست، لایک، گفتگو", en: "Posts, likes, talk", tr: "Gönderi, beğeni, sohbet" },
     dChat: { fa: "اتاق رونین", en: "The Ronin room", tr: "Ronin odası" },
     dMarket: { fa: "خرید و آگهی", en: "Buy & listings", tr: "Alışveriş ve ilan" },
@@ -239,9 +251,21 @@
       ".hpR3{width:126px;height:126px;border-color:rgba(255,111,216,.36);" +
         "box-shadow:inset 0 0 40px rgba(124,92,255,.32)}" +
       "@keyframes hpSpin{to{transform:rotate(360deg)}}" +
+      "@keyframes hpSpinB{to{transform:rotate(-360deg)}}" +
+      /* قمرهایی که روی مدار می‌چرخند (خلافِ چرخش مدار تا صاف بمانند) */
+      ".hpMoon{position:absolute;top:-9px;left:calc(50% - 9px);width:18px;height:18px;border-radius:50%;" +
+        "display:grid;place-items:center;font-size:9px;line-height:1;pointer-events:none;" +
+        "background:rgba(8,12,28,.92);border:1px solid rgba(140,160,255,.45);" +
+        "box-shadow:0 0 0 3px rgba(124,92,255,.1),0 6px 16px rgba(0,0,0,.5)}" +
+      ".hpMoon.b{top:auto;bottom:-9px}" +
+      ".hpR1 .hpMoon{animation:hpSpinB 28s linear infinite}" +
+      ".hpR2 .hpMoon{animation:hpSpinB 19s linear infinite reverse}" +
+      ".hpR3 .hpMoon{animation:hpFloat 5.5s ease-in-out infinite}" +
       ".hpOrb{position:relative;z-index:2;width:104px;height:104px;border-radius:32px;display:grid;place-items:center;" +
-        "font-size:44px;font-weight:900;color:#fff;background:linear-gradient(140deg,#7c5cff,#22d3ee);" +
+        "font-size:44px;font-weight:900;color:#fff;background:linear-gradient(140deg,#7c5cff,#22d3ee);overflow:hidden;" +
         "box-shadow:0 22px 60px rgba(124,92,255,.5);animation:hpFloat 7s ease-in-out infinite}" +
+      ".hpOrb .k{position:relative;z-index:1;line-height:1}" +
+      ".hpOrb img{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;display:block}" +
       "@keyframes hpFloat{50%{transform:translateY(-9px) rotate(-3deg)}}" +
       ".hpTag{position:absolute;z-index:3;padding:4px 10px;border-radius:99px;font-size:10px;color:#eaf0ff;" +
         "background:rgba(10,14,32,.78);border:1px solid rgba(140,160,255,.3);" +
@@ -368,10 +392,38 @@
     var s = st();
     function box(v, k) { return '<span class="hpStat"><b data-hp="' + k + '">' + num(v) + "</b>" + esc(t("s" + k[0].toUpperCase() + k.slice(1))) + "</span>"; }
     return '<div class="hpStats">' + box(s.online, "online") + box(s.users, "users") +
-      box(s.posts, "posts") + box(s.anime, "anime") + "</div>";
+      box(s.posts, "posts") + box(s.items, "items") + "</div>";
   }
 
   /* ── ۴. قطعه‌های صفحه ───────────────────────────────────── */
+  /* تصویر سیاره: اول از تنظیمات سایت، بعد از ORB_IMG بالا */
+  var orbCache = null, orbAsked = false;
+  function orbSrc() {
+    if (orbCache != null) return String(orbCache || "").trim();
+    var s = R.SITE || {};
+    var v = s.orbImg || s.orb || s.heroImg || ORB_IMG || "";
+    return String(v || "").trim();
+  }
+  /* یک‌بار خواندن عکس از دیتابیس (settings/site/orbImg) */
+  function loadOrb() {
+    if (orbAsked) return;
+    orbAsked = true;
+    if (!R.db || !R.db.ref) return;
+    try {
+      R.db.ref("settings/site/orbImg").once("value").then(function (sn) {
+        var v = sn && sn.val ? String(sn.val() || "") : "";
+        if (v === (orbCache || "")) return;
+        orbCache = v;
+        try { render(); } catch (e) {}
+      }, function () {});
+    } catch (e) {}
+  }
+  function orbHTML() {
+    var src = orbSrc();
+    return '<span class="k">忍</span>' +
+      (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : "");
+  }
+
   function banner() {
     var on = list(R.ONLINE || {});
     var faces = on.slice(0, 4).map(function (u) { return '<span class="hpFace">' + esc(ini(u.n || u.name)) + "</span>"; }).join("");
@@ -390,7 +442,7 @@
           '<p class="hpLead">' + esc(t("lead")) + "</p>" +
           '<div class="hpCta">' +
             '<button class="btn p" type="button" data-hp-go="community">🚀 ' + esc(t("cta1")) + "</button>" +
-            '<button class="btn" type="button" data-hp-go="anime">🎬 ' + esc(t("cta2")) + "</button>" +
+            '<button class="btn" type="button" data-hp-go="discover">🧭 ' + esc(t("cta2")) + "</button>" +
             '<button class="btn hpGhost" type="button" data-hp-go="market">🛒 ' + esc(t("cta3")) + "</button>" +
           "</div>" +
           statsHTML() +
@@ -398,9 +450,11 @@
             "<span>" + num(cnt(R.ONLINE)) + " " + esc(t("onlineNow")) + "</span></div>" +
         "</div>" +
         '<div class="hpArt" aria-hidden="true">' +
-          '<div class="hpRing hpR1"></div><div class="hpRing hpR2"></div><div class="hpRing hpR3"></div>' +
-          '<div class="hpOrb">忍</div>' +
-          '<span class="hpTag a">' + esc(t("sAnime")) + "</span>" +
+          '<div class="hpRing hpR1"><i class="hpMoon">📣</i><i class="hpMoon b">💬</i></div>' +
+          '<div class="hpRing hpR2"><i class="hpMoon">🏆</i></div>' +
+          '<div class="hpRing hpR3"><i class="hpMoon">💎</i></div>' +
+          '<div class="hpOrb">' + orbHTML() + "</div>" +
+          '<span class="hpTag a">' + esc(t("explore")) + "</span>" +
           '<span class="hpTag b">' + esc(t("live")) + "</span>" +
         "</div>" +
       "</div>" +
@@ -420,42 +474,56 @@
     }
     return '<section class="hpS"><div class="hpSH"><h2>🧭 ' + esc(t("dock")) + "</h2></div>" +
       '<div class="hpDock">' +
-        d("anime", "🎬", t("sAnime"), t("dAnime"), s.anime) +
-        d("news", "📰", t("news"), t("dNews"), s.news) +
         d("community", "👥", t("community"), t("dComm"), s.posts) +
         d("chat", "💬", t("chat"), t("dChat"), s.chat) +
         d("market", "🛒", t("market"), t("dMarket"), s.items) +
+        d("bulletin", "📣", t("bulletin"), t("dBul"), 0) +
+        d("rank", "🏆", t("rank"), t("dRank"), s.users) +
         d("premium", "💎", t("premium"), t("dPrem"), 0) +
       "</div></section>";
   }
 
+  /* پیشنهاد ویژه: بدون انیمه — کالای فروشگاه، خبر تازه و دنیای پرمیوم */
   function slides() {
     var out = [];
-    var an = list(R.ANIME).slice(0, 3);
-    an.forEach(function (a) {
+    list(R.PRODUCTS).slice(0, 2).forEach(function (p) {
       out.push({
-        kind: "anime", id: a.id, kick: t("pickAnime"), title: a.title || "—",
-        desc: a.desc || a.gen || "", icon: a.icon || "🎬", img: a.img || "",
-        chips: [a.gen, a.st, a.eps ? num(a.eps) + " " + t("eps") : "", a.rate ? "⭐ " + a.rate : ""].filter(Boolean),
+        kind: "market", id: p.id, kick: t("pickMarket"), title: p.name || "—",
+        desc: p.desc || t("dMarket"), icon: "🛒", img: p.img || "",
+        chips: [p.price ? num(p.price) + " " + (p.cur || "") : "", p.cat, day(p.t)].filter(Boolean),
         cta: t("open")
       });
     });
-    var nw = list(R.NEWS).slice(0, 3);
-    nw.forEach(function (n) {
+    list(R.NEWS).slice(0, 2).forEach(function (n) {
       out.push({
         kind: "news", id: n.id, kick: t("pickNews"), title: n.title || "—",
-        desc: n.body || "", icon: n.icon || "📰", img: "",
+        desc: n.body || "", icon: n.icon || "📰", img: n.img || "",
         chips: [n.cat, day(n.t)].filter(Boolean), cta: t("read")
       });
+    });
+    if (!out.length) out.push({
+      kind: "market", id: "", kick: t("pickMarket"), title: t("noItems"),
+      desc: t("dMarket"), icon: "🛒", img: "", chips: [], cta: t("cta3")
+    });
+    /* عضو برتر */
+    var top = list(R.USERS).sort(function (a, b) { return (b.xp || 0) - (a.xp || 0); })[0];
+    if (top && (top.name || top.n)) out.push({
+      kind: "community", id: top.id || "", kick: t("pickUser"),
+      title: top.name || top.n, desc: t("top"), icon: "🏅", img: "",
+      chips: [(top.xp ? "XP " + num(top.xp) : ""), top.prem ? t("premium") : ""].filter(Boolean),
+      cta: t("open")
+    });
+    /* آخرین پیام چت */
+    var msg = list(R.CHAT).sort(function (a, b) { return (b.t || 0) - (a.t || 0); })[0];
+    if (msg && msg.text) out.push({
+      kind: "chat", id: msg.id || "", kick: t("pickChat"),
+      title: msg.n || msg.name || t("guest"), desc: msg.text, icon: "💬", img: "",
+      chips: [ago(msg.t)].filter(Boolean), cta: t("open")
     });
     out.push({
       kind: "premium", id: "", kick: t("pickPrem"), title: t("premTitle"),
       desc: t("premDesc"), icon: "💎", img: "",
       chips: [t("f1"), t("f2"), t("f3"), t("f4")], cta: t("premCta")
-    });
-    if (!an.length) out.unshift({
-      kind: "anime", id: "", kick: t("pickAnime"), title: t("noAnime"),
-      desc: t("dAnime"), icon: "🎬", img: "", chips: [], cta: t("cta2")
     });
     return out;
   }
@@ -676,7 +744,6 @@
   }
 
   function openSlide(kind, id) {
-    if (kind === "anime" && id && R.openAnime) return R.openAnime(id);
     if (kind === "news" && id && R.openNews) return R.openNews(id);
     if (kind === "premium") return goTo(R.ME ? "premium" : "auth");
     return goTo(kind);
@@ -726,6 +793,7 @@
   function boot() {
     render();
     hookI18n();
+    loadOrb();
     if (!ticker) {
       ticker = setInterval(function () { try { sync(); } catch (e) {} }, 2000);
     }
@@ -745,6 +813,7 @@
   R.heroPlus = {
     render: render, sync: sync, inner: inner, t: t, slides: slides,
     paintSpot: paintSpot, goTo: goTo, stats: st,
+    setOrb: function (v) { orbCache = String(v || ""); try { render(); } catch (e) {} },
     state: function () { return { spot: spotI, rot: rotI, lang: lastLang }; }
   };
 })();
