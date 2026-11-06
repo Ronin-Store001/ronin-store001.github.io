@@ -606,7 +606,7 @@
       return '<div class="card"><div class="row"><div style="font-size:30px">' + (p.icon || "🎁") +
         '</div><div class="grow" style="min-width:0"><div class="sm b ellip">' + esc(p.name) + "</div>" +
         '<div class="xs mut">' + esc(p.sellerName || "فروشنده") + " • " + money(p.price) + " " +
-        esc(p.cur || "تومان") + "</div></div></div>" +
+        esc(p.cur || "افغانی") + "</div></div></div>" +
         (p.desc ? '<div class="sm mut mt">' + esc(p.desc) + "</div>" : "") +
         '<div class="row w" style="gap:6px;margin-top:10px">' +
         '<button class="btn ok mini" data-aad="' + p.id + '">✅ تایید</button>' +
@@ -665,6 +665,7 @@
       esc((R.SITE && R.SITE.ann) || "") + '">' +
       '<button class="btn p mini mt" data-saveann="1">ذخیره اعلان</button></div>' +
       '<div class="card"><div class="sm b mb">🔐 یادآوری امنیت</div>' +
+       '<div id="apicoHost" class="mb"></div>' +
       '<div class="xs mut">قوانین Firebase باید Publish شده باشند؛ وگرنه هیچ‌کس نمی‌تواند بنویسد.</div></div>';
   }
 
