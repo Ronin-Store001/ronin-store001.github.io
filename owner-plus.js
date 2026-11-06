@@ -32,17 +32,27 @@
     var s = document.createElement("style");
     s.id = "opCss";
     s.textContent =
-      "#opBanner{position:fixed;top:0;inset-inline:0;z-index:140;display:none;padding:7px 12px;" +
+      "#opBanner{position:fixed;top:0;inset-inline:0;z-index:140;display:none;padding:7px 42px;" +
       "font-size:12.5px;text-align:center;font-weight:700;color:#101426;" +
-      "background:linear-gradient(135deg,#bdee63,#8ec63f)}" +
-      "#opBanner.on{display:block}" +
+      "background:linear-gradient(135deg,#bdee63,#8ec63f);transition:transform .45s ease,opacity .45s ease}" +
+      "#opBanner.on{display:block;animation:opDrop .45s ease both}" +
+      "#opBanner.off{transform:translateY(-130%);opacity:0}" +
       "#opBanner.maint{background:linear-gradient(135deg,#ffb03a,#ff7a7a);color:#2b1400}" +
       "#opBanner b{font-weight:900}" +
+      "#opBanner .opX{position:absolute;top:50%;inset-inline-end:9px;transform:translateY(-50%);" +
+      "width:24px;height:24px;border-radius:8px;border:1px solid rgba(16,20,38,.28);cursor:pointer;" +
+      "background:rgba(255,255,255,.3);color:#101426;font-size:12px;font-weight:900;line-height:1;padding:0}" +
+      "@keyframes opDrop{from{transform:translateY(-130%);opacity:0}to{transform:translateY(0);opacity:1}}" +
       ".opGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:8px 0}" +
       ".opKpi{background:rgba(120,140,255,.08);border:1px solid rgba(140,160,255,.18);" +
       "border-radius:12px;padding:8px 10px}" +
       ".opKpi .n{font-weight:900;font-size:17px}" +
       ".opKpi .l{font-size:11px;opacity:.7}" +
+      ".opOrbRow{display:flex;gap:10px;align-items:flex-start}" +
+      ".opOrbPrev{flex:0 0 64px;width:64px;height:64px;border-radius:16px;display:grid;place-items:center;" +
+      "font-size:22px;font-weight:900;color:#fff;overflow:hidden;" +
+      "background:linear-gradient(140deg,#7c5cff,#22d3ee)}" +
+      ".opOrbPrev img{width:100%;height:100%;object-fit:cover;display:block}" +
       ".opRow{display:flex;align-items:center;justify-content:space-between;gap:8px;" +
       "padding:6px 0;border-top:1px solid rgba(150,120,255,.12);font-size:12.5px}" +
       ".opRow:first-of-type{border-top:0}" +
@@ -259,7 +269,7 @@
   }
 
   /* ── ۷. بنر و حالت تعمیر ────────────────────────────────── */
-  var SITE = { ann: "", maint: false };
+  var SITE = { ann: "", maint: false, orbImg: "" };
 
   function bannerBox() {
     var b = el("opBanner");
@@ -270,21 +280,40 @@
     }
     return b;
   }
+  var hideT = null;
   function renderBanner() {
     var b = bannerBox();
     var txt = String(SITE.ann || "").trim();
     var maint = !!SITE.maint;
+    if (hideT) { clearTimeout(hideT); hideT = null; }
     if (!txt && !maint) { b.className = ""; b.innerHTML = ""; return; }
     b.className = maint ? "on maint" : "on";
-    b.innerHTML = maint
+    b.innerHTML = (maint
       ? "🛠 حالت تعمیر: " + esc(txt || "سایت موقتاً در حال به‌روزرسانی است")
-      : "📌 " + esc(txt);
+      : "📌 " + esc(txt)) +
+      '<button class="opX" type="button" aria-label="بستن" data-opx="1">✕</button>';
+    /* مزاحم نباشد: چند ثانیه بعد از ورود، خودش بالا می‌رود */
+    hideT = setTimeout(dismissBanner, maint ? 12000 : 6000);
   }
+  function dismissBanner() {
+    var b = el("opBanner");
+    if (hideT) { clearTimeout(hideT); hideT = null; }
+    if (!b || !/(^|\s)on(\s|$)/.test(b.className)) return;
+    b.classList.add("off");
+    setTimeout(function () { b.className = ""; b.innerHTML = ""; }, 460);
+  }
+  document.addEventListener("click", function (e) {
+    var x = e.target;
+    if (!x || !x.closest || !x.closest("#opBanner .opX")) return;
+    e.preventDefault();
+    dismissBanner();
+  });
   function loadSite() {
     return read("settings/site").then(function (v) {
       v = v || {};
       SITE.ann = v.ann || "";
       SITE.maint = !!v.maint;
+      SITE.orbImg = String(v.orbImg || "");
       renderBanner();
     });
   }
@@ -294,9 +323,15 @@
     var p = {};
     if (patch.ann !== undefined) p.ann = patch.ann;
     if (patch.maint !== undefined) p.maint = !!patch.maint;
+    if (patch.orbImg !== undefined) p.orbImg = String(patch.orbImg || "");
     R.db.ref("settings/site").update(p).then(function () {
       Object.keys(p).forEach(function (k) { SITE[k] = p[k]; });
       renderBanner();
+      /* عکس سیارهٔ هیرو بی‌درنگ عوض شود */
+      if (patch.orbImg !== undefined) {
+        if (R.SITE) R.SITE.orbImg = SITE.orbImg;
+        if (R.heroPlus && R.heroPlus.setOrb) { try { R.heroPlus.setOrb(SITE.orbImg); } catch (e) {} }
+      }
       toast("ذخیره شد ✅", "ok");
       paint();
     }).catch(function (e) { toast("نشد: " + (e && e.message ? e.message : ""), "err"); });
@@ -392,6 +427,20 @@
       "> حالت تعمیر (بنر نارنجی و متن هشدار)</label>" +
       '<button class="btn mini p mt" data-op="save">ذخیره</button></div>';
 
+    /* عکس سیارهٔ هیرو */
+    h += '<div class="card mb"><div class="sm b mb">🪐 عکس سیارهٔ هیرو</div>' +
+      '<div class="xs mut mb">لینک عکس را بگذار یا از گالری انتخاب کن. خالی = کانجی 忍.</div>' +
+      '<div class="opOrbRow"><div class="opOrbPrev" id="opOrbPrev">' +
+      (SITE.orbImg ? '<img src="' + esc(SITE.orbImg) + '" alt="">' : "忍") + "</div>" +
+      '<div class="grow"><input class="inp mb" id="opOrb" maxlength="400000" ' +
+      'placeholder="https://… یا data:image/…" value="' + esc(SITE.orbImg) + '">' +
+      '<div class="row" style="gap:7px;flex-wrap:wrap">' +
+      '<button class="btn mini" type="button" data-oporbpick="1">📷 انتخاب از گالری</button>' +
+      '<button class="btn mini p" type="button" data-op="orb">ذخیره عکس</button>' +
+      '<button class="btn mini" type="button" data-op="orbclr">حذف</button></div>' +
+      '<input type="file" id="opOrbFile" accept="image/*" style="display:none">' +
+      '</div></div></div>';
+
     /* خروجی */
     h += '<div class="card mb"><div class="sm b mb">⬇️ خروجی گزارش</div>' +
       '<div class="xs mut mb">خلاصهٔ وضعیت و آیتم‌های قابل پاک‌سازی را به‌صورت JSON ذخیره می‌کند.</div>' +
@@ -430,9 +479,62 @@
     } else if (a === "save") {
       var ann = el("opAnn"), mt = el("opMaint");
       saveSite({ ann: ann ? String(ann.value || "").slice(0, 120) : "", maint: !!(mt && mt.checked) });
+    } else if (a === "orb") {
+      var oi = el("opOrb");
+      saveSite({ orbImg: oi ? String(oi.value || "").trim().slice(0, 400000) : "" });
+    } else if (a === "orbclr") {
+      var o2 = el("opOrb"), pv2 = el("opOrbPrev");
+      if (o2) o2.value = "";
+      if (pv2) pv2.textContent = "忍";
+      saveSite({ orbImg: "" });
     } else if (a === "exp") {
       exportJSON();
     }
+  });
+
+  /* ── ۱۰.۱ عکس سیاره: گالری → فشرده‌سازی → data URL ──────── */
+  function shrink(file, cb) {
+    var fr = new FileReader();
+    fr.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var m = 420, w = im.width || m, h = im.height || m;
+        if (w > m || h > m) { var k = Math.min(m / w, m / h); w = Math.round(w * k); h = Math.round(h * k); }
+        var c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        try {
+          c.getContext("2d").drawImage(im, 0, 0, w, h);
+          cb(c.toDataURL("image/jpeg", 0.82));
+        } catch (e) { cb(""); }
+      };
+      im.onerror = function () { cb(""); };
+      im.src = fr.result;
+    };
+    fr.onerror = function () { cb(""); };
+    fr.readAsDataURL(file);
+  }
+
+  document.addEventListener("click", function (e) {
+    var x = e.target;
+    if (!x || !x.closest || !isOwner() || !x.closest("[data-oporbpick]")) return;
+    e.preventDefault();
+    var f = el("opOrbFile");
+    if (f) f.click();
+  });
+
+  document.addEventListener("change", function (e) {
+    var x = e.target;
+    if (!x || x.id !== "opOrbFile" || !isOwner()) return;
+    var f = x.files && x.files[0];
+    if (!f) return;
+    if (!/^image\//.test(f.type || "")) return toast("فقط فایل عکس", "err");
+    shrink(f, function (url) {
+      if (!url) return toast("عکس خوانده نشد", "err");
+      var oi = el("opOrb"), pv = el("opOrbPrev");
+      if (oi) oi.value = url;
+      if (pv) pv.innerHTML = '<img src="' + url + '" alt="">';
+      toast("عکس آماده شد — «ذخیره عکس» را بزن", "ok");
+    });
   });
 
   /* ── ۱۱. راه‌اندازی ────────────────────────────────────── */
