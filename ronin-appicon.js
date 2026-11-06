@@ -1,4 +1,4 @@
-/* ═══ RONIN STORE — APP ICON v4 · پنل مالک + لینک + منیفست ═══ */
+/* ═══ RONIN STORE — APP ICON v5 · پنل مالک + لینک + منیفست ═══ */
 "use strict";
 (function () {
  var REPO = "Ronin-Store001/ronin-store001.github.io", BRANCH = "main", TK = "ronin_gh_tok";
@@ -36,12 +36,17 @@
   }
 
   /* منیفست را با آیکن دلخواه بازنویسی کن (برای نصب تازه) */
+  /* هر جا اسم منیفست مخزن متفاوت باشد هم کار می‌کند، و اگر هیچ‌کدام نبود خودش می‌سازد */
+  var MANIFESTS = ["manifest.webmanifest", "manifest.json", "site.webmanifest"];
   function rebuildManifest(u) {
     try {
-      fetch("manifest.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (m) {
-        m = m || {};
-        var type = u.indexOf("data:image/svg") === 0 ? "image/svg+xml"
-          : (u.indexOf("data:image/webp") === 0 ? "image/webp" : "image/png");
+      var type = u.indexOf("data:image/svg") === 0 ? "image/svg+xml"
+        : (u.indexOf("data:image/webp") === 0 ? "image/webp" : "image/png");
+      var base = {
+        name: "Ronin Store", short_name: "Ronin", start_url: "./", scope: "./",
+        display: "standalone", background_color: "#0a0e22", theme_color: "#0a0e22"
+      };
+      function write(m) {
         m.icons = [
           { src: u, sizes: "192x192", type: type, purpose: "any" },
           { src: u, sizes: "512x512", type: type, purpose: "any" }
@@ -52,7 +57,18 @@
         if (l.__aiBlob) { try { URL.revokeObjectURL(l.__aiBlob); } catch (e) {} }
         l.__aiBlob = url;
         l.href = url;
-      }).catch(function () {});
+      }
+      var i = 0;
+      (function nxt() {
+        if (i >= MANIFESTS.length) return write(base);
+        fetch(MANIFESTS[i++] + "?v=" + Date.now(), { cache: "no-store" }).then(function (r) {
+          if (!r.ok) throw 0;
+          return r.json();
+        }).then(function (m) {
+          if (!m || typeof m !== "object" || m instanceof Array) throw 0;
+          write(Object.assign(base, m));
+        }).catch(nxt);
+      })();
     } catch (e) {}
   }
   function refresh() {
