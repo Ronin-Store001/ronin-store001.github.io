@@ -1,4 +1,4 @@
-/* ═══ RONIN STORE — APP ICON v3 · رونین: تلاش دوباره + ادامه دادن ═══ */
+/* ═══ RONIN STORE — APP ICON v4 · پنل مالک + لینک + منیفست ═══ */
 "use strict";
 (function () {
  var REPO = "Ronin-Store001/ronin-store001.github.io", BRANCH = "main", TK = "ronin_gh_tok";
@@ -12,7 +12,59 @@
   function tok() { try { return localStorage.getItem(TK) || ""; } catch (e) { return ""; } }
   function setTok(v) { try { v ? localStorage.setItem(TK, v) : localStorage.removeItem(TK); } catch (e) {} }
 
+  /* آیکن اختصاصی که مالک از تنظیمات انتخاب کرده */
+  function customIcon() {
+    var b = (window.R && R.brand) || {};
+    return (typeof b.appIcon === "string" && b.appIcon) ? b.appIcon : "";
+  }
+  /* نشان دادن فوری آیکن روی تب مرورگر و «افزودن به صفحه اصلی» iOS */
+  function applyLive(u) {
+    if (!u) return;
+    var old = document.head.querySelectorAll("link[rel='icon']");
+    for (var i = 0; i < old.length; i++) document.head.removeChild(old[i]);
+    var ic = document.createElement("link");
+    ic.rel = "icon"; ic.href = u;
+    document.head.appendChild(ic);
+    var a = document.head.querySelector("link[rel='apple-touch-icon']");
+    if (!a) {
+      a = document.createElement("link");
+      a.rel = "apple-touch-icon";
+      document.head.appendChild(a);
+    }
+    a.href = u;
+    rebuildManifest(u);
+  }
+
+  /* منیفست را با آیکن دلخواه بازنویسی کن (برای نصب تازه) */
+  function rebuildManifest(u) {
+    try {
+      fetch("manifest.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (m) {
+        m = m || {};
+        var type = u.indexOf("data:image/svg") === 0 ? "image/svg+xml"
+          : (u.indexOf("data:image/webp") === 0 ? "image/webp" : "image/png");
+        m.icons = [
+          { src: u, sizes: "192x192", type: type, purpose: "any" },
+          { src: u, sizes: "512x512", type: type, purpose: "any" }
+        ];
+        var l = document.head.querySelector("link[rel='manifest']");
+        if (!l) { l = document.createElement("link"); l.rel = "manifest"; document.head.appendChild(l); }
+        var url = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: "application/manifest+json" }));
+        if (l.__aiBlob) { try { URL.revokeObjectURL(l.__aiBlob); } catch (e) {} }
+        l.__aiBlob = url;
+        l.href = url;
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  function refresh() {
+    var pv = el("apicoPrev");
+    if (!pv) return;
+    var u = customIcon();
+    if (u) { pv.src = u; return; }
+    png(192, function (b) { if (b) pv.src = URL.createObjectURL(b); });
+  }
+
   function logoSrc() {
+    if (customIcon()) return customIcon();
     var b = (window.R && R.brand) || {};
     if (b.logo) return String(b.logo);
     var mk = document.querySelector("#top .brandmark");
@@ -97,6 +149,78 @@
     });
   }
 
+  /* ذخیره عکس آیکن در تنظیمات سایت (بدون نیاز به توکن) */
+  function saveIcon(file) {
+    if (!file || !file.type || file.type.indexOf("image/") !== 0) return R.toast("فقط عکس 🖼", "err");
+    if (file.size > 10 * 1024 * 1024) return R.toast("عکس بزرگ‌تر از ۱۰ مگه ❌", "err");
+    if (!R.db) return R.toast("دیتابیس آماده نیست ⏳", "err");
+    var fr = new FileReader();
+    fr.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        try {
+          var S = 512, c = document.createElement("canvas");
+          c.width = c.height = S;
+          var x = c.getContext("2d");
+          x.imageSmoothingQuality = "high";
+          var m = Math.min(im.width, im.height);
+          x.drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, S, S);
+          var u = c.toDataURL("image/png");
+          if (u.length > 700000) u = c.toDataURL("image/webp", 0.85);
+          R.brand = R.brand || {};
+          R.brand.appIcon = u;
+          R.db.ref("settings/brand").update({ appIcon: u }).then(function () {
+            applyLive(u); refresh();
+            line("✅ آیکن ذخیره شد · ~" + Math.round(u.length / 1365) + "KB", "b");
+            R.toast("آیکن ذخیره شد ✅ — شورتکات را پاک کن و دوباره نصب کن", "ok");
+          }).catch(function (e) { R.toast("ذخیره نشد: " + ((e && e.message) || "خطا"), "err"); });
+        } catch (e) { R.toast("پردازش نشد ❌", "err"); }
+      };
+      im.onerror = function () { R.toast("عکس خوانده نشد ❌", "err"); };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  }
+
+  function resetIcon() {
+    if (!R.db) return R.toast("دیتابیس آماده نیست ⏳", "err");
+    R.db.ref("settings/brand/appIcon").remove().then(function () {
+      if (R.brand) delete R.brand.appIcon;
+      if (R.applyBrand) R.applyBrand(R.brand || {});
+      refresh();
+      line("↩️ آیکن به لوگوی سایت برگشت", "mut");
+      R.toast("آیکن به لوگوی سایت برگشت ↩️", "ok");
+    }).catch(function (e) { R.toast("نشد: " + ((e && e.message) || "خطا"), "err"); });
+  }
+
+  /* لینک عکس آیکن (https://…) — بدون آپلود فایل */
+  function saveUrl(v) {
+    v = String(v || "").trim();
+    if (!v) return R.toast("لینک خالی است 🖼", "err");
+    if (!/^https?:\/\//i.test(v) && v.indexOf("data:image") !== 0) return R.toast("لینک معتبر نیست ❌", "err");
+    if (!R.db) return R.toast("دیتابیس آماده نیست ⏳", "err");
+    R.brand = R.brand || {};
+    R.brand.appIcon = v;
+    R.db.ref("settings/brand").update({ appIcon: v }).then(function () {
+      applyLive(v); refresh();
+      line("✅ لینک آیکن ذخیره شد", "b");
+      R.toast("آیکن ذخیره شد ✅ — شورتکات را حذف و دوباره نصب کن", "ok");
+    }).catch(function (e) { R.toast("ذخیره نشد: " + ((e && e.message) || "خطا"), "err"); });
+  }
+
+  /* آیکن ذخیره‌شده را برای همه‌ی بازدیدکننده‌ها اعمال کن */
+  function watchBrand() {
+    if (!window.R || !R.db || R._aiw) return;
+    R._aiw = true;
+    R.db.ref("settings/brand").on("value", function (sn) {
+      R.brand = sn.val() || R.brand || {};
+      var u = customIcon();
+      if (u) applyLive(u);
+      else if (R.applyBrand) R.applyBrand(R.brand);
+      refresh();
+    }, function () {});
+  }
+
   function line(t, cls) {
     var box = el("apicoList");
     if (!box) return;
@@ -165,7 +289,7 @@
 
   function card() {
     if (!window.R || !R.isOwner || !R.isOwner()) return;
-    var sec = el("sec-settings");
+    var sec = el("apicoHost") || el("sec-settings");
     if (!sec || el("apicoCard")) return;
     if (!el("apicoCss")) {
       var st = document.createElement("style"); st.id = "apicoCss";
@@ -181,12 +305,19 @@
       '<div class="card mb" id="apicoCard">' +
         '<div class="between"><span class="sm b">📱 آیکون اپلیکیشن — آپدیت خودکار</span>' +
         '<span class="chip gd">👑 فقط مالک</span></div>' +
-        '<div class="xs mut mt mb">از لوگوی فعلی سایت سه آیکن ساخته و در گیت‌هاب کامیت می‌شود.</div>' +
+        '<div class="xs mut mt mb">عکسی که می‌خواهی روی آیکن شورتکات/اپ باشد را انتخاب کن (مربعی بریده می‌شود). ذخیره‌اش در تنظیمات سایت است و فوری روی تب مرورگر و «افزودن به صفحه اصلی» می‌نشیند.</div>' +
         '<div class="apico mb"><img id="apicoPrev" alt="پیش‌نمایش">' +
           '<div class="col" style="gap:7px">' +
-            '<button class="btn p mini" data-apic="go" type="button">🚀 ساخت و آپلود خودکار</button>' +
+            '<label class="btn p mini" style="display:inline-block;cursor:pointer;text-align:center">🖼 عکس آیکن از گالری' +
+              '<input id="apicoFile" type="file" accept="image/*" hidden></label>' +
+            '<button class="btn mini" data-apic="reset" type="button">↩️ بازگشت به لوگوی سایت</button>' +
+            '<button class="btn mini" data-apic="go" type="button">🚀 آپلود روی گیت‌هاب</button>' +
             '<button class="btn mini" data-apic="test" type="button">🔍 تست توکن</button>' +
           "</div></div>" +
+        '<div class="field"><label class="lbl">یا لینک عکس آیکن</label>' +
+        '<input class="inp" id="apicoUrl" dir="ltr" placeholder="https://…/icon.png">' +
+        '<button class="btn mini p mt" data-apic="url" type="button">💾 ذخیره لینک</button></div>' +
+        '<div class="xs mut mb">آیکن شورتکات نصب‌شده فقط بعد از حذف و نصب دوباره عوض می‌شود (اندروید: حذف شورتکات → نصب مجدد · iOS: Remove از صفحه اصلی و دوباره Add). برای اینکه آیکن روی گیت‌هاب هم عوض شود، فایل‌ها را با 🚀 آپلود کن.</div>' +
         '<div class="field"><label class="lbl">توکن گیت‌هاب (Fine-grained · Contents: Read and write)</label>' +
         '<input class="inp" id="apicoTok" type="password" dir="ltr" placeholder="github_pat_..."></div>' +
         '<div class="row w" style="gap:7px">' +
@@ -202,8 +333,14 @@
         "</div>" +
       "</div>";
     sec.appendChild(d.firstChild);
-    var pv = el("apicoPrev");
-    if (pv) png(192, function (b) { if (b) pv.src = URL.createObjectURL(b); });
+    refresh();
+    var fi = el("apicoFile");
+    if (fi) fi.addEventListener("change", function (e) {
+      saveIcon(e.target.files && e.target.files[0]);
+      e.target.value = "";
+    });
+    line(customIcon() ? "🖼 آیکن اختصاصی ذخیره شده ✅" : "🖼 آیکن فعلی = لوگوی سایت",
+      customIcon() ? "b" : "mut");
     line(tok() ? "🔑 توکن ذخیره شده — آماده ✅" : "🔑 هنوز توکنی ثبت نشده", "mut");
   }
 
@@ -223,17 +360,38 @@
       return;
     }
     if (a === "clear") { setTok(""); clearList(); line("🗑 توکن پاک شد", "mut"); R.toast("توکن پاک شد", "ok"); return; }
+    if (a === "reset") return resetIcon();
     if (a === "test") return test();
+    if (a === "url") return saveUrl((el("apicoUrl") || {}).value);
     if (a === "go") return run();
     if (a === "512") return save(512, "icon-512.png");
     if (a === "180") return save(180, "apple-touch-icon.png");
     return save(192, "icon-192.png");
   });
 
+  /* در پنل مالک هم سوار شود (تب تنظیمات دوباره رندر می‌شود) */
+  var hostT = 0;
+  function watchPanel() {
+    try {
+      var h = el("ownerBody");
+      if (!h || h.__aiObs) return;
+      h.__aiObs = 1;
+      new MutationObserver(function () {
+        clearTimeout(hostT);
+        hostT = setTimeout(card, 120);
+      }).observe(h, { childList: true });
+    } catch (e) {}
+  }
+
+  R.appIcon = {
+    apply: applyLive, manifest: rebuildManifest, setUrl: saveUrl,
+    reset: resetIcon, refresh: refresh, saveFile: saveIcon, current: customIcon
+  };
+
   var prev = R.onLogin;
-  R.onLogin = function () { if (prev) { try { prev(); } catch (e) {} } setTimeout(card, 700); };
-  function boot() { card(); }
+  R.onLogin = function () { if (prev) { try { prev(); } catch (e) {} } setTimeout(function () { card(); watchBrand(); watchPanel(); }, 700); };
+  function boot() { card(); watchBrand(); watchPanel(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
-  setTimeout(card, 2600);
+  setTimeout(function () { card(); watchBrand(); watchPanel(); }, 2600);
 })();
