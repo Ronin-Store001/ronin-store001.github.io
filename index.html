@@ -2,32 +2,40 @@
 <html dir="rtl" lang="fa">
 <head>
 
-  <!-- ── تم — باید قبل از رندر اجرا شود ───────────────────────── -->
-  <script src="theme.js"></script>
+  <!-- ═══════════════════════════════════════════════════════════════════
+       RONIN STORE — index.html
+       ترتیب: تم ▸ متا ▸ آیکن/فونت ▸ استایل‌ها ▸ بدنه ▸ اسکریپت‌ها
+       ═══════════════════════════════════════════════════════════════════ -->
 
-  <!-- ── متاها ───────────────────────────────────────────────── -->
+  <!-- ── ۱ ▸ تم — باید قبل از هر رندری اجرا شود ────────────────────── -->
+  <script src="theme.js?v=3"></script>
+
+  <!-- ── ۲ ▸ متا ────────────────────────────────────────────────────── -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#05070f">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="RONIN STORE — انیمه، انجمن، فروشگاه، چت و دنیای پرمیوم رونین">
+  <meta name="description" content="RONIN STORE — انجمن، فروشگاه، چت و دنیای پرمیوم رونین">
   <meta name="robots" content="index,follow">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="RONIN STORE — Anime Universe">
-  <meta property="og:description" content="انیمه • انجمن • فروشگاه • پرمیوم">
+  <meta property="og:title" content="RONIN STORE — Community &amp; Marketplace">
+  <meta property="og:description" content="انجمن • فروشگاه • پرمیوم">
   <meta name="twitter:card" content="summary_large_image">
-  <title>RONIN STORE — Anime Universe</title>
+  <title>RONIN STORE — Community &amp; Marketplace</title>
 
-  <!-- ── آیکن ────────────────────────────────────────────────── -->
+  <!-- ── ۳ ▸ آیکن، Manifest، فونت ──────────────────────────────────── -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e22'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='36' fill='%238fdcff'%3E%E5%BF%8D%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-title" content="RONIN">
+  <meta name="application-name" content="RONIN">
 
-  <!-- ── فونت‌ها ─────────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
 
-  <!-- ── استایل‌های پایه ─────────────────────────────────────── -->
+  <!-- ── ۴ ▸ استایل‌های پایه ────────────────────────────────────────── -->
   <link rel="stylesheet" href="css/1-base.css">
   <link rel="stylesheet" href="css/2-ui.css">
   <link rel="stylesheet" href="css/css/3-panels.css">
@@ -52,7 +60,7 @@
   #rstop.on{display:grid}
   </style>
 
-  <!-- ── استایل‌های رونین ────────────────────────────────────── -->
+  <!-- ── ۵ ▸ استایل‌های رونین ──────────────────────────────────────── -->
   <link rel="stylesheet" href="ronin-chat.css?v=1">
   <link rel="stylesheet" href="ronin-nav.css?v=1">
   <link rel="stylesheet" href="ronin-rail-scroll.css?v=1">
@@ -61,11 +69,11 @@
   <link rel="stylesheet" href="ronin-intro-plus.css?v=1">
   <script src="ronin-intro.js?v=1"></script>
 
-  <!-- ── پس‌زمینه‌ی فضایی — باید آخرین استایل باشد ───────────── -->
+  <!-- ── ۶ ▸ پس‌زمینهٔ فضایی — باید آخرین استایل باشد ────────────────── -->
   <link rel="stylesheet" href="ronin-zero.css?v=12">
 
-
 </head>
+
 <body>
 
 <!-- ═══════════ پس‌زمینه‌ی فضایی ═══════════ -->
@@ -93,7 +101,7 @@
     <div class="brandmark">忍</div>
     <div class="brandtx">
       <b>RONIN STORE</b>
-      <small>ANIME • COMMUNITY • MARKETPLACE</small>
+      <small>COMMUNITY • MARKETPLACE</small>
     </div>
   </div>
 
@@ -126,6 +134,7 @@
         <div class="ditem" data-go="discover"><i>🧭</i>کاوش</div>
         <div class="ditem" data-go="rank"><i>🏆</i>رتبه‌بندی</div>
         <div class="ditem" data-go="events"><i>📅</i>رویدادها</div>
+        <div class="ditem" data-go="bulletin"><i>📣</i>اطلاعیه‌ها</div>
       </div>
     </div>
 
@@ -190,7 +199,7 @@
     <div class="hero">
       <div class="halo"></div>
       <h1>به دنیای Ronin Store خوش آمدی</h1>
-      <p>انیمه، جامعه، فروشگاه و دنیایی که خودت می‌سازی.</p>
+      <p>جامعه، فروشگاه و دنیایی که خودت می‌سازی.</p>
       <div class="cta">
         <button class="btn p" data-go="community">شروع ماجراجویی</button>
         <button class="btn" data-go="bulletin">اطلاعیه و تریلر</button>
@@ -228,7 +237,7 @@
 
     <div class="card mb hide" data-auth>
       <div class="row mb"><div class="av sm"><span data-me-av>؟</span></div><b class="sm" data-me-name>کاربر</b></div>
-      <textarea class="area" id="pText" placeholder="چه خبر؟ از انیمه‌ای بگو، نظرسنجی بگذار…" maxlength="1200"></textarea>
+      <textarea class="area" id="pText" placeholder="چه خبر؟ یه پست بنویس، نظرسنجی بگذار…" maxlength="1200"></textarea>
       <label class="check mt"><input type="checkbox" id="pPollOn"> افزودن نظرسنجی</label>
       <div class="col mt hide" id="pPollWrap">
         <input class="inp" id="pOpt1" placeholder="گزینه ۱" maxlength="60">
@@ -434,7 +443,7 @@
 
     <div class="card">
       <div class="sm b">RONIN STORE <span data-ver>V19</span></div>
-      <div class="xs mut mt">انیمه • انجمن • فروشگاه • پرمیوم</div>
+      <div class="xs mut mt">انجمن • فروشگاه • پرمیوم</div>
       <div class="xs mut">© <span data-year>۲۰۲۶</span> — همه حقوق محفوظ است</div>
     </div>
   </section>
@@ -509,7 +518,7 @@
       <button class="icobtn" data-close="searchMod">✕</button>
     </div>
     <div class="row">
-      <input class="inp" id="sqIn" placeholder="پست، محصول، انیمه…">
+      <input class="inp" id="sqIn" placeholder="پست، محصول، کاربر…">
       <button class="btn mini" id="sqClear">✕</button>
     </div>
     <div id="sqOut" class="mt"></div>
@@ -530,60 +539,70 @@
 <div id="rprog"></div>
 <div id="rsplash"><div><b>RONIN STORE</b><i></i></div></div>
 
-<!-- ═══════════ اسکریپت‌ها ═══════════ -->
+<!-- ═══════════════════════════════════════════════════════════════════
+     ۷ ▸ اسکریپت‌ها — ترتیب مهم است، جابه‌جا نکن
+     ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- فایربیس -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- ── ۷.۱ ▸ فایربیس ────────────────────────────────────────────── -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<!-- هسته‌ی رونین -->
-<script src="css/js/1-core.js"></script>
-<script src="fb-guard.js?v=1"></script>
-<script src="css/js/js/2-auth.js"></script>
-<script src="css/js/js/js/3-feed.js"></script>
-<script src="css/js/js/js/js/4-chat.js"></script>
-<script src="css/js/js/js/js/js/5-market.js"></script>
-<script src="css/js/js/js/js/js/js/js/7-extra.js"></script>
-<script src="css/js/js/js/js/js/js/js/js/8-companion.js"></script>
+  <!-- ── ۷.۲ ▸ هستهٔ رونین ─────────────────────────────────────────── -->
+  <script src="css/js/1-core.js"></script>
+  <script src="fb-guard.js?v=1"></script>
+  <script src="css/js/js/2-auth.js"></script>
+  <script src="css/js/js/js/3-feed.js"></script>
+  <script src="css/js/js/js/js/4-chat.js"></script>
+  <script src="css/js/js/js/js/js/5-market.js"></script>
+  <script src="css/js/js/js/js/js/js/js/7-extra.js"></script>
+  <script src="css/js/js/js/js/js/js/js/js/8-companion.js?v=2"></script>
 
-<!-- رابط و برند -->
-<script src="profile.js"></script>
-<script src="ui-fix.js"></script>
-<script src="brand.js"></script>
-<script src="ronin-appicon.js?v=5"></script>
-<script src="ronin-bulletin.js?v=1"></script>
-<script src="extra.js"></script>
-<script src="css/js/js/js/js/js/js/js/js/js/9-boot.js"></script>
+  <!-- ── ۷.۳ ▸ پروفایل، برند، بوت (پروفایل باید قبل از 9-boot باشد) ── -->
+  <script src="ronin-profile.js?v=1"></script>
+  <script src="ui-fix.js"></script>
+  <script src="brand.js"></script>
+  <script src="ronin-appicon.js?v=4"></script>
+  <script src="ronin-bulletin.js?v=2"></script>
+  <script src="extra.js"></script>
+  <script src="css/js/js/js/js/js/js/js/js/js/9-boot.js"></script>
 
-<!-- پک‌ها و قابلیت‌ها -->
-<script src="pack1.js"></script>
-<script src="pack2.js?v=4"></script>
-<script src="pack3.js"></script>
-<script src="chat-plus.js"></script>
-<script src="groups.js?v=7"></script>
-<script src="groups-plus.js?v=3"></script>
-<script src="inbox.js?v=2"></script>
-<script src="users.js?v=1"></script>
-<script src="notify-plus.js?v=1"></script>
-<script src="settings-plus.js?v=1"></script>
-<script src="cart-plus.js?v=1"></script>
-<script src="nav-drawer.js?v=2"></script>
-<script src="lite.js"></script>
-<script src="notif-prefs.js?v=2"></script>
+  <!-- ── ۷.۴ ▸ پک‌ها و قابلیت‌ها ────────────────────────────────────── -->
+  <script src="pack1.js"></script>
+  <script src="pack2.js?v=7"></script>
+  <script src="pack3.js?v=2"></script>
+  <script src="chat-plus.js"></script>
+  <script src="chat-pro.js?v=1"></script>
+  <script src="ronin-chat-ultra.js?v=4"></script>
+  <script src="groups.js?v=4"></script>
+  <script src="groups-plus.js?v=3"></script>
+  <script src="inbox.js?v=2"></script>
+  <script src="users.js?v=1"></script>
+  <script src="notify-plus.js?v=1"></script>
+  <script src="settings-plus.js?v=1"></script>
+  <script src="cart-plus.js?v=1"></script>
+  <script src="nav-drawer.js?v=3"></script>
+  <script src="ronin-burger-pro.js?v=6"></script>
+  <script src="lite.js"></script>
+  <script src="notif-prefs.js?v=2"></script>
   <script src="notify-fix.js?v=2"></script>
   <script src="premium-plus.js?v=1"></script>
   <script src="owner-plus.js?v=3"></script>
+  <script src="owner-hub.js?v=5"></script>
   <script src="team-plus.js?v=1"></script>
-  <script src="profile-plus.js?v=1"></script>
   <script src="settings-extra.js?v=1"></script>
   <script src="hero-plus.js?v=5"></script>
-  <script src="owner-hub.js?v=5"></script>
-<script src="ronin-nav.js"></script>
-  <script src="ronin-burger-pro.js?v=6"></script>
-  <script src="ronin-chat-ultra.js?v=1"></script>
-  <script src="chat-pro.js?v=1"></script>
+  <script src="ronin-nav.js"></script>
 
+  <!-- ── ۷.۵ ▸ منو، ترجمه، همراه، فوتر ─────────────────────────────── -->
+  <script src="ronin-menu.js?v=1"></script>
+  <script src="ronin-i18n.js?v=1"></script>
+  <script src="ronin-companion-plus.js?v=4"></script>
+  <script src="ronin-footer.js?v=4"></script>
+  <script src="ronin-footer-home.js?v=1"></script>
+  <script src="ronin-about.js?v=2"></script>
+
+  <!-- ── ۷.۶ ▸ اسپلش، نوار پیشرفت، دکمهٔ بازگشت به بالا ─────────────── -->
 <!-- پک ارتقا: اسپلش، نوار پیشرفت، دکمه‌ی بازگشت به بالا -->
 <script>
 (function () {
@@ -636,15 +655,7 @@
 })();
 </script>
 
-<!-- منو، ترجمه، همراه، فوتر -->
-<script src="ronin-menu.js?v=1"></script>
-<script src="ronin-i18n.js?v=1"></script>
-<script src="ronin-companion-plus.js?v=4"></script>
-  <script src="ronin-companion-lab.js?v=6"></script>
-<script src="ronin-footer.js?v=4"></script>
-  <script src="ronin-footer-home.js?v=1"></script>
-<script src="ronin-about.js?v=1"></script>
-
+  <!-- ── ۷.۷ ▸ شمارندهٔ سبد خرید در داک موبایل ──────────────────────── -->
 <!-- ═══════════ سبد خرید در داک موبایل ═══════════ -->
 <script>
 (function () {
