@@ -40,6 +40,7 @@
   function paintTheme() {
     var b = document.querySelector(".hpBan");
     if (b) b.setAttribute("data-hp-theme", themeId);
+    document.documentElement.setAttribute("data-rn-theme", themeId);
     document.querySelectorAll(BOX + " [data-hptheme]").forEach(function (n) {
       n.classList.toggle("on", n.getAttribute("data-hptheme") === themeId);
     });
@@ -428,34 +429,77 @@
       /* ── تم‌های هیرو (رنگ‌ها با متغیر عوض می‌شوند) ── */
       ".hpBan{--bg1:#0b1130;--bg2:#0a0f26;--bg3:#070a1c;" +
         "--a1:rgba(124,92,255,.5);--a2:rgba(34,211,238,.34);--a3:rgba(255,79,216,.26);" +
-        "--g1:#8f7bff;--g2:#22d3ee;--g3:#ff6fd8;--mk1:#7c5cff;--mk2:#22d3ee;" +
+        "--hG1:#8f7bff;--hG2:#22d3ee;--hG3:#ff6fd8;--mk1:#7c5cff;--mk2:#22d3ee;" +
         "--acc:#8ef2ff;--accBg:rgba(34,211,238,.1);--accBd:rgba(34,211,238,.3);--r3:rgba(124,92,255,.32)}" +
       ".hpBan{background:linear-gradient(155deg,var(--bg1),var(--bg2) 48%,var(--bg3))}" +
       ".hpBan::before{background:radial-gradient(40% 46% at 20% 16%,var(--a1),transparent 70%)," +
         "radial-gradient(34% 40% at 84% 24%,var(--a2),transparent 72%)," +
         "radial-gradient(36% 44% at 64% 98%,var(--a3),transparent 72%)}" +
-      ".hpGrad{background-image:linear-gradient(100deg,var(--g1),var(--g2) 55%,var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent}" +
+      ".hpGrad{background-image:linear-gradient(100deg,var(--hG1),var(--hG2) 55%,var(--hG3));-webkit-background-clip:text;background-clip:text;color:transparent}" +
       ".hpMark{background:linear-gradient(135deg,var(--mk1),var(--mk2))}" +
-      ".hpOrb{background:linear-gradient(140deg,var(--g1),var(--g2))}" +
+      ".hpOrb{background:linear-gradient(140deg,var(--hG1),var(--hG2))}" +
       ".hpR3{box-shadow:inset 0 0 40px var(--r3)}" +
       ".hpRotTxt{color:var(--acc);background:var(--accBg);border-color:var(--accBd)}" +
       ".hpBan[data-hp-theme=sakura]{--bg1:#2a0b1c;--bg2:#1a0713;--bg3:#12040d;" +
         "--a1:rgba(255,92,158,.5);--a2:rgba(255,179,217,.32);--a3:rgba(124,92,255,.28);" +
-        "--g1:#ff8ec4;--g2:#ff5c9e;--g3:#ffd0e6;--mk1:#ff5c9e;--mk2:#ffb3d9;" +
+        "--hG1:#ff8ec4;--hG2:#ff5c9e;--hG3:#ffd0e6;--mk1:#ff5c9e;--mk2:#ffb3d9;" +
         "--acc:#ffc2dd;--accBg:rgba(255,92,158,.12);--accBd:rgba(255,92,158,.34);--r3:rgba(255,92,158,.4)}" +
       ".hpBan[data-hp-theme=gold]{--bg1:#241a05;--bg2:#1a1203;--bg3:#0e0901;" +
         "--a1:rgba(255,196,64,.45);--a2:rgba(255,236,160,.28);--a3:rgba(255,120,40,.24);" +
-        "--g1:#ffd66b;--g2:#ffb03a;--g3:#fff3c4;--mk1:#ffb03a;--mk2:#ffd66b;" +
+        "--hG1:#ffd66b;--hG2:#ffb03a;--hG3:#fff3c4;--mk1:#ffb03a;--mk2:#ffd66b;" +
         "--acc:#ffe6a6;--accBg:rgba(255,176,58,.12);--accBd:rgba(255,176,58,.36);--r3:rgba(255,196,64,.4)}" +
       ".hpBan[data-hp-theme=cyber]{--bg1:#04140f;--bg2:#03100c;--bg3:#020a08;" +
         "--a1:rgba(93,240,176,.42);--a2:rgba(34,211,238,.3);--a3:rgba(140,255,110,.22);" +
-        "--g1:#5df0b0;--g2:#22d3ee;--g3:#b6ffcf;--mk1:#5df0b0;--mk2:#22d3ee;" +
+        "--hG1:#5df0b0;--hG2:#22d3ee;--hG3:#b6ffcf;--mk1:#5df0b0;--mk2:#22d3ee;" +
         "--acc:#9dffd4;--accBg:rgba(93,240,176,.12);--accBd:rgba(93,240,176,.34);--r3:rgba(93,240,176,.36)}" +
       ".hpBan[data-hp-theme=ember]{--bg1:#280a08;--bg2:#1c0605;--bg3:#0f0302;" +
         "--a1:rgba(255,84,112,.48);--a2:rgba(255,146,64,.3);--a3:rgba(255,196,64,.2);" +
-        "--g1:#ff7a5c;--g2:#ff5470;--g3:#ffd66b;--mk1:#ff5470;--mk2:#ffb03a;" +
+        "--hG1:#ff7a5c;--hG2:#ff5470;--hG3:#ffd66b;--mk1:#ff5470;--mk2:#ffb03a;" +
         "--acc:#ffc2a6;--accBg:rgba(255,120,60,.12);--accBd:rgba(255,120,60,.34);--r3:rgba(255,84,112,.4)}" +
 
+      /* ── تم سراسری: کل سایت ── */
+      /* ── تم روی سطوح اصلی سایت (تم‌های پرمیوم) ── */
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body #top{background-image:linear-gradient(90deg,transparent,var(--vio),var(--cy),transparent),linear-gradient(180deg,var(--g3),var(--g2))!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body #rail{background:linear-gradient(180deg,var(--g2),var(--g3))!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body #dock .dwrap{background:linear-gradient(180deg,var(--g2),var(--g3))!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .card{background:linear-gradient(150deg,var(--g2),var(--g3))!important;border-color:var(--rnLine)!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .qc{background:linear-gradient(150deg,var(--g1),var(--g2))!important;border-color:var(--rnLine)!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .tabs,html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .chip{background:var(--g1)!important;border-color:var(--rnLine)!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .chat,html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .chead,html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .cbar{background:var(--g2)!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .modal .box,html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .toast{background:var(--g3)!important;border-color:var(--ln2)!important}" +
+      "html:not([data-theme=light])[data-rn-theme]:not([data-rn-theme=neo]) body .premcard{background:linear-gradient(150deg,var(--g2),var(--g3))!important;border-color:var(--rnLine)!important}" +
+      /* ── تم روی پوستهٔ سایت: هدر، ریل، داک، تب‌ها، کارت‌ها، دکمهٔ اصلی ── */
+      "html body #top{background-image:linear-gradient(90deg,transparent,var(--vio),var(--cy),transparent)," +
+        "linear-gradient(180deg,var(--g3,rgba(7,9,20,.88)),var(--g2,rgba(7,9,20,.5)))}" +
+      "html body #rail{background:linear-gradient(180deg,var(--g2,rgba(12,16,40,.88)),var(--g3,rgba(8,11,28,.78)))}" +
+      "html body #dock .dwrap{background:linear-gradient(180deg,var(--g2,rgba(10,13,32,.7)),var(--g3,rgba(6,8,20,.96)))}" +
+      "html body #top .nav a.on,html body .ditem.on,html body .tab.on,html body #dock a.on{" +
+        "background:linear-gradient(135deg,var(--vio),var(--cy))}" +
+      "html body .card::before{background:linear-gradient(90deg,transparent,var(--vio),transparent)}" +
+      "html[data-rn-theme]:not([data-rn-theme=neo]) body .btn.p{" +
+        "background:linear-gradient(135deg,var(--vio),var(--mag) 55%,var(--cy));color:#0b0410}" +
+      "html[data-rn-theme]:not([data-rn-theme=neo]) body .brandmark{" +
+        "background:linear-gradient(140deg,var(--r-vio),var(--r-mg))}" +
+      "html[data-rn-theme]:not([data-rn-theme=neo]) body ::selection{background:var(--vio)}" +
+      "html[data-rn-theme=neo]{--vio:#7c5cff;--cy:#22d3ee;--mag:#ff4fd8;--r-vio:#7c5cff;--r-cy:#22d3ee;--r-mg:#ff4fd8;" +
+        "--ln2:rgba(124,92,255,.34);--rnLine:rgba(140,160,255,.16)}" +
+      "html:not([data-theme=light])[data-rn-theme=neo]{--bg:#04060f;--g1:rgba(11,15,34,.62);--g2:rgba(18,23,50,.78);--g3:rgba(8,11,26,.92)}" +
+      "html[data-rn-theme=sakura]{--vio:#ff4f8f;--cy:#ffa8cc;--mag:#ff2e6b;--r-vio:#ff4f8f;--r-cy:#ffa8cc;--r-mg:#ff2e6b;" +
+        "--ln2:rgba(255,92,158,.4);--rnLine:rgba(255,140,180,.18)}" +
+      "html:not([data-theme=light])[data-rn-theme=sakura]{--bg:#14040f;--g1:rgba(44,10,26,.62);--g2:rgba(56,14,34,.78);--g3:rgba(26,5,16,.92)}" +
+      "html[data-rn-theme=gold]{--vio:#ffb03a;--cy:#ffe08a;--mag:#ff8a2f;--r-vio:#ffb03a;--r-cy:#ffe08a;--r-mg:#ff8a2f;" +
+        "--ln2:rgba(255,176,58,.4);--rnLine:rgba(255,200,110,.18)}" +
+      "html:not([data-theme=light])[data-rn-theme=gold]{--bg:#0d0801;--g1:rgba(40,30,8,.62);--g2:rgba(52,38,10,.78);--g3:rgba(24,17,4,.92)}" +
+      "html[data-rn-theme=cyber]{--vio:#22d3ee;--cy:#5df0b0;--mag:#8cff6e;--r-vio:#22d3ee;--r-cy:#5df0b0;--r-mg:#8cff6e;" +
+        "--ln2:rgba(93,240,176,.38);--rnLine:rgba(120,240,190,.18)}" +
+      "html:not([data-theme=light])[data-rn-theme=cyber]{--bg:#020a08;--g1:rgba(8,26,20,.62);--g2:rgba(10,34,26,.78);--g3:rgba(4,16,12,.92)}" +
+      "html[data-rn-theme=ember]{--vio:#ff5470;--cy:#ffb03a;--mag:#ff7a5c;--r-vio:#ff5470;--r-cy:#ffb03a;--r-mg:#ff7a5c;" +
+        "--ln2:rgba(255,84,112,.4);--rnLine:rgba(255,140,120,.18)}" +
+      "html:not([data-theme=light])[data-rn-theme=ember]{--bg:#0f0302;--g1:rgba(40,12,8,.62);--g2:rgba(52,16,10,.78);--g3:rgba(24,6,4,.92)}" +
+      "body{background:var(--bg);transition:background .45s ease}" +
+      "#hpRoot .hpS,#hpRoot .hpPk,#hpRoot .hpChip,#hpAbout,#hpRoot .hpStat{border-color:var(--rnLine,rgba(140,160,255,.16))}" +
+      "#hpRoot .hpD:hover,#hpRoot .hpRow:hover,#hpRoot .hpPk:hover{border-color:var(--ln2,rgba(124,92,255,.55))}" +
+      "#hpRoot .hpS{background:linear-gradient(160deg,var(--g2,rgba(255,255,255,.04)),var(--g1,rgba(255,255,255,.02)))}" +
       ".hpThmBar{display:flex;align-items:center;gap:6px;margin-top:14px;flex-wrap:wrap}" +
       ".hpThmBar .lb{font-size:10px;font-weight:900;color:#a9b2dd}" +
       ".hpThm{position:relative;width:30px;height:30px;border-radius:10px;cursor:pointer;padding:0;" +
@@ -658,7 +702,16 @@
       desc: t("premDesc"), icon: "💎", img: "",
       chips: [t("f1"), t("f2"), t("f3"), t("f4")], cta: t("premCta")
     });
-    return out;
+    /* همیشه ۷ اسلاید: اگر داده کم بود با پیشنهادهای ثابت پر می‌شود */
+    var pad = [
+      { kind: "bulletin", id: "", kick: t("pickNews"), title: t("bulletin"), desc: t("dBul"), icon: "📣", img: "", chips: [num(cnt(R.NEWS))], cta: t("open") },
+      { kind: "rank", id: "", kick: t("rank"), title: t("top"), desc: t("dRank"), icon: "🏆", img: "", chips: [num(cnt(R.USERS))], cta: t("open") },
+      { kind: "chat", id: "", kick: t("chat"), title: t("chatBuzz"), desc: t("dChat"), icon: "💬", img: "", chips: [num(cnt(R.ONLINE))], cta: t("open") },
+      { kind: "community", id: "", kick: t("community"), title: t("posts"), desc: t("dComm"), icon: "📝", img: "", chips: [num(cnt(R.POSTS))], cta: t("open") },
+      { kind: "market", id: "", kick: t("pickMarket"), title: t("newItems"), desc: t("dMarket"), icon: "🛒", img: "", chips: [num(cnt(R.PRODUCTS))], cta: t("cta3") }
+    ];
+    for (var pi = 0; out.length < 7; pi++) out.push(pad[pi % pad.length]);
+    return out.slice(0, 7);
   }
 
   function slideHTML(sl) {
