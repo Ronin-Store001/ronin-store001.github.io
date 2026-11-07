@@ -11,13 +11,18 @@
   if (window.__roninOff) return;
   window.__roninOff = true;
 
+  /* ⚠ سیاست ذخیره‌سازی: رکورد بازی هیچ‌وقت به فایربیس/سرور فرستاده نمی‌شود.
+     فقط دو کلید در حافظهٔ همین مرورگر (localStorage) نگه داشته می‌شود:
+       ronin_hi   → بهترین امتیاز روی همین دستگاه
+       ronin_mute → وضعیت صدا
+     اگر مرورگر اجازه ندهد (حالت ناشناس/مسدود)، امتیاز فقط در حافظهٔ همین اجرا می‌ماند. */
   var HI = "ronin_hi", MUTE = "ronin_mute";
   var G = {
     on: false, over: false, paused: false, score: 0, best: 0, speed: 1,
     t: 0, ob: [], coins: [], parts: [], dust: [], shake: 0, night: 0,
     raf: 0, last: 0, started: false, mute: false, dpr: 1
   };
-  var P = { x: 96, y: 0, vy: 0, w: 34, h: 52, duck: false, jumps: 0, run: 0 };
+  var P = { x: 92, y: 0, vy: 0, w: 38, h: 58, duck: false, jumps: 0, run: 0, sq: 0, spinT: 0 };
 
   function el(i) { return document.getElementById(i); }
   function num(n) { return String(Math.floor(n)).replace(/[0-9]/g, function (d) { return "۰۱۲۳۴۵۶۷۸۹"[d]; }); }
@@ -30,15 +35,20 @@
     var s = document.createElement("style");
     s.id = "rnOffCss";
     s.textContent = [
-      ".rnNet{position:fixed;top:0;inset-inline:0;z-index:9100;display:flex;align-items:center;gap:8px;" +
-        "justify-content:center;padding:8px 12px;font-size:11.5px;font-weight:800;font-family:inherit;" +
-        "color:#1a0b12;background:linear-gradient(90deg,#ffb03a,#ff5470);" +
-        "box-shadow:0 10px 30px -14px rgba(255,84,112,.9);transform:translateY(-120%);" +
-        "transition:transform .35s cubic-bezier(.16,1,.3,1)}",
-      ".rnNet.on{transform:none}",
-      ".rnNet button{cursor:pointer;border:0;border-radius:9px;padding:5px 10px;font-family:inherit;" +
-        "font-size:11px;font-weight:900;color:#fff;background:rgba(0,0,0,.28)}",
+      ".rnNet{position:fixed;z-index:100000;inset-inline:8px;bottom:calc(76px + env(safe-area-inset-bottom));" +
+        "flex-wrap:wrap;align-items:center;gap:7px;padding:10px;border-radius:16px;" +
+        "font-family:inherit;background:linear-gradient(135deg,#ffd66b,#ffb03a 45%,#ff5470);" +
+        "box-shadow:0 18px 44px -18px rgba(255,84,112,.95),inset 0 0 0 1px rgba(255,255,255,.2);" +
+        "display:none}",
+      ".rnNet.on{display:flex;animation:rnNetIn .32s cubic-bezier(.16,1,.3,1) both}",
+      "@keyframes rnNetIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}",
+      ".rnNet>span{flex:1 1 100%;font-size:11.5px;font-weight:900;color:#1a0b12;letter-spacing:.1px}",
+      ".rnNet button{cursor:pointer;border:0;border-radius:11px;padding:0 12px;min-height:40px;" +
+        "font-family:inherit;font-size:12px;font-weight:900;color:#1a0b12;background:rgba(0,0,0,.14)}",
+      ".rnNet button[data-rn=play]{flex:1 1 auto;color:#8fe9ff;background:linear-gradient(135deg,#0b1022,#1b2a55);" +
+        "box-shadow:0 10px 22px -12px #000}",
       ".rnNet button:active{transform:scale(.96)}",
+      "@media(min-width:701px){.rnNet{inset-inline:auto;inset-inline-end:14px;bottom:14px;max-width:380px}}",
 
       "#rnOff{position:fixed;inset:0;z-index:9200;display:none;flex-direction:column;" +
         "font-family:inherit;color:#e9edff;" +
@@ -114,8 +124,8 @@
       b = document.createElement("div");
       b.id = "rnNet";
       b.className = "rnNet";
-      b.innerHTML = '<span>📴 آفلاین شدی — می‌تونی بازی کنی</span>' +
-        '<button type="button" data-rn="play">🎮 بازی</button>' +
+      b.innerHTML = '<span>📴 آفلاین شدی — وقت بازی است</span>' +
+        '<button type="button" data-rn="play">🎮 بازی کن</button>' +
         '<button type="button" data-rn="retry">↺ تلاش</button>' +
         '<button type="button" data-rn="x">✕</button>';
       document.body.appendChild(b);
@@ -126,8 +136,7 @@
     var b = banner();
     var off = navigator.onLine === false;
     b.classList.toggle("on", off && !G.on);
-    if (off) document.body.style.paddingTop = Math.max(0, b.offsetHeight - 6) + "px";
-    else document.body.style.paddingTop = "";
+    document.body.style.paddingTop = "";
   }
 
   /* ── ۳. سازندهٔ صفحه ────────────────────────────────────── */
@@ -192,6 +201,7 @@
     G.score = 0; G.speed = 1; G.t = 0; G.over = false; G.paused = false;
     G.shake = 0; G.night = 0; G.started = true;
     P.y = GY - P.h; P.vy = 0; P.duck = false; P.jumps = 0;
+    P.sq = 0; P.spinT = 0; G.airT = 0;
     spawn(0);
     hud();
     var c = el("rnCtr"); if (c) c.classList.add("hide");
@@ -214,18 +224,31 @@
     }
   }
 
-  function jump() {
-    if (!G.started || G.over) { if (G.over) { reset(); } else { start(); } return; }
-    if (P.jumps >= 2) return;
-    P.vy = P.jumps === 0 ? -940 : -800;
-    P.jumps++;
-    P.duck = false;
-    beep(P.jumps === 1 ? 520 : 660, 0.06);
-    for (var i = 0; i < 7; i++) {
-      G.dust.push({ x: P.x + P.w / 2, y: GY, vx: (Math.random() - 0.5) * 160, vy: -Math.random() * 90,
-        life: 0.5, max: 0.5, r: 2 + Math.random() * 2 });
+  function dustPuff(n, air) {
+    for (var i = 0; i < n; i++) {
+      G.dust.push({ x: P.x + P.w / 2, y: air ? P.y + P.h : GY,
+        vx: (Math.random() - 0.5) * 200, vy: -Math.random() * (air ? 150 : 100),
+        life: 0.5, max: 0.5, r: 2 + Math.random() * 2.4 });
     }
   }
+
+  function jump() {
+    if (!G.on) return;
+    if (!G.started || G.over) { if (G.over) { reset(); } else { start(); } return; }
+    var grounded = P.y + P.h >= GY - 1.5;
+    if (!grounded && P.jumps === 0 && G.t - (G.airT || 0) < 0.1) grounded = true;  /* کویوتی */
+    if (grounded) {
+      P.vy = -980; P.jumps = 1; P.duck = false; P.sq = 0;
+      beep(520, 0.05);
+      dustPuff(9, false);
+    } else if (P.jumps < 2) {
+      P.vy = -850; P.jumps = 2; P.duck = false; P.spinT = 0.44;
+      beep(760, 0.05);
+      dustPuff(12, true);
+    }
+  }
+  function cutJump() { if (P.vy < -260) P.vy = -260; }
+
   function duck(on) {
     if (!G.started || G.over) return;
     P.duck = !!on && P.y + P.h >= GY - 1;
@@ -269,8 +292,19 @@
 
     P.vy += 2600 * dt;
     P.y += P.vy * dt;
-    if (P.y >= GY - P.h) { P.y = GY - P.h; P.vy = 0; P.jumps = 0; }
+    if (P.y >= GY - P.h) {
+      if (P.vy > 150) P.sq = 1;                       /* فرود: اسکواش */
+      P.y = GY - P.h; P.vy = 0; P.jumps = 0;
+    } else if (P.jumps === 0) {
+      G.airT = G.t;                                   /* زمان ترک زمین */
+    }
+    if (P.spinT > 0) P.spinT = Math.max(0, P.spinT - dt);
+    if (P.sq > 0) P.sq = Math.max(0, P.sq - dt * 4.2);
     P.run += dt * (6 + G.speed * 4);
+    if (P.jumps === 0 && Math.random() < 0.16) {
+      G.dust.push({ x: P.x + 4, y: GY, vx: -40 - Math.random() * 70, vy: -20 - Math.random() * 40,
+        life: 0.4, max: 0.4, r: 1.4 + Math.random() * 2 });
+    }
 
     var px = 300 * dt * G.speed;
     var i, o;
@@ -435,52 +469,156 @@
   }
 
   function drawRunner() {
-    var ph = P.duck ? 30 : P.h;
-    var px = P.x, py = GY - ph;
-    var leg = Math.sin(P.run) * (P.y + P.h >= GY - 1 ? 7 : 3);
+    var ph = P.duck ? 32 : P.h;
+    var cx0 = P.x + P.w / 2, fy = GY;
+    var air = P.y + P.h < GY - 2;
+    var run = P.run;
+    var sq = P.sq || 0;
+    var spin = P.spinT > 0 ? (1 - P.spinT / 0.44) * Math.PI * 2 : 0;
+    var u = ph / 58;
 
     cx.save();
-    /* هاله */
-    cx.fillStyle = "rgba(124,92,255,.22)";
-    cx.beginPath(); cx.ellipse(px + P.w / 2, GY + 2, 26, 7, 0, 0, 7); cx.fill();
-
-    /* شال */
-    cx.strokeStyle = "#ff5470"; cx.lineWidth = 4; cx.lineCap = "round";
+    /* سایه */
+    cx.fillStyle = "rgba(0,0,0,.4)";
     cx.beginPath();
-    cx.moveTo(px + 6, py + 16);
-    cx.quadraticCurveTo(px - 18, py + 14 + Math.sin(P.run) * 4, px - 30, py + 30);
-    cx.stroke();
-
-    /* بدن */
-    var g = cx.createLinearGradient(px, py, px + P.w, py + ph);
-    g.addColorStop(0, "#cfd6ff");
-    g.addColorStop(1, "#7c5cff");
-    cx.fillStyle = g;
-    cx.beginPath();
-    if (cx.roundRect) cx.roundRect(px, py, P.w, ph, 9);
-    else cx.rect(px, py, P.w, ph);
+    cx.ellipse(cx0, fy + 2, 20 * u, Math.max(2.5, 6 - (GY - (P.y + P.h)) * 0.01), 0, 0, 7);
     cx.fill();
 
-    /* سر و کلاه */
-    cx.fillStyle = "#0b1022";
-    cx.beginPath(); cx.arc(px + P.w / 2, py + 12, 10, 0, 7); cx.fill();
-    cx.fillStyle = "#ffb03a";
-    cx.fillRect(px + P.w / 2 - 12, py + 6, 24, 4);
+    cx.translate(cx0, fy);
+    if (spin) cx.rotate(spin);
+    cx.scale(1 + sq * 0.16, 1 - sq * 0.2);
 
-    /* چشم */
-    cx.fillStyle = "#8fe9ff";
-    cx.fillRect(px + P.w / 2 + 2, py + 12, 4, 3);
+    var HR = 8.5 * u;
+    var headY = -ph + HR + 1 * u;
+    var torsoTop = -ph + 2 * HR + 5 * u;
+    var waistY = -ph * 0.34;
+    var torsoW = 21 * u;
+    var torsoH = waistY - torsoTop;
+    var wav = Math.sin(run * 1.6) * 3.2 * u;
 
-    /* پاها */
-    cx.strokeStyle = "#dfe6ff"; cx.lineWidth = 5; cx.lineCap = "round";
+    function rr(x, y, w, h, r) {
+      cx.beginPath();
+      if (cx.roundRect) cx.roundRect(x, y, w, h, r);
+      else cx.rect(x, y, w, h);
+    }
+
+    /* شال */
+    cx.lineCap = "round";
+    cx.strokeStyle = "#ffb03a";
+    cx.lineWidth = 2.6 * u;
     cx.beginPath();
-    cx.moveTo(px + 10, py + ph - 2); cx.lineTo(px + 10 + leg, GY);
-    cx.moveTo(px + P.w - 12, py + ph - 2); cx.lineTo(px + P.w - 12 - leg, GY);
+    cx.moveTo(-2 * u, torsoTop + 2 * u);
+    cx.bezierCurveTo(-12 * u, torsoTop + 6 * u - wav, -24 * u, torsoTop + 12 * u + wav, -34 * u, torsoTop + 6 * u + wav);
+    cx.stroke();
+    cx.strokeStyle = "#ff5470";
+    cx.lineWidth = 4.6 * u;
+    cx.beginPath();
+    cx.moveTo(-2 * u, torsoTop + 3 * u);
+    cx.bezierCurveTo(-10 * u, torsoTop + 2 * u + wav, -19 * u, torsoTop + 8 * u - wav, -27 * u, torsoTop + 1 * u - wav);
     cx.stroke();
 
-    /* شمشیر */
-    cx.strokeStyle = "#8fe9ff"; cx.lineWidth = 2;
-    cx.beginPath(); cx.moveTo(px + P.w - 6, py + 20); cx.lineTo(px + P.w + 16, py + 6); cx.stroke();
+    /* شمشیر روی کمر */
+    cx.strokeStyle = "#c7d4ff";
+    cx.lineWidth = 2.6 * u;
+    cx.beginPath(); cx.moveTo(-9 * u, -12 * u); cx.lineTo(9 * u, -38 * u); cx.stroke();
+    cx.strokeStyle = "#ffb03a";
+    cx.lineWidth = 3.4 * u;
+    cx.beginPath(); cx.moveTo(-12 * u, -9.5 * u); cx.lineTo(-7.5 * u, -14 * u); cx.stroke();
+
+    /* پاها */
+    function leg(sign, front) {
+      var a = air ? 0 : Math.sin(run + (sign > 0 ? Math.PI : 0)) * 0.85;
+      var hx = sign * 4.5 * u, hy = waistY + 1 * u;
+      var fx = hx + (air ? sign * 3 * u : Math.sin(a) * 9 * u);
+      var fy2 = air ? -8 * u - (sign > 0 ? 4 * u : 0) : 0;
+      var kx = (hx + fx) / 2 + 3 * u;
+      var ky = (hy + fy2) / 2;
+      cx.strokeStyle = front ? "#2b3272" : "#1a1f48";
+      cx.lineWidth = 6.2 * u;
+      cx.lineCap = "round";
+      cx.beginPath();
+      cx.moveTo(hx, hy);
+      cx.quadraticCurveTo(kx, ky, fx, fy2);
+      cx.stroke();
+      cx.fillStyle = front ? "#ffd66b" : "#c99a3f";
+      cx.beginPath();
+      cx.ellipse(fx + 1.5 * u, fy2 - 1 * u, 4.2 * u, 2.4 * u, 0, 0, 7);
+      cx.fill();
+    }
+    leg(-1, false);
+
+    /* بدن */
+    var tg = cx.createLinearGradient(-torsoW / 2, torsoTop, torsoW / 2, waistY);
+    tg.addColorStop(0, "#3d4498");
+    tg.addColorStop(0.5, "#202a66");
+    tg.addColorStop(1, "#0b1030");
+    cx.fillStyle = tg;
+    rr(-torsoW / 2, torsoTop, torsoW, torsoH, 6 * u);
+    cx.fill();
+
+    /* گردن */
+    cx.fillStyle = "#101538";
+    cx.fillRect(-3 * u, headY + HR - 1.5 * u, 6 * u, 6 * u);
+
+    /* کمربند */
+    cx.fillStyle = "#ff5470";
+    cx.fillRect(-torsoW / 2, waistY - 4.5 * u, torsoW, 4.5 * u);
+    cx.fillStyle = "#ffd66b";
+    cx.fillRect(-2.2 * u, waistY - 5 * u, 4.4 * u, 5 * u);
+
+    /* خط زره */
+    cx.strokeStyle = "rgba(143,233,255,.55)";
+    cx.lineWidth = 1.6 * u;
+    cx.beginPath();
+    cx.moveTo(-7 * u, torsoTop + 6 * u);
+    cx.lineTo(7 * u, torsoTop + 6 * u);
+    cx.stroke();
+
+    /* دست‌ها */
+    function arm(sign, front) {
+      var a = air ? (sign > 0 ? -1.1 : -0.4) : Math.sin(run + (sign > 0 ? 0 : Math.PI)) * 0.9;
+      var sx = sign * torsoW * 0.5, sy = torsoTop + 4 * u;
+      var ex = sx + Math.sin(a) * 7 * u;
+      var ey = sy + Math.cos(a) * 8 * u;
+      var hx2 = ex + Math.sin(a + 0.5) * 5 * u;
+      var hy2 = ey + Math.cos(a + 0.5) * 5 * u;
+      cx.strokeStyle = front ? "#39418f" : "#232a63";
+      cx.lineWidth = 5 * u;
+      cx.lineCap = "round";
+      cx.beginPath();
+      cx.moveTo(sx, sy);
+      cx.quadraticCurveTo(ex, ey, hx2, hy2);
+      cx.stroke();
+      cx.fillStyle = "#ffd9b3";
+      cx.beginPath(); cx.arc(hx2, hy2, 2.3 * u, 0, 7); cx.fill();
+    }
+    arm(-1, false);
+
+    /* سر */
+    cx.fillStyle = "#1a2050";
+    cx.beginPath(); cx.arc(0, headY, HR, 0, 7); cx.fill();
+    cx.fillStyle = "#0a0f24";
+    cx.beginPath();
+    cx.arc(0, headY + HR * 0.25, HR * 0.86, 0, Math.PI);
+    cx.fill();
+    cx.fillStyle = "#ff5470";
+    cx.fillRect(-HR, headY - HR * 0.55, HR * 2, HR * 0.42);
+    cx.strokeStyle = "#ff5470";
+    cx.lineWidth = 2.8 * u;
+    cx.beginPath();
+    cx.moveTo(-HR * 0.9, headY - HR * 0.35);
+    cx.quadraticCurveTo(-HR * 2.4, headY - HR * 0.2 + wav, -HR * 3.6, headY + HR * 0.5 + wav);
+    cx.stroke();
+    cx.shadowColor = "#8fe9ff"; cx.shadowBlur = 8 * u;
+    cx.fillStyle = "#8fe9ff";
+    rr(0.5 * u, headY - 1.5 * u, 6 * u, 2.6 * u, 1.3 * u);
+    cx.fill();
+    cx.shadowBlur = 0;
+
+    /* پا و دست جلو */
+    leg(1, true);
+    arm(1, true);
+
     cx.restore();
   }
 
@@ -540,6 +678,8 @@
   function start() {
     var it = document.querySelector("#rnOff .rnIntro");
     if (it) it.style.display = "none";
+    var ae = document.activeElement;
+    if (ae && ae.closest && ae.closest("#rnOff") && ae.blur) ae.blur();
     if (!cv) { open(false); }
     size();
     reset();
@@ -556,6 +696,7 @@
     var t = e.target && e.target.closest ? e.target.closest("[data-rn]") : null;
     if (!t) return;
     e.preventDefault();
+    if (t.blur) t.blur();
     var a = t.getAttribute("data-rn");
     if (a === "play") { open(true); }
     else if (a === "retry") { location.reload(); }
@@ -567,19 +708,34 @@
     else if (a === "duck") { duck(true); setTimeout(function () { duck(false); }, 420); }
   });
 
-  document.addEventListener("keydown", function (e) {
+  function isJumpKey(e) {
+    return e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW" ||
+      e.key === " " || e.key === "ArrowUp" || e.key === "w" || e.key === "W";
+  }
+  function isDuckKey(e) {
+    return e.code === "ArrowDown" || e.code === "KeyS" ||
+      e.key === "ArrowDown" || e.key === "s" || e.key === "S";
+  }
+  function onKey(e, down) {
     if (!G.on) return;
-    var k = e.key;
-    if (k === " " || k === "ArrowUp" || k === "w" || k === "W") { e.preventDefault(); jump(); }
-    else if (k === "ArrowDown" || k === "s" || k === "S") { e.preventDefault(); duck(true); }
-    else if (k === "p" || k === "P") { G.paused = !G.paused; }
-    else if (k === "Escape") { close(); }
-    else if (k === "r" || k === "R") { reset(); }
-  });
-  document.addEventListener("keyup", function (e) {
-    if (!G.on) return;
-    if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") duck(false);
-  });
+    if (isJumpKey(e)) {
+      e.preventDefault(); e.stopPropagation();
+      if (down) jump(); else cutJump();
+      return;
+    }
+    if (isDuckKey(e)) {
+      e.preventDefault(); e.stopPropagation();
+      duck(down);
+      return;
+    }
+    if (!down) return;
+    if (e.key === "p" || e.key === "P") { e.preventDefault(); G.paused = !G.paused; }
+    else if (e.key === "Escape") { e.preventDefault(); close(); }
+    else if (e.key === "r" || e.key === "R") { e.preventDefault(); reset(); }
+  }
+  /* فاز capture تا هیچ اسکریپت دیگری (چت، اینترو…) اسپیس را قورت ندهد */
+  window.addEventListener("keydown", function (e) { onKey(e, true); }, true);
+  window.addEventListener("keyup", function (e) { onKey(e, false); }, true);
 
   /* لمس روی بوم = پرش */
   document.addEventListener("pointerdown", function (e) {
@@ -631,7 +787,7 @@
     setInterval(beat, 25000);
   }
 
-  window.RoninGame = { open: open, close: close, start: start, state: G, player: P };
+  window.RoninGame = { open: open, close: close, start: start, jump: jump, duck: duck, state: G, player: P };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();
