@@ -17,6 +17,58 @@
   /* عکس داخل «سیاره»: یا لینک عکس را همینجا بگذار، یا در تنظیمات سایت
      مقدار orbImg را ذخیره کن (R.SITE.orbImg). خالی باشد → کانجی 忍 */
   var ORB_IMG = "";
+  /* ── تم‌های هیرو: یکی رایگان، چهارتای دیگر پرمیوم ─────────── */
+  var THEMES = [
+    { id: "neo", free: 1, ic: "🌧", n: "نئو رین سیتی" },
+    { id: "sakura", free: 0, ic: "🌸", n: "شکوفهٔ سرخ" },
+    { id: "gold", free: 0, ic: "🏮", n: "طلای رونین" },
+    { id: "cyber", free: 0, ic: "⚡", n: "سایبر نئون" },
+    { id: "ember", free: 0, ic: "🔥", n: "خاکستر سرخ" }
+  ];
+  var THKEY = "ronin_hp_theme", themeId = "neo";
+
+  function themeDef(id) {
+    for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === id) return THEMES[i];
+    return THEMES[0];
+  }
+  function themeOK(id) { var d = themeDef(id); return !!d.free || !!R.prem; }
+  function themeLoad() {
+    var v = "";
+    try { v = localStorage.getItem(THKEY) || ""; } catch (e) {}
+    themeId = themeOK(v) ? themeDef(v).id : "neo";
+  }
+  function paintTheme() {
+    var b = document.querySelector(".hpBan");
+    if (b) b.setAttribute("data-hp-theme", themeId);
+    document.querySelectorAll(BOX + " [data-hptheme]").forEach(function (n) {
+      n.classList.toggle("on", n.getAttribute("data-hptheme") === themeId);
+    });
+    var d = themeDef(themeId), lb = document.querySelector(BOX + " .hpThmNow");
+    if (lb) lb.textContent = d.n + " " + d.ic;
+  }
+  function setTheme(id, quiet) {
+    var d = themeDef(id);
+    if (!themeOK(id)) {
+      toast("این تم مخصوص پرمیوم است 💎", "err");
+      return goTo(R.ME ? "premium" : "auth");
+    }
+    themeId = d.id;
+    try { localStorage.setItem(THKEY, themeId); } catch (e) {}
+    paintTheme();
+    if (!quiet) toast("تم هیرو: " + d.n + " " + d.ic, "ok");
+  }
+  function themesBar() {
+    var cur = themeDef(themeId);
+    return '<div class="hpThmBar"><span class="lb">🎨 تم هیرو</span>' +
+      THEMES.map(function (t) {
+        var lk = !t.free && !R.prem;
+        return '<button class="hpThm' + (t.id === themeId ? " on" : "") + (lk ? " lock" : "") +
+          '" type="button" data-hptheme="' + t.id + '" title="' + esc(t.n) + (lk ? " — پرمیوم 💎" : "") +
+          '">' + t.ic + (lk ? '<i class="lk">💎</i>' : "") + "</button>";
+      }).join("") +
+      '<span class="hpThmNow">' + esc(cur.n) + " " + cur.ic + "</span></div>";
+  }
+
   var lastLang = null, rotI = 0, spotI = 0;
   var ticker = null, rotTimer = null, spotTimer = null;
 
@@ -372,7 +424,88 @@
       /* کم‌مصرف */
       "html.lite " + BOX + " *,html.lite " + BOX + " *::before,html.lite " + BOX + " *::after{animation:none!important}" +
       "@media (prefers-reduced-motion:reduce){" + BOX + " *," + BOX + " *::before," + BOX + " *::after{" +
-        "animation:none!important;transition:none!important}}";
+        "animation:none!important;transition:none!important}}" +
+      /* ── تم‌های هیرو (رنگ‌ها با متغیر عوض می‌شوند) ── */
+      ".hpBan{--bg1:#0b1130;--bg2:#0a0f26;--bg3:#070a1c;" +
+        "--a1:rgba(124,92,255,.5);--a2:rgba(34,211,238,.34);--a3:rgba(255,79,216,.26);" +
+        "--g1:#8f7bff;--g2:#22d3ee;--g3:#ff6fd8;--mk1:#7c5cff;--mk2:#22d3ee;" +
+        "--acc:#8ef2ff;--accBg:rgba(34,211,238,.1);--accBd:rgba(34,211,238,.3);--r3:rgba(124,92,255,.32)}" +
+      ".hpBan{background:linear-gradient(155deg,var(--bg1),var(--bg2) 48%,var(--bg3))}" +
+      ".hpBan::before{background:radial-gradient(40% 46% at 20% 16%,var(--a1),transparent 70%)," +
+        "radial-gradient(34% 40% at 84% 24%,var(--a2),transparent 72%)," +
+        "radial-gradient(36% 44% at 64% 98%,var(--a3),transparent 72%)}" +
+      ".hpGrad{background-image:linear-gradient(100deg,var(--g1),var(--g2) 55%,var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent}" +
+      ".hpMark{background:linear-gradient(135deg,var(--mk1),var(--mk2))}" +
+      ".hpOrb{background:linear-gradient(140deg,var(--g1),var(--g2))}" +
+      ".hpR3{box-shadow:inset 0 0 40px var(--r3)}" +
+      ".hpRotTxt{color:var(--acc);background:var(--accBg);border-color:var(--accBd)}" +
+      ".hpBan[data-hp-theme=sakura]{--bg1:#2a0b1c;--bg2:#1a0713;--bg3:#12040d;" +
+        "--a1:rgba(255,92,158,.5);--a2:rgba(255,179,217,.32);--a3:rgba(124,92,255,.28);" +
+        "--g1:#ff8ec4;--g2:#ff5c9e;--g3:#ffd0e6;--mk1:#ff5c9e;--mk2:#ffb3d9;" +
+        "--acc:#ffc2dd;--accBg:rgba(255,92,158,.12);--accBd:rgba(255,92,158,.34);--r3:rgba(255,92,158,.4)}" +
+      ".hpBan[data-hp-theme=gold]{--bg1:#241a05;--bg2:#1a1203;--bg3:#0e0901;" +
+        "--a1:rgba(255,196,64,.45);--a2:rgba(255,236,160,.28);--a3:rgba(255,120,40,.24);" +
+        "--g1:#ffd66b;--g2:#ffb03a;--g3:#fff3c4;--mk1:#ffb03a;--mk2:#ffd66b;" +
+        "--acc:#ffe6a6;--accBg:rgba(255,176,58,.12);--accBd:rgba(255,176,58,.36);--r3:rgba(255,196,64,.4)}" +
+      ".hpBan[data-hp-theme=cyber]{--bg1:#04140f;--bg2:#03100c;--bg3:#020a08;" +
+        "--a1:rgba(93,240,176,.42);--a2:rgba(34,211,238,.3);--a3:rgba(140,255,110,.22);" +
+        "--g1:#5df0b0;--g2:#22d3ee;--g3:#b6ffcf;--mk1:#5df0b0;--mk2:#22d3ee;" +
+        "--acc:#9dffd4;--accBg:rgba(93,240,176,.12);--accBd:rgba(93,240,176,.34);--r3:rgba(93,240,176,.36)}" +
+      ".hpBan[data-hp-theme=ember]{--bg1:#280a08;--bg2:#1c0605;--bg3:#0f0302;" +
+        "--a1:rgba(255,84,112,.48);--a2:rgba(255,146,64,.3);--a3:rgba(255,196,64,.2);" +
+        "--g1:#ff7a5c;--g2:#ff5470;--g3:#ffd66b;--mk1:#ff5470;--mk2:#ffb03a;" +
+        "--acc:#ffc2a6;--accBg:rgba(255,120,60,.12);--accBd:rgba(255,120,60,.34);--r3:rgba(255,84,112,.4)}" +
+
+      ".hpThmBar{display:flex;align-items:center;gap:6px;margin-top:14px;flex-wrap:wrap}" +
+      ".hpThmBar .lb{font-size:10px;font-weight:900;color:#a9b2dd}" +
+      ".hpThm{position:relative;width:30px;height:30px;border-radius:10px;cursor:pointer;padding:0;" +
+        "display:grid;place-items:center;font-size:13px;line-height:1;color:#fff;" +
+        "border:1px solid rgba(140,160,255,.28);background:#0a0f22;transition:transform .16s,box-shadow .16s}" +
+      ".hpThm:hover{transform:translateY(-2px)}" +
+      ".hpThm.on{box-shadow:0 0 0 2px #0a0f26,0 0 0 3px var(--acc)}" +
+      ".hpThm.lock{opacity:.62}" +
+      ".hpThm .lk{position:absolute;top:-5px;inset-inline-end:-5px;font-size:7px;font-style:normal;" +
+        "background:#0a0f22;border-radius:99px;padding:1px 2px;line-height:1.4}" +
+      ".hpThm[data-hptheme=neo]{background:linear-gradient(135deg,#7c5cff,#22d3ee)}" +
+      ".hpThm[data-hptheme=sakura]{background:linear-gradient(135deg,#ff8ec4,#ff5c9e)}" +
+      ".hpThm[data-hptheme=gold]{background:linear-gradient(135deg,#ffb03a,#ffe6a6)}" +
+      ".hpThm[data-hptheme=cyber]{background:linear-gradient(135deg,#5df0b0,#22d3ee)}" +
+      ".hpThm[data-hptheme=ember]{background:linear-gradient(135deg,#ff5470,#ffb03a)}" +
+      ".hpThmNow{font-size:10px;color:#cdd5ff;font-weight:800;opacity:.85}" +
+
+      "#rnAboutBox{display:none!important}" +
+      "#hpAbout{position:relative;overflow:hidden;border-radius:22px;padding:18px;" +
+        "border:1px solid rgba(140,160,255,.18);" +
+        "background:linear-gradient(160deg,rgba(124,92,255,.14),rgba(34,211,238,.07) 58%,rgba(255,255,255,.02))}" +
+      "#hpAbout::before{content:\"\";position:absolute;inset-inline-end:-70px;top:-80px;width:220px;height:220px;" +
+        "border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.4),transparent 68%);" +
+        "filter:blur(8px);pointer-events:none}" +
+      "#hpAbout .hpAB{position:relative;z-index:2;display:grid;" +
+        "grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:18px;align-items:start}" +
+      "@media(max-width:880px){#hpAbout .hpAB{grid-template-columns:1fr;gap:14px}}" +
+      "#hpAbout h2{margin:6px 0 8px;font-size:17px;font-weight:900;color:#f4f6ff;line-height:1.5}" +
+      "#hpAbout p{margin:0;font-size:11.5px;line-height:2.05;color:#bfc7ea}" +
+      "#hpAbout .hpComF{margin-top:10px}" +
+      "#hpAbout .hpCta{margin-top:12px}" +
+      ".hpPkW{border-radius:16px;padding:12px;background:rgba(8,11,26,.5);border:1px solid rgba(140,160,255,.16)}" +
+      ".hpPkH{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:9px}" +
+      ".hpPkH b{font-size:12.5px;font-weight:900;color:#fff}" +
+      ".hpPkH span{font-size:10px;color:#8f9ac0}" +
+      ".hpPkG{display:grid;grid-template-columns:1fr 1fr;gap:7px}" +
+      "@media(max-width:560px){.hpPkG{grid-template-columns:1fr}}" +
+      ".hpPk{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;cursor:pointer;" +
+        "border:1px solid rgba(140,160,255,.14);background:rgba(255,255,255,.045);" +
+        "transition:transform .16s,border-color .16s,background .16s;min-width:0;text-align:start}" +
+      ".hpPk:hover,.hpPk:focus-visible{transform:translateY(-2px);border-color:rgba(124,92,255,.55);" +
+        "background:rgba(124,92,255,.13);outline:none}" +
+      ".hpPkI{flex:0 0 auto;width:26px;height:26px;border-radius:9px;display:grid;place-items:center;" +
+        "font-size:13px;background:rgba(124,92,255,.18);border:1px solid rgba(140,160,255,.22)}" +
+      ".hpPkM{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:1px}" +
+      ".hpPkM b{font-size:11px;font-weight:900;color:#eef1ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
+      ".hpPkM span{font-size:9.5px;color:#98a2cf;line-height:1.6;white-space:nowrap;overflow:hidden;" +
+        "text-overflow:ellipsis}" +
+      ".hpPkB{flex:0 0 auto;font-size:9px;font-weight:900;padding:2px 6px;border-radius:99px;color:#cfe3ff;" +
+        "background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.3)}";
     document.head.appendChild(s);
   }
 
@@ -427,7 +560,7 @@
   function banner() {
     var on = list(R.ONLINE || {});
     var faces = on.slice(0, 4).map(function (u) { return '<span class="hpFace">' + esc(ini(u.n || u.name)) + "</span>"; }).join("");
-    return '<div class="hpBan"><div class="hpIn">' +
+    return '<div class="hpBan" data-hp-theme="' + themeId + '"><div class="hpIn">' +
         '<div class="hpCopy">' +
           '<div class="hpTop">' +
             '<span class="hpMark">忍</span><span class="hpNm">RONIN STORE</span>' +
@@ -445,7 +578,7 @@
             '<button class="btn" type="button" data-hp-go="discover">🧭 ' + esc(t("cta2")) + "</button>" +
             '<button class="btn hpGhost" type="button" data-hp-go="market">🛒 ' + esc(t("cta3")) + "</button>" +
           "</div>" +
-          statsHTML() +
+          statsHTML() + themesBar() +
           '<div class="hpWho"><span class="hpFaces">' + faces + "</span>" +
             "<span>" + num(cnt(R.ONLINE)) + " " + esc(t("onlineNow")) + "</span></div>" +
         "</div>" +
@@ -651,7 +784,51 @@
           chatHTML() + "</section>" +
         '<section class="hpS"><div class="hpSH"><h2>⚡ ' + esc(t("start")) + "</h2></div>" + stepsHTML() + "</section>" +
       "</div>" +
-      promoHTML();
+      aboutHTML() + promoHTML();
+  }
+
+
+  /* ── ۵.۵ «رونین استور چیست» + ۷ پیشنهاد ویژه ──────────────── */
+  function pkGo(ic, title, desc, badge, go) {
+    return '<div class="hpPk" role="button" tabindex="0" data-hp-' +
+      (go.indexOf("act:") === 0 ? 'act="' + go.slice(4) : 'go="' + go) + '">' +
+      '<span class="hpPkI">' + ic + "</span>" +
+      '<span class="hpPkM"><b>' + esc(title) + "</b><span>" + esc(desc) + "</span></span>" +
+      (badge ? '<span class="hpPkB">' + esc(badge) + "</span>" : "") + "</div>";
+  }
+  function aboutHTML() {
+    var s = st();
+    var chips = ["📰 خبر و تریلر", "👥 انجمن", "💬 چت زنده", "🛒 فروشگاه", "🏆 رتبه‌بندی", "🎮 بازی آفلاین", "💎 پرمیوم"];
+    return '<section id="hpAbout"><div class="hpAB">' +
+      "<div>" +
+        '<span class="hpKick">🛰 دربارهٔ رونین</span>' +
+        "<h2>رونین استور چیست؟</h2>" +
+        "<p>یک دنیای دیجیتال فارسی: تریلر و خبر پخش را می‌بینی، در انجمن پست و کامنت می‌گذاری، " +
+          "در چت زنده حرف می‌زنی، آگهی و کالا می‌بینی، رکورد و سطح جمع می‌کنی — و اگر اینترنت قطع شد، " +
+          "بازی آفلاین شوریکن رانر همین‌جاست. همه‌چیز در یک جا.</p>" +
+        '<div class="hpComF">' + chips.map(function (c) { return "<span>" + esc(c) + "</span>"; }).join("") + "</div>" +
+        '<div class="hpStats">' +
+          '<span class="hpStat"><b>' + num(s.users) + "</b>کاربر</span>" +
+          '<span class="hpStat"><b>' + num(s.posts) + "</b>پست</span>" +
+          '<span class="hpStat"><b>' + num(s.items) + "</b>کالا</span>" +
+          '<span class="hpStat"><b>' + num(s.online) + "</b>آنلاین</span>" +
+        "</div>" +
+        '<div class="hpCta">' +
+          '<button class="btn p" type="button" data-hp-go="community">🚀 شروع کن</button>' +
+          '<button class="btn" type="button" data-hp-about="1">📖 بیشتر بدان</button>' +
+        "</div>" +
+      "</div>" +
+      '<div class="hpPkW"><div class="hpPkH"><b>✨ ۷ پیشنهاد ویژه</b><span>همین‌جا شروع کن</span></div>' +
+        '<div class="hpPkG">' +
+          pkGo("🚀", "اولین قدم", "حساب بساز، پست بگذار", s.posts + " پست", "community") +
+          pkGo("🎮", "شوریکن رانر", "بازی آفلاین، رکورد روی گوشی خودت", "جدید", "act:game") +
+          pkGo("💎", "دنیای پرمیوم", "نشان، گروه، تم‌های ویژه هیرو", "ویژه", "premium") +
+          pkGo("📣", "اطلاعیه‌ها", "تریلر، خبر و اعلان پخش", s.news + " خبر", "bulletin") +
+          pkGo("🛒", "فروشگاه", "تازه‌ترین کالاهای اعضا", s.items + " کالا", "market") +
+          pkGo("🏆", "رتبه‌بندی", "اعضای برتر بر اساس XP", s.users + " عضو", "rank") +
+          pkGo("💬", "چت زنده", "همین حالا در اتاق رونین", s.online + " آنلاین", "chat") +
+        "</div></div>" +
+      "</div></section>";
   }
 
   /* ── ۵. رندر ─────────────────────────────────────────────── */
@@ -671,6 +848,7 @@
       h.appendChild(b);
       b.innerHTML = inner();
     }
+    paintTheme();
     lastLang = langq();
     startRot();
     startSpot();
@@ -761,6 +939,29 @@
     if (d) { e.preventDefault(); return paintSpot(parseInt(d.getAttribute("data-hp-dot"), 10) || 0); }
     if (x.closest("[data-hp-prev]")) { e.preventDefault(); return paintSpot(spotI - 1); }
     if (x.closest("[data-hp-next]")) { e.preventDefault(); return paintSpot(spotI + 1); }
+    var th = x.closest("[data-hptheme]");
+    if (th) { e.preventDefault(); return setTheme(th.getAttribute("data-hptheme")); }
+    var ac = x.closest("[data-hp-act]");
+    if (ac) {
+      e.preventDefault();
+      if (ac.getAttribute("data-hp-act") === "game") {
+        if (window.RoninGame && window.RoninGame.open) window.RoninGame.open(true);
+        else toast("بازی آفلاین وقتی نت قطع شود خودش باز می‌شود 🎮", "info");
+      }
+      return;
+    }
+    if (x.closest("[data-hp-about]")) {
+      e.preventDefault();
+      if (R.openInfo) return R.openInfo("🏯 درباره رونین استور",
+        "<p><b>رونین استور</b> یک پلتفرم فارسی برای جامعه، بازار و دنیای پرمیوم است.</p>" +
+        "<p>📣 <b>اطلاعیه‌ها:</b> تریلر، اعلان پخش، خبر و میم.</p>" +
+        "<p>👥 <b>انجمن:</b> پست، لایک، کامنت، نظرسنجی و دنبال‌کردن کاربران.</p>" +
+        "<p>💬 <b>چت:</b> چت عمومی، گروه‌های چت و پیام خصوصی.</p>" +
+        "<p>🛒 <b>فروشگاه:</b> آگهی کالا و محصول؛ خریدار مستقیم با فروشنده در تماس می‌شود.</p>" +
+        "<p>💎 <b>پرمیوم:</b> نشان ویژه، تم‌های هیرو، گروه‌های چت و قابلیت‌های ویژه.</p>" +
+        "<p>🎮 <b>آفلاین:</b> بازی شوریکن رانر با رکورد روی دستگاه خودت.</p>");
+      return toast("این بخش در دسترس نیست", "info");
+    }
     var g = x.closest("[data-hp-go]");
     if (g) { e.preventDefault(); return goTo(g.getAttribute("data-hp-go")); }
   });
@@ -775,6 +976,8 @@
     if (g) return goTo(g);
     var o = x.getAttribute("data-hp-open");
     if (o) return openSlide(o, x.getAttribute("data-id"));
+    var th = x.getAttribute("data-hptheme");
+    if (th) return setTheme(th);
   });
 
   /* ── ۸. هم‌گام با زبان و داده ───────────────────────────── */
@@ -791,6 +994,7 @@
   }
 
   function boot() {
+    themeLoad();
     render();
     hookI18n();
     loadOrb();
@@ -814,6 +1018,8 @@
     render: render, sync: sync, inner: inner, t: t, slides: slides,
     paintSpot: paintSpot, goTo: goTo, stats: st,
     setOrb: function (v) { orbCache = String(v || ""); try { render(); } catch (e) {} },
+    themes: THEMES,
+    theme: function (id) { if (id === undefined) return themeId; setTheme(id, 1); return themeId; },
     state: function () { return { spot: spotI, rot: rotI, lang: lastLang }; }
   };
 })();
