@@ -1,7 +1,31 @@
-/* RONIN STORE — service worker (همیشه نسخه جدید رو میگیره) */
-var CACHE = "ronin-cache-v1";
+/* RONIN STORE — service worker v3
+   آفلاین واقعی: پوستهٔ سایت + صفحهٔ آفلاین + بازی کش می‌شوند */
+var CACHE = "ronin-v3";
 
-self.addEventListener("install", function () { self.skipWaiting(); });
+/* فقط چیزهایی که برای «باز شدن سایت بدون اینترنت» لازم‌اند */
+var CORE = [
+  "./",
+  "./index.html",
+  "./offline.html",
+  "./ronin-offline.js",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./icon.svg",
+  "./ronin-zero.css?v=12",
+  "./ronin-2026.css?v=1"
+];
+
+self.addEventListener("install", function (e) {
+  e.waitUntil(
+    caches.open(CACHE).then(function (c) {
+      /* تک‌تک اضافه می‌کنیم تا یک ۴۰۴ کل نصب را خراب نکند */
+      return Promise.all(CORE.map(function (u) {
+        return c.add(new Request(u, { cache: "reload" })).catch(function () {});
+      }));
+    }).then(function () { return self.skipWaiting(); })
+  );
+});
 
 self.addEventListener("activate", function (e) {
   e.waitUntil(
@@ -11,16 +35,82 @@ self.addEventListener("activate", function (e) {
   );
 });
 
+function isNav(req) {
+  return req.mode === "navigate" || (req.method === "GET" && req.headers.get("accept") &&
+    req.headers.get("accept").indexOf("text/html") >= 0);
+}
+
+function isStatic(u) {
+  return /\.(css|js|mjs|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|json|mp3|ogg|webmanifest)$/i.test(u.pathname);
+}
+
 self.addEventListener("fetch", function (e) {
   var req = e.request;
   if (req.method !== "GET") return;
   var u = new URL(req.url);
-  if (u.origin !== location.origin) return;
+  if (u.origin !== location.origin) return;            /* فایربیس/فونت دست‌نخورده */
+
+  /* ── صفحه‌ها: شبکه اول، بعد کش، بعد offline.html ── */
+  if (isNav(req)) {
+    e.respondWith(
+      new Promise(function (res) {
+        var done = false;
+        var timer = setTimeout(function () {
+          if (done) return;
+          caches.match("./index.html").then(function (c) {
+            if (c) { done = true; res(c); }
+          });
+        }, 3500);
+        fetch(req).then(function (r) {
+          clearTimeout(timer);
+          if (done) return;
+          done = true;
+          var copy = r.clone();
+          caches.open(CACHE).then(function (c) { c.put("./index.html", copy).catch(function () {}); });
+          res(r);
+        }).catch(function () {
+          clearTimeout(timer);
+          if (done) return;
+          done = true;
+          caches.match(req, { ignoreSearch: true })
+            .then(function (c) { return c || caches.match("./index.html"); })
+            .then(function (c) { res(c || caches.match("./offline.html")); });
+        });
+      })
+    );
+    return;
+  }
+
+  /* ── دارایی‌های ثابت: کش اول ── */
+  if (isStatic(u)) {
+    e.respondWith(
+      caches.match(req).then(function (hit) {
+        if (hit) {
+          fetch(req).then(function (r) {
+            if (r && r.ok) caches.open(CACHE).then(function (c) { c.put(req, r.clone()); });
+          }).catch(function () {});
+          return hit;
+        }
+        return fetch(req).then(function (r) {
+          if (r && (r.ok || r.type === "opaque")) {
+            var copy = r.clone();
+            caches.open(CACHE).then(function (c) { c.put(req, copy).catch(function () {}); });
+          }
+          return r;
+        }).catch(function () {
+          return caches.match("./offline.html");
+        });
+      })
+    );
+    return;
+  }
+
+  /* ── بقیهٔ درخواست‌ها: شبکه اول ── */
   e.respondWith(
-    fetch(req).then(function (res) {
-      var copy = res.clone();
+    fetch(req).then(function (r) {
+      var copy = r.clone();
       caches.open(CACHE).then(function (c) { c.put(req, copy).catch(function () {}); });
-      return res;
+      return r;
     }).catch(function () { return caches.match(req); })
   );
 });
