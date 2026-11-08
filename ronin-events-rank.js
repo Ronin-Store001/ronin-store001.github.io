@@ -10,7 +10,7 @@
 (function () {
   if (!window.R || window.RoninEventsRank) return;
 
-  var ER = window.RoninEventsRank = { version: "2.0" };
+  var ER = window.RoninEventsRank = { version: "3.0" };
   var S = ER.state = {
     users: {},
     events: {},
@@ -22,6 +22,8 @@
     evMode: "all",
     q: "",
     openEv: null,
+    detail: null,
+    editEv: null,
     busy: {},
     rem: {},
     fired: {}
@@ -75,6 +77,19 @@
   function safeUrl(u) {
     u = String(u || "").trim();
     return /^https?:\/\//i.test(u) ? u : "";
+  }
+  function eventURL(id) {
+    return location.origin + location.pathname + "#event/" + encodeURIComponent(id);
+  }
+  function parseEventHash() {
+    var m = String(location.hash || "").match(/^#event(?:\/|=)(.+)$/);
+    if (!m) return "";
+    try { return decodeURIComponent(m[1]); } catch (e) { return m[1]; }
+  }
+  function setHash(hash, replace) {
+    try {
+      history[replace ? "replaceState" : "pushState"](null, "", hash);
+    } catch (e) { location.hash = hash; }
   }
 
   /* ── تاریخ و شمارش معکوس ────────────────────────────────── */
@@ -454,6 +469,11 @@
       };
     });
   }
+  function findEvent(id) {
+    var list = allEvents();
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return null;
+  }
   function attendees(e) {
     var g = e.going || {}, out = [];
     Object.keys(g).forEach(function (uid) {
@@ -515,7 +535,7 @@
           '<button class="btn p mini erx-newbtn" type="button" id="erxEvNew" data-erx-new hidden>＋ رویداد جدید</button>' +
         '</div>' +
         '<div class="erx-create" id="erxEvForm" hidden>' +
-          '<div class="erx-createhead"><b>ساخت رویداد جدید</b>' +
+          '<div class="erx-createhead"><b id="erxEvFormTitle">ساخت رویداد جدید</b>' +
             '<button class="icobtn" type="button" data-erx-closeform aria-label="بستن">✕</button></div>' +
           '<div class="erx-form">' +
             '<div class="erx-f full"><label for="erxEvTitle">عنوان رویداد</label>' +
@@ -547,6 +567,7 @@
             '<span class="erx-hint">بعد از ثبت، رویداد بلافاصله برای همه نمایش داده می‌شود.</span>' +
           '</div>' +
         '</div>' +
+        '<div class="erx-detail" id="erxEvDetail" hidden></div>' +
         '<div class="erx-evlist" id="erxEvList"></div>' +
       '</div>';
 
@@ -602,7 +623,130 @@
 
     var hero = byId("erxEvHero");
     if (hero) hero.innerHTML = eventsHero();
+    syncDetailMode();
+    renderDetail();
     renderEventsList();
+  }
+
+  function syncDetailMode() {
+    var on = !!S.detail;
+    var hero = byId("erxEvHero");
+    var tools = document.querySelector("#erxEvents .erx-evtools");
+    var list = byId("erxEvList");
+    var form = byId("erxEvForm");
+    var detail = byId("erxEvDetail");
+    if (hero) hero.hidden = on;
+    if (tools) tools.hidden = on;
+    if (list) list.hidden = on;
+    if (form && on) form.hidden = !S.editEv;
+    if (detail) detail.hidden = !on;
+  }
+
+  function detailBack() {
+    return '<div class="erx-detailbar">' +
+      '<button class="btn mini erx-backbtn" type="button" data-erx-back>→ همهٔ رویدادها</button>' +
+      '<span class="erx-kicker">EVENT PAGE · صفحهٔ رویداد</span>' +
+    '</div>';
+  }
+
+  function detailFact(label, value) {
+    return '<div class="erx-fact"><span>' + label + '</span><b>' + value + '</b></div>';
+  }
+
+  function detailHTML(e) {
+    var ph = phase(e), K = KINDS[e.kind] || KINDS.other;
+    var names = attendees(e), gc = names.length, cap = Number(e.cap) || 0;
+    var mine = isGoing(e, R.ME);
+    var full = cap > 0 && gc >= cap && !mine;
+    var canJoin = !!e.start && ph !== "past";
+    var disabled = !canJoin || (full && !mine);
+    var label = mine ? "✓ شرکت کردم" : full ? "ظرفیت تکمیل" : ph === "past" ? "پایان‌یافته" :
+      ph === "live" ? "پیوستن" : "شرکت می‌کنم";
+    var org = (S.users[e.by] && S.users[e.by].name) || e.byn || "تیم رونین";
+    var link = safeUrl(e.link);
+    var pct = cap ? Math.min(100, Math.round(gc / cap * 100)) : 0;
+    var icsBtn = e.start
+      ? '<button class="btn mini" type="button" data-erx-ics="' + esc(e.id) + '">📅 افزودن به تقویم</button>' : "";
+    var remBtn = e.start && ph !== "past"
+      ? '<button class="btn mini' + (S.rem[e.id] ? " on" : "") + '" type="button" data-erx-rem="' +
+        esc(e.id) + '">' + (S.rem[e.id] ? "🔔 یادآوری فعال" : "🔔 یادآوری") + '</button>' : "";
+    var manageBtns = canManage()
+      ? '<button class="btn mini erx-editbtn" type="button" data-erx-edit="' + esc(e.id) + '">✏️ ویرایش</button>' +
+        '<button class="btn mini erx-delbtn" type="button" data-erx-del="' + esc(e.id) + '">🗑 حذف</button>' : "";
+
+    return detailBack() +
+      '<article class="erx-evpage ' + ph + '">' +
+        '<div class="erx-evpagehero">' +
+          '<div class="erx-evpageicon">' + K.ic + '</div>' +
+          '<div class="erx-evpagecopy">' +
+            '<div class="erx-evtop"><span class="erx-kind">' + K.ic + " " + K.fa + '</span>' +
+              stateHTML(e) + '</div>' +
+            '<h3>' + esc(e.title) + '</h3>' +
+            '<p class="erx-evpagemeta">🗓 ' + esc(dateLine(e.start)) +
+              (e.place ? ' • 📍 ' + esc(e.place) : "") + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="erx-evpagegrid">' +
+          '<section class="erx-evpagebody">' +
+            '<h4>دربارهٔ رویداد</h4>' +
+            '<p>' + (e.body ? esc(e.body) : "توضیحی برای این رویداد ثبت نشده است.") + '</p>' +
+            (link ? '<a class="erx-linkbtn" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">🔗 باز کردن لینک رویداد</a>' : "") +
+            (e.start ? '<div class="erx-evpagecd"><span>' + (ph === "live" ? "تا پایان" : "شروع تا") + '</span>' + cdNode(e) + '</div>' : "") +
+          '</section>' +
+          '<aside class="erx-evpageside">' +
+            '<div class="erx-facts">' +
+              detailFact("میزبان", esc(org)) +
+              detailFact("زمان", esc(dateLine(e.start))) +
+              detailFact("مدت", fa(durOf(e)) + " دقیقه") +
+              detailFact("ظرفیت", cap ? fa(gc) + " از " + fa(cap) : "نامحدود") +
+              detailFact("مکان", e.place ? esc(e.place) : "اعلام نشده") +
+            '</div>' +
+            (cap ? '<div class="erx-capbar"><i style="width:' + pct + '%"></i></div>' : "") +
+            '<div class="erx-attendees"><div class="erx-attendeeshead"><b>شرکت‌کننده‌ها</b>' +
+              '<span>' + fa(gc) + ' نفر</span></div>' +
+              (names.length
+                ? '<div class="erx-peoplelist">' + names.map(function (n) {
+                    return '<span>' + esc(n.n) + '</span>';
+                  }).join("") + '</div>'
+                : '<p>هنوز کسی ثبت‌نام نکرده است.</p>') +
+            '</div>' +
+          '</aside>' +
+        '</div>' +
+        '<div class="erx-evpageacts">' +
+          '<button class="btn p mini erx-join' + (mine ? " on" : "") + '" type="button" data-erx-join="' +
+            esc(e.id) + '" aria-pressed="' + (mine ? "true" : "false") + '"' +
+            (disabled ? " disabled" : "") + '>' + label + '</button>' +
+          icsBtn + remBtn +
+          '<button class="btn mini" type="button" data-erx-share="' + esc(e.id) + '">🔗 اشتراک</button>' +
+          '<button class="btn mini" type="button" data-erx-copy="' + esc(e.id) + '">📋 کپی لینک</button>' +
+          manageBtns +
+        '</div>' +
+      '</article>';
+  }
+
+  function renderDetail() {
+    var box = byId("erxEvDetail");
+    if (!box) return;
+    if (!S.detail) { box.hidden = true; box.innerHTML = ""; return; }
+    box.hidden = false;
+    if (!S.evReady) {
+      box.innerHTML = detailBack() + '<div class="erx-skel"><i></i><i></i><i></i><i></i></div>';
+      return;
+    }
+    if (S.evErr) {
+      box.innerHTML = detailBack() + emptyBox("🛡", "صفحهٔ رویداد باز نشد",
+        "اتصال به تقویم برقرار نشد. دوباره تلاش کن.",
+        '<button class="btn mini" type="button" data-erx-back>بازگشت</button>');
+      return;
+    }
+    var e = findEvent(S.detail);
+    if (!e) {
+      box.innerHTML = detailBack() + emptyBox("🔎", "این رویداد پیدا نشد",
+        "ممکن است حذف شده باشد یا لینک آن قدیمی باشد.",
+        '<button class="btn p mini" type="button" data-erx-back>دیدن رویدادها</button>');
+      return;
+    }
+    box.innerHTML = detailHTML(e);
   }
 
   function nextEvent() {
@@ -640,7 +784,7 @@
           '<b data-erx-cd data-start="' + e.start + '" data-dur="' + durOf(e) +
           '" data-phase="' + ph + '">' + cdText((ph === "live" ? endOf(e) : e.start) - Date.now()) + '</b>' +
         '</div>' +
-        '<button class="btn mini" type="button" data-erx-more="' + esc(e.id) + '">جزئیات و ثبت‌نام</button>' +
+        '<button class="btn mini" type="button" data-erx-detail="' + esc(e.id) + '">صفحهٔ رویداد</button>' +
       '</div>';
     } else {
       h += '<div class="erx-next none"><div class="erx-nico">🗓</div>' +
@@ -687,7 +831,8 @@
       '<div class="erx-evmain">' +
         '<div class="erx-evtop"><span class="erx-kind">' + K.ic + " " + K.fa + '</span>' +
           stateHTML(e) + '</div>' +
-        '<h4>' + esc(e.title) + '</h4>' +
+        '<h4><button class="erx-titleopen" type="button" data-erx-detail="' + esc(e.id) + '">' +
+          esc(e.title) + ' <span aria-hidden="true">↗</span></button></h4>' +
         '<div class="erx-evmeta">' +
           '<span>🗓 ' + esc(dateLine(e.start)) + '</span>' +
           (e.place ? '<span>📍 ' + esc(e.place) + '</span>' : '') +
@@ -732,7 +877,9 @@
         (e.start ? '<button class="btn mini" type="button" data-erx-ics="' + esc(e.id) + '">📅 افزودن به تقویم</button>' : '') +
         (e.start && ph !== "past" ? '<button class="btn mini' + (S.rem[e.id] ? " on" : "") +
           '" type="button" data-erx-rem="' + esc(e.id) + '">' + (S.rem[e.id] ? "🔔 یادآوری فعال" : "🔔 یادآوری") + '</button>' : '') +
+        '<button class="btn mini" type="button" data-erx-detail="' + esc(e.id) + '">↗ صفحهٔ رویداد</button>' +
         '<button class="btn mini" type="button" data-erx-share="' + esc(e.id) + '">🔗 اشتراک</button>' +
+        '<button class="btn mini" type="button" data-erx-copy="' + esc(e.id) + '">📋 کپی لینک</button>' +
         (canManage() ? '<button class="btn mini erx-delbtn" type="button" data-erx-del="' + esc(e.id) + '">🗑 حذف</button>' : '') +
       '</div>' +
       '<div class="erx-peoplelist"><b>شرکت‌کننده‌ها</b>' +
@@ -787,6 +934,13 @@
   function eventsClick(e) {
     var t = e.target;
     if (!t || !t.closest) return;
+    if (t.closest("[data-erx-back]")) { closeDetail(); return; }
+    var page = t.closest("[data-erx-detail]");
+    if (page) { openDetail(page.getAttribute("data-erx-detail"), true); return; }
+    var edit = t.closest("[data-erx-edit]");
+    if (edit) { openForm(edit.getAttribute("data-erx-edit")); return; }
+    var copy = t.closest("[data-erx-copy]");
+    if (copy) { copyEventLink(copy.getAttribute("data-erx-copy")); return; }
     var tab = t.closest("[data-erx-emode]");
     if (tab) {
       S.evMode = tab.getAttribute("data-erx-emode") || "all";
@@ -798,8 +952,7 @@
       return;
     }
     if (t.closest("[data-erx-closeform]")) {
-      var f = byId("erxEvForm");
-      if (f) f.hidden = true;
+      closeForm(false);
       return;
     }
     var join = t.closest("[data-erx-join]");
@@ -830,16 +983,95 @@
     return String(v).replace(/["\\]/g, "\\$&");
   }
 
-  function openForm() {
+  function openDetail(id, push) {
+    if (!id) return;
+    if (R.cur !== "events") {
+      S.detail = null;
+      R.go("events");
+    }
+    S.detail = id;
+    S.openEv = null;
+    closeForm(false);
+    renderEvents();
+    var hash = "#event/" + encodeURIComponent(id);
+    if (push) {
+      if (location.hash !== hash) setHash(hash, false);
+    } else {
+      setHash(hash, true);
+    }
+    setTimeout(function () {
+      var sec = byId("sec-events");
+      if (sec) window.scrollTo(0, Math.max(0, sec.offsetTop - 72));
+    }, 40);
+  }
+
+  function closeDetail() {
+    S.detail = null;
+    closeForm(false);
+    setHash("#events", true);
+    renderEvents();
+    var sec = byId("sec-events");
+    if (sec) window.scrollTo(0, Math.max(0, sec.offsetTop - 72));
+  }
+
+  function routeFromHash() {
+    var id = parseEventHash();
+    if (id) { openDetail(id, false); return; }
+    if (S.detail) {
+      S.detail = null;
+      closeForm(false);
+      renderEvents();
+    }
+  }
+
+  function resetFormFields() {
+    ["erxEvTitle", "erxEvPlace", "erxEvLink", "erxEvBody"].forEach(function (id) {
+      var n = byId(id); if (n) n.value = "";
+    });
+    var cap = byId("erxEvCap"); if (cap) cap.value = "0";
+    var kind = byId("erxEvKind"); if (kind) kind.value = "tournament";
+    var dur = byId("erxEvDur"); if (dur) dur.value = "90";
+    var start = byId("erxEvStart"); if (start) start.value = defaultStart();
+  }
+  function setFormMode(id) {
+    var head = byId("erxEvFormTitle");
+    var save = byId("erxEvSave");
+    if (head) head.textContent = id ? "ویرایش رویداد" : "ساخت رویداد جدید";
+    if (save) save.textContent = id ? "ذخیرهٔ تغییرات" : "ثبت رویداد";
+  }
+  function fillForm(e) {
+    if (!e) return;
+    var title = byId("erxEvTitle");
+    if (title) title.value = e.title || "";
+    var kind = byId("erxEvKind"); if (kind) kind.value = e.kind || "other";
+    var start = byId("erxEvStart"); if (start) start.value = e.start ? dtLocal(e.start) : defaultStart();
+    var dur = byId("erxEvDur"); if (dur) dur.value = String(durOf(e));
+    var place = byId("erxEvPlace"); if (place) place.value = e.place || "";
+    var link = byId("erxEvLink"); if (link) link.value = e.link || "";
+    var cap = byId("erxEvCap"); if (cap) cap.value = String(Number(e.cap) || 0);
+    var body = byId("erxEvBody"); if (body) body.value = e.body || "";
+  }
+  function openForm(id) {
     if (!canManage()) { toast("ساخت رویداد فقط برای مالک و تیم مجاز است", "err"); return; }
+    if (id && !S.events[id]) { toast("این رویداد پیدا نشد", "err"); return; }
     var f = byId("erxEvForm");
     if (!f) return;
+    S.editEv = id || null;
     f.hidden = false;
-    var start = byId("erxEvStart");
-    if (start && !start.value) start.value = defaultStart();
+    if (id) fillForm(findEvent(id));
+    else resetFormFields();
+    setFormMode(S.editEv);
+    syncDetailMode();
     try { f.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
     var t = byId("erxEvTitle");
     if (t) setTimeout(function () { try { t.focus(); } catch (e) {} }, 120);
+  }
+  function closeForm(reset) {
+    S.editEv = null;
+    setFormMode(null);
+    var f = byId("erxEvForm"); if (f) f.hidden = true;
+    if (reset) resetFormFields();
+    syncDetailMode();
   }
 
   function dtLocal(ts) {
@@ -857,13 +1089,15 @@
 
   function saveEvent() {
     if (!canManage()) { toast("دسترسی ساخت رویداد نداری", "err"); return; }
+    var editId = S.editEv;
+    if (editId && !S.events[editId]) { toast("این رویداد پیدا نشد", "err"); closeForm(false); return; }
     var title = R.clean ? R.clean(byId("erxEvTitle") ? byId("erxEvTitle").value : "", 90)
                         : String((byId("erxEvTitle") || {}).value || "").trim().slice(0, 90);
     if (title.length < 3) { toast("عنوان رویداد را کامل بنویس", "err"); return; }
     var startVal = byId("erxEvStart") ? byId("erxEvStart").value : "";
     var start = startVal ? new Date(startVal).getTime() : 0;
     if (!start || isNaN(start)) { toast("زمان شروع را انتخاب کن", "err"); return; }
-    if (start < Date.now() - 60000) { toast("زمان شروع نمی‌تواند در گذشته باشد", "err"); return; }
+    if (!editId && start < Date.now() - 60000) { toast("زمان شروع نمی‌تواند در گذشته باشد", "err"); return; }
     var dur = Number((byId("erxEvDur") || {}).value) || 90;
     var kind = (byId("erxEvKind") || {}).value || "other";
     if (!KINDS[kind]) kind = "other";
@@ -874,32 +1108,37 @@
     var body = String((byId("erxEvBody") || {}).value || "").trim().slice(0, 600);
     var cap = Math.max(0, parseInt((byId("erxEvCap") || {}).value, 10) || 0);
     var btn = byId("erxEvSave");
-    if (btn) { btn.disabled = true; btn.textContent = "در حال ثبت…"; }
+    if (btn) { btn.disabled = true; btn.textContent = editId ? "در حال ذخیره…" : "در حال ثبت…"; }
 
     var payload = {
       title: title, body: body, kind: kind, start: start, dur: dur,
-      place: place, link: link, cap: cap, by: R.ME || "",
-      byn: (R.USER && R.USER.name) || "تیم رونین", t: Date.now()
+      place: place, link: link, cap: cap
     };
     var op;
-    try { op = R.add("events", payload); }
-    catch (err) { op = Promise.reject(err); }
+    try {
+      if (editId) {
+        payload.updated = Date.now();
+        payload.upby = R.ME || "";
+        op = R.upd ? R.upd("events/" + editId, payload)
+                   : R.db.ref("events/" + editId).update(payload);
+      } else {
+        payload.by = R.ME || "";
+        payload.byn = (R.USER && R.USER.name) || "تیم رونین";
+        payload.t = Date.now();
+        op = R.add("events", payload);
+      }
+    } catch (err) { op = Promise.reject(err); }
     Promise.resolve(op).then(function () {
-      toast("رویداد ثبت شد ✅", "ok");
-      if (byId("erxEvTitle")) byId("erxEvTitle").value = "";
-      if (byId("erxEvBody")) byId("erxEvBody").value = "";
-      if (byId("erxEvPlace")) byId("erxEvPlace").value = "";
-      if (byId("erxEvLink")) byId("erxEvLink").value = "";
-      if (byId("erxEvCap")) byId("erxEvCap").value = "0";
-      if (byId("erxEvStart")) byId("erxEvStart").value = defaultStart();
-      var f = byId("erxEvForm");
-      if (f) f.hidden = true;
-      S.evMode = "all";
+      toast(editId ? "تغییرات رویداد ذخیره شد ✅" : "رویداد ثبت شد ✅", "ok");
+      if (editId) S.events[editId] = Object.assign({}, S.events[editId] || {}, payload);
+      else S.evMode = "all";
+      resetFormFields();
+      closeForm(false);
       renderEvents();
     }).catch(function (err) {
-      toast("رویداد ثبت نشد: " + ((err && err.message) || "خطای دسترسی"), "err");
+      toast((editId ? "ذخیره نشد: " : "رویداد ثبت نشد: ") + ((err && err.message) || "خطای دسترسی"), "err");
     }).then(function () {
-      if (btn) { btn.disabled = false; btn.textContent = "ثبت رویداد"; }
+      if (btn) { btn.disabled = false; setFormMode(S.editEv); }
     });
   }
 
@@ -912,6 +1151,7 @@
     R.db.ref("events/" + id).remove().then(function () {
       delete S.events[id];
       if (S.openEv === id) S.openEv = null;
+      if (S.detail === id) { S.detail = null; closeForm(false); setHash("#events", true); }
       renderEvents();
       toast("رویداد حذف شد", "ok");
     }).catch(function (err) {
@@ -1015,12 +1255,18 @@
     if (!e) return;
     var text = "📅 " + (e.title || "رویداد") + "\n" + dateLine(e.start) +
       (e.place ? "\n📍 " + e.place : "") + "\nاز تقویم رونین";
-    var url = location.origin + location.pathname + "#events";
+    var url = eventURL(id);
     if (navigator.share) {
       navigator.share({ title: e.title || "رویداد رونین", text: text, url: url }).catch(function () {});
       return;
     }
     copyText(text + "\n" + url);
+  }
+
+  function copyEventLink(id) {
+    var e = S.events[id];
+    if (!e) return;
+    copyText("📅 " + (e.title || "رویداد") + "\n" + eventURL(id));
   }
 
   function copyText(text) {
@@ -1219,7 +1465,14 @@
   function installHooks() {
     if (!R.hooks) R.hooks = {};
     R.hooks.rank = function () { ensureRank(); renderRank(); };
-    R.hooks.events = function () { ensureEvents(); renderEvents(); };
+    R.hooks.events = function () {
+      ensureEvents();
+      if (S.detail && !parseEventHash()) {
+        S.detail = null;
+        closeForm(false);
+      }
+      renderEvents();
+    };
   }
 
   function boot() {
@@ -1235,12 +1488,16 @@
     watchEvents();
     renderRank();
     renderEvents();
+    window.addEventListener("hashchange", routeFromHash);
+    setTimeout(routeFromHash, 0);
     setInterval(tick, 1000);
     setTimeout(installHooks, 1200);
   }
 
   ER.paintRank = function () { ensureRank(); renderRank(); };
   ER.paintEvents = function () { ensureEvents(); renderEvents(); };
+  ER.openEvent = function (id) { openDetail(id, true); };
+  ER.closeEvent = function () { closeDetail(); };
   ER.preview = function (users, events) {
     if (users) { S.users = users; S.rankReady = true; S.rankErr = false; }
     if (events) { S.events = events; S.evReady = true; S.evErr = false; }
