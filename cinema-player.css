@@ -1,0 +1,475 @@
+/* ═══════════════════════════════════════════════════════════════
+   RONIN PLAYER — cinema-player.css
+   پلیر اختصاصی: نوار زمان، ژست‌ها، پنل تنظیمات، آمار، مینی‌پلیر
+   ═══════════════════════════════════════════════════════════════ */
+
+.rpl {
+  position: fixed; inset: 0; z-index: 9950;
+  display: flex; flex-direction: column;
+  color: #f4f6ff; font-family: Vazirmatn, system-ui, sans-serif;
+  background: #03050d;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .22s ease, visibility .22s;
+  --rplAcc: var(--cy, #22d3ee);
+  --rplAcc2: var(--vio, #7c5cff);
+}
+.rpl.on { opacity: 1; visibility: visible; pointer-events: auto; }
+
+/* پس‌زمینهٔ محیطی از پوستر */
+.rpl-amb {
+  position: absolute; inset: -12%; z-index: 0;
+  background-size: cover; background-position: center;
+  filter: blur(64px) saturate(1.5); opacity: .26; transform: scale(1.08);
+  transition: opacity .4s;
+}
+.rpl-amb::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(70% 60% at 50% 45%, transparent, rgba(3,5,13,.62) 70%),
+    linear-gradient(180deg, rgba(3,5,13,.86), rgba(3,5,13,.35) 30%, rgba(3,5,13,.9));
+}
+.rpl.noamb .rpl-amb { opacity: 0; }
+
+/* ── پوسته ─────────────────────────────────────────────────── */
+.rpl-shell {
+  position: relative; z-index: 2; flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+}
+
+/* ── نوار بالا ─────────────────────────────────────────────── */
+.rpl-top {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 14px; flex: none;
+  background: linear-gradient(180deg, rgba(4,6,15,.92), rgba(4,6,15,.25) 70%, transparent);
+}
+.rpl-back {
+  width: 36px; height: 36px; flex: none; border-radius: 11px; cursor: pointer;
+  display: grid; place-items: center; font-size: 15px;
+  border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); color: #fff;
+  transition: .16s;
+}
+.rpl-back:hover { background: rgba(255,255,255,.14); transform: translateX(-1px); }
+.rpl-ttl { min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+.rpl-ttl b {
+  font-size: 12.5px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rpl-ttl span { font-size: 9.5px; color: #9aa6cc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rpl-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-inline-start: 4px; }
+.rpl-badges span {
+  font-size: 8.5px; font-weight: 900; padding: 2px 6px; border-radius: 5px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #dbe2ff;
+  letter-spacing: .3px;
+}
+.rpl-badges span.hd { border-color: rgba(93,240,176,.45); color: #9dffd4; }
+.rpl-top .sp { flex: 1; }
+.rpl-ib {
+  width: 34px; height: 34px; flex: none; border-radius: 10px; cursor: pointer;
+  display: grid; place-items: center; font-size: 13px;
+  border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: #fff;
+  transition: .15s;
+}
+.rpl-ib:hover { background: rgba(255,255,255,.14); }
+.rpl-ib.hot { border-color: rgba(255,84,112,.6); background: rgba(255,84,112,.16); }
+
+/* ── صحنه ──────────────────────────────────────────────────── */
+.rpl-stage {
+  position: relative; flex: 1; min-height: 0;
+  display: grid; place-items: center;
+  padding: 0 14px 14px;
+}
+.rpl-frame {
+  position: relative; width: 100%; height: 100%;
+  border-radius: 16px; overflow: hidden; background: #000;
+  box-shadow: 0 26px 70px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.08);
+  transition: border-radius .2s;
+}
+.rpl.theater .rpl-stage { padding: 0; }
+.rpl.theater .rpl-frame { border-radius: 0; }
+.rpl-frame video {
+  width: 100%; height: 100%; object-fit: contain; background: #000;
+  display: block; outline: none;
+}
+.rpl.cover .rpl-frame video { object-fit: cover; }
+.rpl-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
+
+.rpl-dim {
+  position: absolute; inset: 0; z-index: 1; background: #000; opacity: 0;
+  pointer-events: none; transition: opacity .12s;
+}
+.rpl-glow {
+  position: absolute; inset: auto 0 -40px; height: 90px; z-index: 1; pointer-events: none;
+  background: radial-gradient(60% 100% at 50% 100%, rgba(124,92,255,.35), transparent 70%);
+  opacity: .55; filter: blur(10px);
+}
+
+/* ── دکمهٔ پخش مرکزی ───────────────────────────────────────── */
+.rpl-big {
+  position: absolute; left: 50%; top: 50%; z-index: 4;
+  transform: translate(-50%, -50%);
+  width: 82px; height: 82px; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; border: 1px solid rgba(255,255,255,.4);
+  background: rgba(8,11,24,.55); backdrop-filter: blur(8px); color: #fff;
+  font-size: 26px; transition: .2s; padding-inline-start: 4px;
+}
+.rpl-big:hover { background: rgba(124,92,255,.75); transform: translate(-50%, -50%) scale(1.05); }
+.rpl-big::before {
+  content: ""; position: absolute; inset: -10px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.22); animation: rplPulse 2.4s ease-out infinite;
+}
+@keyframes rplPulse {
+  0% { transform: scale(.92); opacity: .7; }
+  70% { transform: scale(1.18); opacity: 0; }
+  100% { opacity: 0; }
+}
+.rpl.playing .rpl-big { opacity: 0; visibility: hidden; transform: translate(-50%, -50%) scale(.85); }
+
+/* ── لودینگ ────────────────────────────────────────────────── */
+.rpl-spin {
+  position: absolute; left: 50%; top: 50%; z-index: 5; transform: translate(-50%, -50%);
+  width: 62px; height: 62px; display: none; place-items: center;
+}
+.rpl-spin.on { display: grid; }
+.rpl-spin i {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.14); border-top-color: var(--rplAcc);
+  animation: rplSpin .85s linear infinite;
+}
+.rpl-spin b {
+  font-size: 9.5px; font-weight: 900; color: #dfe6ff; letter-spacing: .5px;
+}
+@keyframes rplSpin { to { transform: rotate(360deg); } }
+
+/* ── خطا / پایان / پخش بعدی ────────────────────────────────── */
+.rpl-err {
+  position: absolute; inset: 0; z-index: 8; display: none; place-items: center;
+  background: rgba(4,6,15,.86); backdrop-filter: blur(6px); text-align: center; padding: 20px;
+}
+.rpl-err.on { display: grid; }
+.rpl-card {
+  max-width: 380px; background: rgba(10,14,28,.94); border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px; padding: 18px; box-shadow: 0 24px 60px rgba(0,0,0,.6);
+}
+.rpl-card .ic { font-size: 30px; margin-bottom: 6px; }
+.rpl-card h4 { margin: 0 0 6px; font-size: 14px; font-weight: 900; }
+.rpl-card p { margin: 0 0 12px; font-size: 11px; color: #9aa6cc; line-height: 1.9; }
+.rpl-card .row { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+
+.rpl-end {
+  position: absolute; inset: 0; z-index: 8; display: none; place-items: center;
+  background: rgba(4,6,15,.9); backdrop-filter: blur(8px); text-align: center; padding: 18px;
+}
+.rpl-end.on { display: grid; }
+.rpl-end h4 { margin: 0 0 4px; font-size: 16px; font-weight: 900; }
+.rpl-end p { margin: 0 0 14px; font-size: 10.5px; color: #9aa6cc; }
+.rpl-end .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.rpl-count {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 12px;
+  font-size: 10.5px; color: #cbd3f2; background: rgba(124,92,255,.16);
+  border: 1px solid rgba(124,92,255,.4); border-radius: 99px; padding: 4px 10px;
+}
+.rpl-count b { color: #fff; }
+
+/* ── کنترل‌ها ──────────────────────────────────────────────── */
+.rpl-ctl {
+  position: absolute; inset-inline: 14px; bottom: 14px; z-index: 6;
+  border-radius: 15px; padding: 7px 12px 9px;
+  background: linear-gradient(180deg, rgba(12,17,36,.62), rgba(5,8,18,.94));
+  border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(16px) saturate(1.2);
+  box-shadow: 0 18px 40px rgba(0,0,0,.45);
+  transition: opacity .25s, transform .25s;
+}
+.rpl.idle .rpl-ctl { opacity: 0; transform: translateY(12px); pointer-events: none; }
+.rpl.idle { cursor: none; }
+.rpl.theater .rpl-ctl { inset-inline: 20px; bottom: 20px; }
+
+/* نوار زمان */
+.rpl-track {
+  position: relative; height: 20px; display: flex; align-items: center;
+  direction: ltr; cursor: pointer; touch-action: none; margin-bottom: 2px;
+}
+.rpl-track:focus-visible { outline: 2px solid var(--rplAcc); outline-offset: 4px; border-radius: 6px; }
+.rpl-rail {
+  position: relative; width: 100%; height: 5px; border-radius: 99px;
+  background: rgba(255,255,255,.2); overflow: visible; transition: height .14s;
+}
+.rpl-track:hover .rpl-rail, .rpl.scrub .rpl-rail { height: 8px; }
+.rpl-buf, .rpl-played {
+  position: absolute; top: 0; bottom: 0; left: 0; border-radius: 99px; pointer-events: none;
+}
+.rpl-buf { width: var(--buf, 0%); background: rgba(255,255,255,.28); }
+.rpl-played {
+  width: var(--p, 0%);
+  background: linear-gradient(90deg, var(--rplAcc), var(--rplAcc2));
+  box-shadow: 0 0 14px rgba(34,211,238,.55);
+}
+.rpl-thumb {
+  position: absolute; left: var(--p, 0%); top: 50%; width: 13px; height: 13px;
+  border-radius: 50%; background: #fff; transform: translate(-50%, -50%) scale(.9);
+  box-shadow: 0 0 0 4px rgba(255,255,255,.18), 0 0 16px rgba(34,211,238,.8);
+  opacity: 0; transition: opacity .14s, transform .14s; pointer-events: none;
+}
+.rpl-track:hover .rpl-thumb, .rpl.scrub .rpl-thumb { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.rpl-chap {
+  position: absolute; top: 50%; width: 2px; height: 9px; border-radius: 2px;
+  background: rgba(6,9,20,.75); transform: translate(-50%, -50%); pointer-events: none;
+}
+.rpl-bub {
+  position: absolute; bottom: 22px; transform: translateX(-50%); z-index: 3;
+  padding: 3px 7px; border-radius: 6px; font-size: 10px; font-weight: 800;
+  background: rgba(8,11,24,.96); border: 1px solid rgba(255,255,255,.18);
+  color: #fff; white-space: nowrap; opacity: 0; transition: opacity .12s; pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+.rpl-bub.on { opacity: 1; }
+.rpl-bub i { font-style: normal; color: #9aa6cc; margin-inline-start: 4px; font-size: 9px; }
+
+/* ردیف دکمه‌ها */
+.rpl-row { display: flex; align-items: center; gap: 5px; }
+.rpl-row .grow { flex: 1; }
+.rpl-btn {
+  height: 30px; min-width: 30px; padding: 0 8px; border-radius: 9px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  border: 1px solid transparent; background: transparent; color: #e9edff;
+  font-family: inherit; font-size: 12px; font-weight: 800; transition: .14s; white-space: nowrap;
+}
+.rpl-btn:hover { background: rgba(255,255,255,.1); }
+.rpl-btn:active { transform: scale(.96); }
+.rpl-btn.ic { font-size: 14px; padding: 0 7px; }
+.rpl-btn.on { background: rgba(124,92,255,.28); border-color: rgba(124,92,255,.5); }
+.rpl-time {
+  font-size: 10.5px; color: #d3daf0; font-variant-numeric: tabular-nums;
+  direction: ltr; cursor: pointer; padding: 4px 6px; border-radius: 7px; white-space: nowrap;
+}
+.rpl-time:hover { background: rgba(255,255,255,.08); }
+.rpl-time i { font-style: normal; opacity: .5; margin: 0 3px; }
+.rpl-vol { display: flex; align-items: center; gap: 3px; width: 34px; overflow: hidden; transition: width .18s; }
+.rpl-vol:hover, .rpl-vol.open { width: 118px; }
+.rpl-vol input {
+  -webkit-appearance: none; appearance: none; width: 76px; height: 4px; border-radius: 99px;
+  direction: ltr; cursor: pointer; outline: none; margin: 0;
+  background: linear-gradient(90deg, #fff 0%, #fff var(--v, 100%), rgba(255,255,255,.24) var(--v, 100%));
+}
+.rpl-vol input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 0;
+}
+
+/* ── منوها ─────────────────────────────────────────────────── */
+.rpl-menu {
+  position: absolute; inset-inline-end: 22px; bottom: 92px; z-index: 12;
+  min-width: 200px; max-width: 280px; max-height: 62%; overflow-y: auto;
+  background: rgba(10,14,28,.98); border: 1px solid rgba(255,255,255,.16);
+  border-radius: 13px; padding: 6px; box-shadow: 0 24px 60px rgba(0,0,0,.65);
+  display: none; animation: rplIn .16s ease;
+}
+.rpl-menu.on { display: block; }
+@keyframes rplIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.rpl-menu b {
+  display: block; font-size: 9.5px; color: #8f9ac0; font-weight: 800;
+  padding: 4px 8px 6px; letter-spacing: .4px;
+}
+.rpl-mi {
+  display: flex; width: 100%; align-items: center; gap: 8px; justify-content: space-between;
+  border: 0; background: none; color: #eef1ff; font-family: inherit; font-size: 11px;
+  padding: 7px 9px; border-radius: 8px; cursor: pointer; text-align: start;
+}
+.rpl-mi:hover { background: rgba(255,255,255,.09); }
+.rpl-mi.on { background: rgba(124,92,255,.26); }
+.rpl-mi small { color: #8f9ac0; font-size: 9px; }
+.rpl-mi .ck { color: var(--rplAcc); font-size: 11px; }
+.rpl-mi.danger { color: #ff9db0; }
+
+/* ── پنل تنظیمات ───────────────────────────────────────────── */
+.rpl-set {
+  position: absolute; top: 0; right: 0; bottom: 0; z-index: 14;
+  width: min(370px, 94vw); padding: 12px 14px 22px; overflow-y: auto;
+  background: #080b18; border-left: 1px solid rgba(255,255,255,.14);
+  box-shadow: -24px 0 60px rgba(0,0,0,.55);
+  scrollbar-width: thin; scrollbar-color: rgba(124,92,255,.55) transparent;
+  transform: translateX(102%); transition: transform .26s ease; visibility: hidden;
+}
+.rpl.set-open .rpl-set { transform: none; visibility: visible; }
+.rpl-set-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.rpl-set-h b { font-size: 13px; font-weight: 900; }
+.rpl-sec { border-top: 1px solid rgba(255,255,255,.08); padding-top: 10px; margin-top: 10px; }
+.rpl-sec:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.rpl-sec h5 {
+  margin: 0 0 7px; font-size: 9.5px; font-weight: 900; color: #8f9ac0; letter-spacing: .6px;
+}
+.rpl-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+.rpl-pill {
+  border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04);
+  color: #dfe5ff; font-family: inherit; font-size: 10px; font-weight: 800;
+  padding: 5px 9px; border-radius: 8px; cursor: pointer; transition: .14s;
+}
+.rpl-pill:hover { border-color: rgba(255,255,255,.3); }
+.rpl-pill.on {
+  background: linear-gradient(135deg, var(--rplAcc2), var(--rplAcc));
+  border-color: transparent; color: #08030f;
+}
+.rpl-tog {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 0; font-size: 11px; color: #e6eaff; cursor: pointer;
+}
+.rpl-tog input {
+  -webkit-appearance: none; appearance: none; flex: 0 0 auto;
+  width: 36px; height: 20px; border-radius: 99px; cursor: pointer; margin: 0;
+  background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.14);
+  position: relative; transition: .18s;
+}
+.rpl-tog input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: #fff; transition: .18s;
+}
+.rpl-tog input:checked {
+  background: linear-gradient(135deg, var(--rplAcc2), var(--rplAcc)); border-color: transparent;
+}
+.rpl-tog input:checked::after { left: 18px; }
+.rpl-setrow {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; border: 0; background: none; color: #eef1ff; font-family: inherit;
+  font-size: 11px; padding: 8px 0; cursor: pointer; text-align: start;
+}
+.rpl-setrow:hover { color: #fff; }
+.rpl-setrow span:last-child { color: #8f9ac0; font-size: 10px; }
+
+/* ── میانبرها ──────────────────────────────────────────────── */
+.rpl-keys {
+  position: absolute; inset: 0; z-index: 20; display: none; place-items: center;
+  background: rgba(3,5,13,.92); backdrop-filter: blur(8px); padding: 18px;
+}
+.rpl-keys.on { display: grid; }
+.rpl-keys .box {
+  width: min(560px, 94vw); max-height: 86vh; overflow-y: auto;
+  background: rgba(10,14,28,.98); border: 1px solid rgba(255,255,255,.16);
+  border-radius: 16px; padding: 16px;
+}
+.rpl-keys h4 { margin: 0 0 10px; font-size: 13px; font-weight: 900; }
+.rpl-kgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+.rpl-krow { display: flex; align-items: center; gap: 8px; font-size: 10.5px; color: #cbd3f2; }
+.rpl-krow kbd {
+  min-width: 34px; text-align: center; font-family: inherit; font-size: 9.5px; font-weight: 900;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+  border-bottom-width: 2px; border-radius: 6px; padding: 2px 5px; color: #fff;
+}
+
+/* ── آمار پخش ──────────────────────────────────────────────── */
+.rpl-stats {
+  position: absolute; top: 62px; inset-inline-start: 18px; z-index: 13;
+  width: 250px; display: none; padding: 11px 12px; border-radius: 12px;
+  background: rgba(8,11,24,.97); border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 20px 46px rgba(0,0,0,.6); font-size: 10px; line-height: 1.95;
+}
+.rpl-stats.on { display: block; }
+.rpl-stats h5 { margin: 0 0 6px; font-size: 9.5px; color: #8f9ac0; letter-spacing: .5px; }
+.rpl-stats .r { display: flex; justify-content: space-between; gap: 10px; }
+.rpl-stats .r span:first-child { color: #8f9ac0; }
+.rpl-stats .r b { font-weight: 800; color: #eef1ff; font-variant-numeric: tabular-nums; unicode-bidi: plaintext; text-align: end; }
+
+/* ── نشانگرهای ژست ─────────────────────────────────────────── */
+.rpl-hud {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.92);
+  z-index: 7; padding: 9px 15px; border-radius: 13px; font-size: 13px; font-weight: 900;
+  background: rgba(6,9,20,.8); border: 1px solid rgba(255,255,255,.2);
+  backdrop-filter: blur(8px); opacity: 0; transition: .14s; pointer-events: none;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.rpl-hud.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.rpl-hud small { font-size: 10px; color: #9aa6cc; font-weight: 700; }
+.rpl-ripple {
+  position: absolute; z-index: 7; width: 92px; height: 92px; border-radius: 50%;
+  transform: translate(-50%, -50%); pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,.28), rgba(255,255,255,.04) 60%, transparent 72%);
+  animation: rplRip .55s ease-out forwards;
+  display: grid; place-items: center; font-size: 13px; font-weight: 900; color: #fff;
+}
+@keyframes rplRip {
+  from { opacity: .95; transform: translate(-50%, -50%) scale(.6); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(1.35); }
+}
+.rpl-flash {
+  position: absolute; inset: 0; z-index: 6; background: #fff; opacity: 0; pointer-events: none;
+}
+.rpl.flash .rpl-flash { animation: rplFlash .35s ease; }
+@keyframes rplFlash { 0% { opacity: .22; } 100% { opacity: 0; } }
+
+/* ── مینی‌پلیر ─────────────────────────────────────────────── */
+.rpl.mini { background: transparent; pointer-events: none; }
+.rpl.mini .rpl-amb, .rpl.mini .rpl-top, .rpl.mini .rpl-ctl,
+.rpl.mini .rpl-big, .rpl.mini .rpl-menu, .rpl.mini .rpl-set,
+.rpl.mini .rpl-keys, .rpl.mini .rpl-stats { display: none !important; }
+.rpl.mini .rpl-shell { position: fixed; inset-inline-start: 14px; bottom: 14px; display: block; }
+.rpl.mini .rpl-stage { padding: 0; position: static; }
+.rpl.mini .rpl-frame {
+  width: min(340px, 74vw); aspect-ratio: 16 / 9; height: auto;
+  border-radius: 13px; border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 18px 50px rgba(0,0,0,.7); pointer-events: auto;
+}
+.rpl.mini .rpl-glow, .rpl.mini .rpl-spin { display: none; }
+.rpl-mini-bar {
+  position: absolute; inset-inline: 0; top: 0; z-index: 9; display: none;
+  align-items: center; gap: 5px; padding: 6px;
+  background: linear-gradient(180deg, rgba(0,0,0,.82), transparent);
+}
+.rpl.mini .rpl-mini-bar { display: flex; }
+.rpl-mini-bar .sp { flex: 1; }
+.rpl-mini-bar button {
+  width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.22); background: rgba(6,9,20,.7);
+  color: #fff; font-size: 11px; cursor: pointer;
+}
+.rpl-mini-bar .mt {
+  font-size: 9.5px; font-weight: 800; padding: 2px 8px; border-radius: 99px;
+  background: rgba(6,9,20,.7); border: 1px solid rgba(255,255,255,.18);
+  max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rpl-mini-prog {
+  position: absolute; inset-inline: 0; bottom: 0; height: 3px;
+  background: rgba(0,0,0,.5); z-index: 9; display: none;
+}
+.rpl.mini .rpl-mini-prog { display: block; }
+.rpl-mini-prog i {
+  display: block; height: 100%; width: var(--p, 0%);
+  background: linear-gradient(90deg, var(--rplAcc), var(--rplAcc2));
+}
+
+/* ── توست داخلی ─────────────────────────────────────────────── */
+.rpl-toast {
+  position: absolute; left: 50%; bottom: 92px; transform: translate(-50%, 8px);
+  z-index: 16; max-width: 80%; text-align: center;
+  background: rgba(8,11,24,.96); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px; padding: 7px 13px; font-size: 10.5px; font-weight: 800;
+  color: #eef1ff; opacity: 0; transition: .2s; pointer-events: none;
+}
+.rpl-toast.on { opacity: 1; transform: translate(-50%, 0); }
+.rpl-toast.ok { border-color: rgba(93,240,176,.5); }
+.rpl-toast.err { border-color: rgba(255,107,129,.55); color: #ffd6dd; }
+
+/* ── ریسپانسیو ─────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .rpl-top { padding: 8px 10px; gap: 7px; }
+  .rpl-badges { display: none; }
+  .rpl-stage { padding: 0 8px 8px; }
+  .rpl-frame { border-radius: 13px; }
+  .rpl-ctl { inset-inline: 8px; bottom: 8px; padding: 6px 9px 8px; }
+  .rpl-time { font-size: 9.5px; }
+  .rpl-vol { display: none; }
+  .rpl-btn.top-hide { display: none; }
+  .rpl-menu { inset-inline: 8px; bottom: 84px; max-width: none; }
+  .rpl-stats { inset-inline: 8px; width: auto; }
+  .rpl-set { width: 100%; }
+  .rpl-hud { font-size: 12px; padding: 8px 12px; }
+  .rpl-big { width: 68px; height: 68px; font-size: 22px; }
+  .rpl-kgrid { grid-template-columns: 1fr; }
+  .rpl.mini .rpl-frame { width: min(300px, 72vw); }
+}
+@media (max-height: 430px) and (orientation: landscape) {
+  .rpl-ttl span { display: none; }
+  .rpl-ctl { bottom: 8px; }
+  .rpl-big { width: 56px; height: 56px; font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rpl, .rpl *, .rpl *::before, .rpl *::after {
+    animation-duration: .001ms !important; transition-duration: .001ms !important;
+  }
+}
