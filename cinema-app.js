@@ -193,6 +193,29 @@
   };
   var EDIT_ID = null;
   var db = null, auth = null, storage = null;
+
+  /* ── تنظیمات ظاهری صفحه (فقط روی همین دستگاه) ─────────────── */
+  var PREF_KEY = "rn_cine_pref";
+  var PREF = ls(PREF_KEY, { density: "normal", ads: true, motion: true, auto: true });
+  if (!PREF || typeof PREF !== "object") PREF = {};
+  if (!PREF.density) PREF.density = "normal";
+  if (typeof PREF.ads !== "boolean") PREF.ads = true;
+  if (typeof PREF.motion !== "boolean") PREF.motion = true;
+  if (typeof PREF.auto !== "boolean") PREF.auto = true;
+  var HERO = { i: 0, sig: "", timer: null };
+  var THEMES = [["neo", "🌌 نئو"], ["sakura", "🌸 ساکورا"], ["gold", "👑 طلایی"], ["cyber", "🧪 سایبر"], ["ember", "🔥 امبر"]];
+
+  function themeGet() { try { return localStorage.getItem("ronin_hp_theme") || "neo"; } catch (e) { return "neo"; } }
+  function themeSet(t) { try { localStorage.setItem("ronin_hp_theme", t); } catch (e) {} }
+  function applyPrefs() {
+    document.documentElement.setAttribute("data-rn-theme", themeGet());
+    if (!document.body) return;
+    document.body.classList.toggle("cx-noad", !PREF.ads);
+    document.body.classList.toggle("cx-lite", !PREF.motion);
+    document.body.classList.toggle("cx-density-compact", PREF.density === "compact");
+    document.body.classList.toggle("cx-density-big", PREF.density === "big");
+  }
+  function savePrefs() { lsSet(PREF_KEY, PREF); applyPrefs(); }
   try {
     if (window.firebase) {
       if (!firebase.apps.length) firebase.initializeApp(FB);
@@ -344,29 +367,87 @@
     return '<div class="cx-empty">چیزی با این فیلترها پیدا نشد.<br>عبارت جست‌وجو را کوتاه‌تر کن یا فیلترها را پاک کن.' +
       '<div style="margin-top:12px"><button class="cx-btn ghost sm" type="button" data-clear="1">پاک کردن فیلترها</button></div></div>';
   }
+  function heroPool() {
+    var list = visible(), feat = [], rest = [];
+    list.forEach(function (it) { (it.featured ? feat : rest).push(it); });
+    var playFirst = function (a, b) { return (plays(b) ? 1 : 0) - (plays(a) ? 1 : 0); };
+    feat.sort(playFirst); rest.sort(playFirst);
+    return feat.concat(rest).slice(0, 5);
+  }
+  function heroHTML(it, i, total) {
+    var saved = watch()[it.id], rate = num(it.rate), h = hue(it.id || it.title);
+    var meta = [];
+    if (rate) meta.push('<span class="cx-hm-rate">★ ' + fa(rate.toFixed(1)) + "</span>");
+    if (it.year) meta.push("<span>" + fa(it.year) + "</span>");
+    meta.push("<span>" + kindIc(it.kind) + " " + kindFa(it.kind) + "</span>");
+    if (it.country) meta.push("<span>" + esc(it.country) + "</span>");
+    if (it.eps && it.eps.length) meta.push("<span>" + fa(it.eps.length) + " قسمت</span>");
+    meta.push(plays(it) ? '<span class="ok">● آمادهٔ پخش</span>' : "<span>به‌زودی</span>");
+    var dots = "";
+    for (var d = 0; d < total; d++) {
+      dots += '<button class="cx-hero-dot' + (d === i ? " on" : "") + '" type="button" data-hero-dot="' + d + '" aria-label="اسلاید ' + fa(d + 1) + '"></button>';
+    }
+    return '<div class="cx-hero-bg' + (it.poster ? " has-img" : "") + '" id="cxHeroBg" style="--h:' + h + '"></div>' +
+      '<div class="cx-hero-mark" aria-hidden="true">' + esc(it.en || it.title) + "</div>" +
+      '<div class="cx-hero-in">' +
+        '<div class="cx-hero-poster">' + poster(it) + (rate ? '<b class="cx-hp-rate">★ ' + fa(rate.toFixed(1)) + "</b>" : "") + "</div>" +
+        '<div class="cx-hero-tx">' +
+          '<div class="cx-hero-kick"><i></i> پیشنهاد ویژهٔ رونین <b>' + fa(i + 1) + " / " + fa(total) + "</b></div>" +
+          "<h2>" + esc(it.title) + (it.en ? "<small>" + esc(it.en) + "</small>" : "") + "</h2>" +
+          '<div class="cx-hero-meta">' + meta.join("") + "</div>" +
+          (it.genres.length ? '<div class="cx-hero-tags">' + it.genres.map(function (g) { return "<span>" + esc(g) + "</span>"; }).join("") + "</div>" : "") +
+          "<p>" + esc(it.desc || "خلاصه‌ای برای این عنوان ثبت نشده.") + "</p>" +
+          '<div class="cx-hero-act">' +
+            (plays(it) ? '<button class="cx-btn cx-hero-play" type="button" data-play="' + esc(it.id) + ':0">▶ تماشا کن</button>' : "") +
+            '<button class="cx-btn ghost" type="button" data-id="' + esc(it.id) + '">ℹ جزئیات</button>' +
+            '<button class="cx-btn ghost" type="button" data-wb="' + esc(it.id) + '">' + (saved ? "✓ در لیست من" : "＋ لیست من") + "</button>" +
+          "</div>" +
+        "</div>" +
+        '<div class="cx-hero-side">' +
+          (rate ? '<div class="cx-score" style="--v:' + clamp(Math.round(rate * 10), 0, 100) + '"><b>' + fa(rate.toFixed(1)) + "</b><i>از ۱۰</i></div>" : "") +
+          (it.studio ? '<div class="cx-hero-fact"><span>استودیو</span><b>' + esc(it.studio) + "</b></div>" : "") +
+          '<div class="cx-hero-fact"><span>زبان</span><b>' + esc(it.lang || "—") + "</b></div>" +
+          (it.eps && it.eps.length ? '<div class="cx-hero-fact"><span>قسمت‌ها</span><b>' + fa(it.eps.length) + " قسمت</b></div>" : "") +
+        "</div>" +
+      "</div>" +
+      '<div class="cx-hero-bot">' +
+        '<div class="cx-hero-dots">' + dots + "</div>" +
+        '<div class="cx-hero-nav"><button class="cx-hero-arrow" type="button" data-hero="1" aria-label="بعدی">‹</button>' +
+          '<span class="cx-hero-count">' + fa(i + 1) + " / " + fa(total) + "</span>" +
+          '<button class="cx-hero-arrow" type="button" data-hero="-1" aria-label="قبلی">›</button></div>' +
+      "</div>" +
+      '<div class="cx-hero-prog' + (PREF.auto && PREF.motion ? " on" : "") + '" aria-hidden="true"><i></i></div>';
+  }
+  function stopHero() { clearTimeout(HERO.timer); HERO.timer = null; }
+  function queueHero() {
+    stopHero();
+    if (!PREF.auto || !PREF.motion) return;
+    HERO.timer = setTimeout(function () {
+      if (document.hidden) { queueHero(); return; }
+      var m = $("#cxModal"), s = $("#cxSheet");
+      if ((m && !m.hidden) || (s && !s.hidden) || (window.RoninPlayer && window.RoninPlayer.isOpen())) { queueHero(); return; }
+      heroGo(1);
+    }, 8000);
+  }
   function paintHero() {
     var box = $("#cxHero");
     if (!box) return;
-    var list = visible(), it = null;
-    for (var i = 0; i < list.length; i++) if (list[i].featured) { it = list[i]; break; }
-    if (!it) it = list[0] || catalog()[0];
-    if (!it) { box.innerHTML = ""; return; }
-    box.innerHTML = '<div class="cx-hero-bg" id="cxHeroBg"></div>' +
-      '<div class="cx-hero-in">' +
-        '<div class="cx-hero-poster">' + poster(it) + "</div>" +
-        '<div class="cx-hero-tx">' +
-          '<div class="cx-hero-tags"><span>🔥 پیشنهاد رونین</span><span>' + kindIc(it.kind) + " " + kindFa(it.kind) + "</span>" +
-            (it.rate ? "<span>★ " + fa(it.rate) + "</span>" : "") + (it.year ? "<span>" + fa(it.year) + "</span>" : "") + "</div>" +
-          "<h2>" + esc(it.title) + "</h2><p>" + esc(it.desc || "") + "</p>" +
-          '<div class="cx-hero-act">' +
-            (plays(it) ? '<button class="cx-btn" type="button" data-play="' + esc(it.id) + ':0">▶ تماشا</button>' : "") +
-            '<button class="cx-btn ghost" type="button" data-id="' + esc(it.id) + '">جزئیات و کیفیت‌ها</button>' +
-            '<button class="cx-btn ghost" type="button" data-wb="' + esc(it.id) + '">🔖 لیست من</button>' +
-          "</div>" +
-        "</div>" +
-      "</div>";
+    var pool = heroPool();
+    if (!pool.length) { box.innerHTML = ""; stopHero(); return; }
+    var sig = pool.map(function (x) { return x.id; }).join("|");
+    if (sig !== HERO.sig) { HERO.sig = sig; HERO.i = 0; }
+    if (HERO.i >= pool.length) HERO.i = 0;
+    var it = pool[HERO.i];
+    box.innerHTML = heroHTML(it, HERO.i, pool.length);
     var bg = $("#cxHeroBg");
-    if (bg) bg.style.backgroundImage = it.poster ? 'url("' + it.poster + '")' : "none";
+    if (bg && it.poster) bg.style.backgroundImage = 'url("' + String(it.poster).replace(/"/g, "") + '")';
+    queueHero();
+  }
+  function heroGo(dir) {
+    var pool = heroPool();
+    if (!pool.length) return;
+    HERO.i = (HERO.i + num(dir, 1) + pool.length) % pool.length;
+    paintHero();
   }
   function paintTabs() {
     var box = $("#cxTabs");
@@ -377,7 +458,7 @@
     c.all = all.length;
     var tabs = [
       ["all", "✨ همه", c.all], ["anime", "🌸 انیمه", c.anime],
-      ["film", "🎬 فیلم خارجی", c.film], ["series", "📺 سریال", c.series],
+      ["film", "🎬 فیلم", c.film], ["series", "📺 سریال", c.series],
       ["mine", "🔖 لیست من", c.mine]
     ];
     var cur = S.mine ? "mine" : S.kind;
@@ -415,14 +496,14 @@
     var box = $("#cxSide");
     if (box) box.innerHTML = filtersHTML();
     var sheet = $("#cxSheet");
-    if (sheet && !sheet.hidden) {
+    if (sheet && sheet.getAttribute("data-mode") === "filters") {
       sheet.innerHTML = '<div class="cx-sheet-in"><div class="cx-sheet-h"><b>فیلترها</b><button class="cx-x" type="button" data-close-sheet="1" style="position:static">✕</button></div>' +
         filtersHTML() + '<button class="cx-btn wide" type="button" data-close-sheet="1" style="margin-top:10px">نمایش نتایج</button></div>';
     }
   }
   function paintTitle() {
     var t = $("#cxTitle"), nav = $$("#cxNav a");
-    var names = { all: "همهٔ عنوان‌ها", anime: "انیمه", film: "فیلم‌های خارجی", series: "سریال‌ها", mine: "لیست تماشای من" };
+    var names = { all: "همهٔ عنوان‌ها", anime: "انیمه", film: "فیلم‌ها", series: "سریال‌ها", mine: "لیست تماشای من" };
     var cur = S.mine ? "mine" : S.kind;
     if (t) t.textContent = names[cur] || names.all;
     nav.forEach(function (a) {
@@ -588,345 +669,38 @@
   }
 
   /* ── ۱۲. پلیر ───────────────────────────────────────────────── */
-  var PL = { id: null, idx: 0, hls: null, subs: [], idleT: null, saveT: 0, embed: false, pending: 0 };
-
-  function embedURL(url) {
-    if (!url) return null;
-    var yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{6,})/);
-    if (yt) return "https://www.youtube.com/embed/" + yt[1] + "?rel=0&modestbranding=1";
-    var ap = url.match(/aparat\.com\/v\/([\w-]+)/);
-    if (ap) return "https://www.aparat.com/video/video/embed/videohash/" + ap[1] + "/vt/frame";
-    var vm = url.match(/vimeo\.com\/(\d+)/);
-    if (vm) return "https://player.vimeo.com/video/" + vm[1];
-    if (/player\.|\/embed\/|<iframe/i.test(url)) return url;
-    return null;
-  }
-  function loadHls(cb) {
-    if (window.Hls) return cb(window.Hls);
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js";
-    s.onload = function () { cb(window.Hls); };
-    s.onerror = function () { cb(null); };
-    document.head.appendChild(s);
-  }
-  function posMap() { return ls(POSKEY, {}) || {}; }
-  function posGet(id, i) { var m = posMap(); return num(m[id + "|" + i]); }
-  function posSet(id, i, t) {
-    if (!id || !(t > 5)) return;
-    var m = posMap();
-    m[id + "|" + i] = Math.floor(t);
-    lsSet(POSKEY, m);
-  }
-  function playerHTML(it, src, idx, srcs, emb) {
-    var subs = PL.subs;
-    var subOpt = subs.length ? subs.map(function (s, i) { return '<button type="button" data-sub="' + i + '">' + esc(s.label || ("زیرنویس " + (i + 1))) + "</button>"; }).join("") : "";
-    var iframe = emb ? '<iframe src="' + esc(emb) + '" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe>' : "";
-    var video = emb ? "" : '<video id="cxV" playsinline preload="metadata"' + (it.poster ? ' poster="' + esc(it.poster) + '"' : "") + "></video>";
-    return '<div class="cxp" id="cxp">' +
-      '<div class="cxp-top"><button class="cxp-ib" type="button" data-p="close" title="بستن (Esc)">→</button>' +
-        '<div style="min-width:0"><div class="ttl">' + esc(it.title) + '</div><div class="sub">' + kindIc(it.kind) + " " + kindFa(it.kind) +
-          (it.year ? " · " + fa(it.year) : "") + (src.label ? " · " + esc(src.label) : "") + "</div></div>" +
-        '<span class="sp"></span>' +
-        '<button class="cxp-ib" type="button" data-p="info" title="جزئیات">ℹ️</button>' +
-        (srcs.length > 1 ? '<button class="cxp-ib" type="button" data-p="next" title="منبع بعدی">⏭</button>' : "") +
-      "</div>" +
-      '<div class="cxp-stage" id="cxpStage">' + video + iframe +
-        '<div class="cxp-spin" id="cxpSpin"></div>' +
-        (emb ? "" : '<button class="cxp-bigplay" id="cxBig" type="button" title="پخش">▶</button>') +
-        '<div class="cxp-err" id="cxpErr"></div>' +
-        (emb ? "" :
-        '<div class="cxp-ctl" id="cxpCtl">' +
-          '<input class="cxp-seek" id="cxSeek" type="range" min="0" max="1000" value="0" aria-label="زمان پخش">' +
-          '<div class="cxp-row">' +
-            '<button class="cxp-txt" type="button" data-p="toggle" id="cxPlayBtn">▶</button>' +
-            '<button class="cxp-txt" type="button" data-p="back" title="۱۰ ثانیه عقب">↺۱۰</button>' +
-            '<button class="cxp-txt" type="button" data-p="fwd" title="۱۰ ثانیه جلو">۱۰↻</button>' +
-            '<button class="cxp-txt" type="button" data-p="mute" id="cxMute">🔊</button>' +
-            '<input class="cxp-vol" id="cxVol" type="range" min="0" max="100" value="100" aria-label="صدا">' +
-            '<span class="cxp-time" id="cxTime">۰:۰۰ / ۰:۰۰</span>' +
-            '<span style="flex:1"></span>' +
-            '<button class="cxp-txt" type="button" data-p="menu:speed" id="cxSpd">۱×</button>' +
-            (srcs.length > 1 ? '<button class="cxp-txt" type="button" data-p="menu:q">کیفیت</button>' : "") +
-            (subs.length ? '<button class="cxp-txt" type="button" data-p="menu:sub">زیرنویس</button>' : "") +
-            '<button class="cxp-txt" type="button" data-p="pip" title="تصویر در تصویر">PiP</button>' +
-            '<button class="cxp-txt" type="button" data-p="fs" id="cxFs" title="تمام‌صفحه">⛶</button>' +
-          "</div>" +
-        "</div>") +
-        '<div class="cxp-menu" id="cxpMenu"></div>' +
-        '<div class="cxp-tip" id="cxpTip"></div>' +
-      "</div></div>";
-  }
+  /* پلیر واقعی در cinema-player.js است. اینجا فقط داده‌های عنوان را
+     به آن می‌دهیم؛ اگر آن فایل نباشد، پیام روشن نشان داده می‌شود. */
   function openPlayer(id, idx) {
     var it = byId(id);
     if (!it) return;
     if (it.prem && !S.prem) return upsell(it);
-    var srcs = it.sources || [];
+    var srcs = (it.sources || []).filter(function (s) { return s && s.href; });
     if (!srcs.length) { toast("برای این عنوان هنوز لینک پخش ثبت نشده", "err"); return; }
+    if (!window.RoninPlayer) { toast("ماژول پلیر بارگذاری نشد؛ cinema-player.js را بررسی کن", "err"); return; }
     idx = clamp(num(idx), 0, srcs.length - 1);
-    var src = srcs[idx];
-    var emb = embedURL(src.href);
-    PL.id = id; PL.idx = idx; PL.embed = !!emb; PL.subs = (src.subs && src.subs.length ? src.subs : (it.subs || []));
-    var wrap = $("#cxPlayer");
-    if (!wrap) return;
-    wrap.innerHTML = playerHTML(it, src, idx, srcs, emb);
-    wrap.hidden = false;
-    document.body.classList.add("lock");
-    var box = $("#cxp");
-    if (box) box.classList.add("playing");
-    if (!emb) initVideo(it, src, idx, srcs);
-    bindPlayerChrome(it, srcs, idx, emb);
-  }
-  function initVideo(it, src, idx, srcs) {
-    var v = $("#cxV");
-    if (!v) return;
-    PL.pending = posGet(it.id, idx);
-    attach(v, src.href);
-    /* زیرنویس‌ها */
-    PL.subs.forEach(function (s, i) {
-      var tr = document.createElement("track");
-      tr.kind = "subtitles"; tr.label = s.label || ("زیرنویس " + (i + 1)); tr.srclang = s.lang || "fa";
-      tr.src = s.src;
-      v.appendChild(tr);
+    window.RoninPlayer.open({
+      id: it.id,
+      title: it.title,
+      subtitle: [kindFa(it.kind), it.year ? fa(it.year) : "", it.country || ""].filter(Boolean).join(" · "),
+      poster: it.poster || "",
+      badges: [it.rate ? "★ " + fa(it.rate) : "", it.en || ""].filter(Boolean),
+      sources: srcs.map(function (s) { return { label: s.label || "پخش", src: s.href, subs: s.subs || [] }; }),
+      subs: it.subs || [],
+      index: idx,
+      onNext: srcs.length > 1 ? function (from) { openPlayer(it.id, (num(from) + 1) % srcs.length); } : null,
+      onClose: function () { S.tmpItem = null; unlock(); },
+      onInfo: function () { openDetail(it.id); }
     });
-    var spin = $("#cxpSpin"), big = $("#cxBig"), err = $("#cxpErr"), seek = $("#cxSeek"), time = $("#cxTime"), playBtn = $("#cxPlayBtn"), mute = $("#cxMute"), vol = $("#cxVol");
-    var savedVol = clamp(num(ls("rn_cine_vol", 1)), 0, 1);
-    v.volume = savedVol;
-    if (vol) { vol.value = String(Math.round(savedVol * 100)); vol.style.setProperty("--v", Math.round(savedVol * 100) + "%"); }
-    if (mute) mute.textContent = savedVol === 0 ? "🔇" : "🔊";
+  }
 
-    function paintTime() {
-      if (!seek) return;
-      var d = isFinite(v.duration) ? v.duration : 0;
-      var p = d ? (v.currentTime / d) * 100 : 0;
-      seek.value = String(Math.round(p * 10));
-      seek.style.setProperty("--p", p.toFixed(2) + "%");
-      if (time) time.textContent = fmtTime(v.currentTime) + " / " + fmtTime(d || 0);
-    }
-    function setPlay(ui) {
-      if (playBtn) playBtn.textContent = ui ? "⏸" : "▶";
-      if (big) big.hidden = ui;
-      if (box) box.classList.toggle("playing", ui);
-      var b = $("#cxp"); if (b) b.classList.toggle("idle", ui ? b.classList.contains("idle") : false);
-    }
-    v.addEventListener("loadedmetadata", function () {
-      if (PL.pending > 10 && PL.pending < v.duration - 12) {
-        v.currentTime = PL.pending;
-        toast("از " + fmtTime(PL.pending) + " ادامه داده شد", "ok");
-      }
-      PL.pending = 0;
-      paintTime();
-    });
-    v.addEventListener("timeupdate", function () {
-      paintTime();
-      if (Date.now() - PL.saveT > 4000) { PL.saveT = Date.now(); posSet(PL.id, PL.idx, v.currentTime); }
-    });
-    v.addEventListener("play", function () { setPlay(true); });
-    v.addEventListener("pause", function () { setPlay(false); posSet(PL.id, PL.idx, v.currentTime); });
-    v.addEventListener("waiting", function () { if (spin) spin.classList.add("on"); });
-    v.addEventListener("playing", function () { if (spin) spin.classList.remove("on"); if (err) err.classList.remove("on"); });
-    v.addEventListener("canplay", function () { if (spin) spin.classList.remove("on"); });
-    v.addEventListener("error", function () { showErr(v, err); });
-    v.addEventListener("volumechange", function () {
-      if (mute) mute.textContent = v.muted || v.volume === 0 ? "🔇" : "🔊";
-      if (vol) { var pc = Math.round((v.muted ? 0 : v.volume) * 100); vol.value = String(pc); vol.style.setProperty("--v", pc + "%"); }
-      lsSet("rn_cine_vol", v.muted ? 0 : v.volume);
-    });
-    if (seek) seek.addEventListener("input", function () {
-      if (isFinite(v.duration)) v.currentTime = (num(seek.value) / 1000) * v.duration;
-    });
-    if (vol) vol.addEventListener("input", function () {
-      v.volume = clamp(num(vol.value) / 100, 0, 1); v.muted = false;
-      vol.style.setProperty("--v", vol.value + "%");
-    });
-    if (big) big.addEventListener("click", function () { v.play().catch(function () {}); });
-    v.addEventListener("click", function () { if (v.paused) v.play().catch(function () {}); else v.pause(); });
-    v.addEventListener("dblclick", function () { toggleFs(); });
-    ["mousemove", "touchstart"].forEach(function (ev) {
-      var stage = $("#cxpStage");
-      if (stage) stage.addEventListener(ev, wake, { passive: true });
-    });
-    v.play().catch(function () { /* مرورگر autoplay را بست — خود کاربر پخش می‌زند */ });
-  }
-  function attach(v, href) {
-    if (PL.hls) { try { PL.hls.destroy(); } catch (e) {} PL.hls = null; }
-    href = String(href || "");
-    var isHls = /\.m3u8(\?|#|$)/i.test(href);
-    if (!isHls) { v.src = href; return; }
-    if (v.canPlayType("application/vnd.apple.mpegurl")) { v.src = href; return; }
-    loadHls(function (Hls) {
-      if (!Hls || !Hls.isSupported()) { v.src = href; return; }
-      PL.hls = new Hls({ maxBufferLength: 30 });
-      PL.hls.loadSource(href);
-      PL.hls.attachMedia(v);
-      PL.hls.on(Hls.Events.ERROR, function (e, d) {
-        if (d && d.fatal) showErr(v, $("#cxpErr"));
-      });
-    });
-  }
-  function showErr(v, el) {
-    if (!el) return;
-    var host = "";
-    try { host = new URL(v.currentSrc || v.src || "").host; } catch (e) {}
-    el.textContent = host
-      ? "پخش از «" + host + "» ممکن نشد. ممکن است لینک منقضی شده یا دامنه اجازهٔ پخش نداشته باشد."
-      : "فایل پخش نشد؛ لینک یا فرمت را بررسی کن.";
-    el.classList.add("on");
-    toast("ویدیو پخش نشد", "err");
-  }
-  function wake() {
-    var box = $("#cxp");
-    if (!box) return;
-    box.classList.remove("idle");
-    clearTimeout(PL.idleT);
-    PL.idleT = setTimeout(function () {
-      var v = $("#cxV");
-      if (v && !v.paused) box.classList.add("idle");
-    }, 2800);
-  }
-  function togglePlay() { var v = $("#cxV"); if (!v) return; if (v.paused) v.play().catch(function () {}); else v.pause(); }
-  function seekBy(s) { var v = $("#cxV"); if (!v || !isFinite(v.duration)) return; v.currentTime = clamp(v.currentTime + s, 0, v.duration); }
-  function toggleMute() { var v = $("#cxV"); if (!v) return; v.muted = !v.muted; }
-  function toggleFs() {
-    var st = $("#cxpStage");
-    if (!st) return;
-    var d = document;
-    if (!d.fullscreenElement && !d.webkitFullscreenElement) {
-      var req = st.requestFullscreen || st.webkitRequestFullscreen;
-      if (!req) return;
-      try {
-        var p = req.call(st);
-        if (p && p.catch) p.catch(function () {});
-      } catch (e) {}
-    } else {
-      var ex = d.exitFullscreen || d.webkitExitFullscreen;
-      if (!ex) return;
-      try {
-        var q = ex.call(d);
-        if (q && q.catch) q.catch(function () {});
-      } catch (e) {}
-    }
-  }
-  function togglePip() {
-    var v = $("#cxV");
-    if (!v) return;
-    if (!document.pictureInPictureEnabled || !v.requestPictureInPicture) return toast("مرورگر تو PiP را پشتیبانی نمی‌کند", "err");
-    if (document.pictureInPictureElement) document.exitPictureInPicture().catch(function () {});
-    else v.requestPictureInPicture().catch(function () { toast("PiP ممکن نشد", "err"); });
-  }
-  function setRate(r, btn) {
-    var v = $("#cxV");
-    if (!v) return;
-    v.playbackRate = r;
-    var lb = $("#cxSpd");
-    if (lb) lb.textContent = (r === 1 ? "۱" : fa(r)) + "×";
-    $$("#cxpMenu [data-spd]").forEach(function (b) { b.classList.toggle("on", num(b.getAttribute("data-spd")) === r); });
-    closeMenu();
-    toast("سرعت پخش: " + fa(r) + "×", "ok");
-  }
-  function setSub(i, label) {
-    var v = $("#cxV");
-    if (!v) return;
-    var tracks = v.textTracks || [];
-    for (var k = 0; k < tracks.length; k++) tracks[k].mode = (k === i ? "showing" : "disabled");
-    closeMenu();
-    toast(i < 0 ? "زیرنویس خاموش شد" : "زیرنویس: " + (label || fa(i + 1)), "ok");
-  }
-  function closeMenu() { var m = $("#cxpMenu"); if (m) { m.classList.remove("on"); m.innerHTML = ""; } }
-  function menu(kind, it, srcs, idx) {
-    var m = $("#cxpMenu");
-    if (!m) return;
-    if (m.classList.contains("on")) { closeMenu(); return; }
-    var h = "";
-    if (kind === "speed") {
-      h = "<b>سرعت پخش</b>" + [0.5, 0.75, 1, 1.25, 1.5, 2].map(function (r) {
-        return '<button type="button" data-spd="' + r + '">' + (r === 1 ? "عادی (۱×)" : fa(r) + "×") + "</button>";
-      }).join("");
-    } else if (kind === "q") {
-      h = "<b>کیفیت / منبع</b>" + srcs.map(function (s, i) {
-        return '<button type="button" data-src="' + i + '"' + (i === idx ? ' class="on"' : "") + ">" + esc(s.label || ("منبع " + (i + 1))) + "</button>";
-      }).join("");
-    } else if (kind === "sub") {
-      h = "<b>زیرنویس</b><button type=\"button\" data-sub=\"-1\">خاموش</button>" +
-        PL.subs.map(function (s, i) { return '<button type="button" data-sub="' + i + '">' + esc(s.label || ("زیرنویس " + (i + 1))) + "</button>"; }).join("");
-    }
-    m.innerHTML = h;
-    m.classList.add("on");
-  }
-  function bindPlayerChrome(it, srcs, idx, emb) {
-    var box = $("#cxp");
-    if (!box) return;
-    box.addEventListener("click", function (e) {
-      var t = e.target;
-      if (!t.closest) return;
-      var mi = t.closest("[data-spd]");
-      if (mi) return setRate(num(mi.getAttribute("data-spd")), mi);
-      var ms = t.closest("[data-src]");
-      if (ms) {
-        var i2 = num(ms.getAttribute("data-src"));
-        var at = 0;
-        var v0 = $("#cxV");
-        if (v0 && isFinite(v0.currentTime)) at = v0.currentTime;
-        openPlayer(it.id, i2);
-        var v1 = $("#cxV");
-        if (v1 && at > 10) v1.addEventListener("loadedmetadata", function once() {
-          v1.currentTime = at; v1.removeEventListener("loadedmetadata", once);
-        });
-        return;
-      }
-      var msub = t.closest("[data-sub]");
-      if (msub) {
-        var si = num(msub.getAttribute("data-sub"), -1);
-        return setSub(si, si >= 0 && PL.subs[si] ? PL.subs[si].label : "");
-      }
-      var b = t.closest("[data-p]");
-      if (!b) return;
-      var a = b.getAttribute("data-p");
-      if (a === "close") return closePlayer();
-      if (a === "info") return openDetail(it.id);
-      if (a === "toggle") return togglePlay();
-      if (a === "back") return seekBy(-10);
-      if (a === "fwd") return seekBy(10);
-      if (a === "mute") return toggleMute();
-      if (a === "pip") return togglePip();
-      if (a === "fs") return toggleFs();
-      if (a === "next") return openPlayer(it.id, (idx + 1) % srcs.length);
-      if (a.indexOf("menu:") === 0) return menu(a.slice(5), it, srcs, idx);
-    });
-    wake();
-  }
-  function closePlayer() {
-    var v = $("#cxV");
-    if (v) { posSet(PL.id, PL.idx, v.currentTime); try { v.pause(); } catch (e) {} }
-    if (PL.hls) { try { PL.hls.destroy(); } catch (e) {} PL.hls = null; }
-    if (document.pictureInPictureElement) document.exitPictureInPicture().catch(function () {});
-    if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
-    var wrap = $("#cxPlayer");
-    if (wrap) { wrap.hidden = true; wrap.innerHTML = ""; }
-    PL.id = null;
-    S.tmpItem = null;
-    unlock();
-  }
   function keyboard(e) {
-    var wrap = $("#cxPlayer");
-    if (!wrap || wrap.hidden) {
-      if (e.key === "Escape") {
-        if ($("#cxModal") && !$("#cxModal").hidden) modalClose();
-        if ($("#cxSheet") && !$("#cxSheet").hidden) closeSheet();
-      }
-      return;
-    }
-    var tag = (e.target && e.target.tagName) || "";
-    if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
-    switch (e.key) {
-      case " ": case "k": e.preventDefault(); togglePlay(); break;
-      case "ArrowLeft": seekBy(10); break;
-      case "ArrowRight": seekBy(-10); break;
-      case "ArrowUp": e.preventDefault(); var v1 = $("#cxV"); if (v1) v1.volume = clamp(v1.volume + 0.1, 0, 1); break;
-      case "ArrowDown": e.preventDefault(); var v2 = $("#cxV"); if (v2) v2.volume = clamp(v2.volume - 0.1, 0, 1); break;
-      case "m": toggleMute(); break;
-      case "f": toggleFs(); break;
-      case "Escape": closePlayer(); break;
-    }
+    if (e.key !== "Escape") return;
+    if (window.RoninPlayer && window.RoninPlayer.isOpen()) return;
+    var m = $("#cxModal");
+    if (m && !m.hidden) return modalClose();
+    var s = $("#cxSheet");
+    if (s && !s.hidden) closeSheet();
   }
 
   /* ── ۱۳. آپلود (مالک/تیم) ───────────────────────────────────── */
@@ -1052,15 +826,57 @@
   }
 
   /* ── ۱۴. رویدادها ───────────────────────────────────────────── */
+  function prefRow(k, t, s, on) {
+    return '<label class="cx-set-row"><span>' + t + "<small>" + s + '</small></span><span class="cx-sw"><input type="checkbox" data-pref="' + k + '"' + (on ? " checked" : "") + '><i></i></span></label>';
+  }
+  function settingsHTML() {
+    var th = themeGet();
+    return '<div class="cx-sheet-in cx-set"><div class="cx-sheet-h"><b>⚙ تنظیمات صفحه</b><button class="cx-x" type="button" data-close-sheet="1" style="position:static">✕</button></div>' +
+      '<p class="cx-set-note">این تنظیمات روی همین دستگاه ذخیره می‌شود و تم انتخابی روی صفحهٔ اصلی رونین هم اعمال می‌شود.</p>' +
+      '<div class="cx-set-sec"><h5>تم صفحه</h5><div class="cx-pills">' +
+        THEMES.map(function (t) {
+          return '<button class="cx-pill' + (th === t[0] ? " on" : "") + '" type="button" data-theme="' + t[0] + '">' + t[1] + "</button>";
+        }).join("") + "</div></div>" +
+      '<div class="cx-set-sec"><h5>اندازهٔ کارت‌ها</h5><div class="cx-pills">' +
+        [["compact", "کوچک"], ["normal", "معمولی"], ["big", "بزرگ"]].map(function (d) {
+          return '<button class="cx-pill' + (PREF.density === d[0] ? " on" : "") + '" type="button" data-density="' + d[0] + '">' + d[1] + "</button>";
+        }).join("") + "</div></div>" +
+      '<div class="cx-set-sec"><h5>نمایش و حرکت</h5>' +
+        prefRow("ads", "نمایش جایگاه تبلیغات", "بنر بالای کاتالوگ", PREF.ads) +
+        prefRow("motion", "انیمیشن و افکت‌ها", "برای دستگاه‌های کند خاموش کن", PREF.motion) +
+        prefRow("auto", "چرخش خودکار هیرو", "تغییر پیشنهاد ویژه هر ۸ ثانیه", PREF.auto) +
+      "</div>" +
+      '<div class="cx-set-sec"><h5>داده‌ها</h5>' +
+        '<button class="cx-set-btn danger" type="button" data-pref="clear-watch">🧹 پاک کردن لیست تماشا</button>' +
+        '<button class="cx-set-btn" type="button" data-pref="reset">↺ بازگشت به تنظیمات پیش‌فرض</button>' +
+      "</div>" +
+      '<div class="cx-set-foot">RONIN FILM · v2</div></div>';
+  }
+  function renderSettings() {
+    var s = $("#cxSheet");
+    if (s && !s.hidden && s.getAttribute("data-mode") === "set") s.innerHTML = settingsHTML();
+  }
+  function openSettings() {
+    var s = $("#cxSheet");
+    if (!s) return;
+    s.setAttribute("data-mode", "set");
+    s.innerHTML = settingsHTML();
+    s.hidden = false;
+    document.body.classList.add("lock");
+  }
   function toggleSheet() {
     var s = $("#cxSheet");
     if (!s) return;
-    if (s.hidden) { paintSide(); s.hidden = false; document.body.classList.add("lock"); }
-    else closeSheet();
+    if (s.hidden || s.getAttribute("data-mode") !== "filters") {
+      s.setAttribute("data-mode", "filters");
+      paintSide();
+      s.hidden = false;
+      document.body.classList.add("lock");
+    } else closeSheet();
   }
   function closeSheet() {
     var s = $("#cxSheet");
-    if (s) { s.hidden = true; s.innerHTML = ""; }
+    if (s) { s.hidden = true; s.innerHTML = ""; s.removeAttribute("data-mode"); }
     unlock();
   }
   function clearFilters() {
@@ -1074,6 +890,40 @@
     if (!t || !t.closest) return;
     if (t.closest("#cxModal") === $("#cxModal") && t.id === "cxModal") return modalClose();
     if (t.closest("#cxSheet") === $("#cxSheet") && t.id === "cxSheet") return closeSheet();
+    var hd = t.closest("[data-hero]");
+    if (hd) { e.preventDefault(); return heroGo(hd.getAttribute("data-hero")); }
+    var hdot = t.closest("[data-hero-dot]");
+    if (hdot) { e.preventDefault(); HERO.i = num(hdot.getAttribute("data-hero-dot")); return paintHero(); }
+    if (t.closest("#cxSetBtn")) { e.preventDefault(); return openSettings(); }
+    var thm = t.closest("[data-theme]");
+    if (thm) {
+      e.preventDefault();
+      themeSet(thm.getAttribute("data-theme"));
+      applyPrefs(); renderSettings();
+      toast("تم صفحه عوض شد", "ok");
+      return;
+    }
+    var den = t.closest("[data-density]");
+    if (den) { e.preventDefault(); PREF.density = den.getAttribute("data-density"); savePrefs(); renderSettings(); return; }
+    var pf = t.closest("button[data-pref]");
+    if (pf) {
+      e.preventDefault();
+      var pk = pf.getAttribute("data-pref");
+      if (pk === "clear-watch") {
+        if (!confirm("لیست تماشای این دستگاه پاک شود؟")) return;
+        try { localStorage.removeItem(WKEY); } catch (err) {}
+        paintResults(); renderSettings();
+        toast("لیست تماشا پاک شد", "ok");
+        return;
+      }
+      if (pk === "reset") {
+        PREF = { density: "normal", ads: true, motion: true, auto: true };
+        themeSet("neo");
+        savePrefs(); renderSettings(); paintAll();
+        toast("تنظیمات به حالت اولیه برگشت", "ok");
+        return;
+      }
+    }
     var wb = t.closest("[data-wb]");
     if (wb) { e.preventDefault(); toggleWatch(wb.getAttribute("data-wb")); return; }
     var pl = t.closest("[data-play]");
@@ -1195,7 +1045,15 @@
   });
   document.addEventListener("change", function (e) {
     var t = e.target;
-    if (!t || !t.id) return;
+    if (!t) return;
+    if (t.matches && t.matches("input[data-pref]")) {
+      var pk = t.getAttribute("data-pref");
+      PREF[pk] = t.checked;
+      savePrefs();
+      if (pk === "auto" || pk === "motion") paintHero();
+      return;
+    }
+    if (!t.id) return;
     if (t.id === "fPlay") { S.playable = t.checked; S.page = 1; paintResults(); paintSide(); syncURL(); }
     if (t.id === "cxSort") { S.sort = t.value; S.page = 1; paintGrid(); syncURL(); }
   });
@@ -1209,6 +1067,7 @@
 
   /* ── ۱۵. شروع ───────────────────────────────────────────────── */
   function boot() {
+    applyPrefs();
     readURL();
     var q = $("#cxq"); if (q) q.value = S.q;
     var sort = $("#cxSort"); if (sort) sort.value = S.sort;
@@ -1220,6 +1079,6 @@
 
   window.RoninCinema = {
     state: S, catalog: catalog, visible: visible, open: openDetail,
-    play: openPlayer, reload: paintAll, upload: openUpload
+    play: openPlayer, reload: paintAll, upload: openUpload, settings: openSettings
   };
 })();
