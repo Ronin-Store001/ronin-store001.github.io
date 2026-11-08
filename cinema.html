@@ -30,7 +30,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="cinema.css?v=3">
+  <link rel="stylesheet" href="cinema.css?v=5">
+  <link rel="stylesheet" href="cinema-player.css?v=3">
 </head>
 
 <body>
@@ -45,7 +46,7 @@
     <nav class="cx-nav" id="cxNav">
       <a href="cinema.html" data-nav="all">همه</a>
       <a href="cinema.html?kind=anime" data-nav="anime">🌸 انیمه</a>
-      <a href="cinema.html?kind=film" data-nav="film">🎬 فیلم خارجی</a>
+      <a href="cinema.html?kind=film" data-nav="film">🎬 فیلم</a>
       <a href="cinema.html?kind=series" data-nav="series">📺 سریال</a>
       <a href="cinema.html?mine=1" data-nav="mine">🔖 لیست من</a>
     </nav>
@@ -57,8 +58,11 @@
     </div>
 
     <div class="cx-act">
-      <button id="cxFilterBtn" class="cx-ico" type="button" title="فیلترها" aria-label="فیلترها">⚙️</button>
-      <button id="cxUploadBtn" class="cx-btn sm" type="button" title="آپلود فیلم/سریال" hidden>＋ آپلود</button>
+      <button id="cxFilterBtn" class="cx-ico" type="button" title="فیلترها" aria-label="فیلترها">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+      </button>
+      <button id="cxSetBtn" class="cx-ico" type="button" title="تنظیمات صفحه" aria-label="تنظیمات صفحه">⚙</button>
+      <button id="cxUploadBtn" class="cx-btn sm" type="button" title="آپلود فیلم/سریال" hidden><span aria-hidden="true">＋</span><span class="cx-up-t">آپلود</span></button>
       <a id="cxAcct" class="cx-ico" href="index.html" title="حساب کاربری" aria-label="حساب">👤</a>
     </div>
   </header>
@@ -130,6 +134,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  <script src="cinema-app.js?v=2"></script>
+  <script src="cinema-player.js?v=2"></script>
+  <script src="cinema-app.js?v=6"></script>
 </body>
 </html>
