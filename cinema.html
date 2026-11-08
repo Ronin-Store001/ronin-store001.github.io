@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa" data-rn-theme="neo">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#04060f">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="رونین فیلم — پخش آنلاین فیلم خارجی، سریال و انیمه با کیفیت بالا، جست‌وجوی حرفه‌ای، فیلتر پیشرفته و پلیر اختصاصی.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="رونین فیلم — فیلم، سریال و انیمه">
+  <meta property="og:description" content="تماشای آنلاین فیلم و انیمه با پلیر اختصاصی رونین">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>رونین فیلم — فیلم، سریال و انیمه</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e22'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='34' fill='%238fdcff'%3E%E5%BF%8D%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    /* تم انتخابی سایت را قبل از رندر اعمال می‌کنیم تا پرش رنگ نداشته باشیم */
+    (function () {
+      try {
+        var t = localStorage.getItem("ronin_hp_theme") || "neo";
+        if (["neo", "sakura", "gold", "cyber", "ember"].indexOf(t) < 0) t = "neo";
+        document.documentElement.setAttribute("data-rn-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="cinema.css?v=3">
+</head>
+
+<body>
+  <a class="cx-skip" href="#cxGrid">رفتن به کاتالوگ</a>
+
+  <header class="cx-top">
+    <a class="cx-brand" href="index.html" title="بازگشت به رونین استور">
+      <span class="cx-mark">忍</span>
+      <span class="cx-bn"><b>RONIN</b><i>فیلم</i></span>
+    </a>
+
+    <nav class="cx-nav" id="cxNav">
+      <a href="cinema.html" data-nav="all">همه</a>
+      <a href="cinema.html?kind=anime" data-nav="anime">🌸 انیمه</a>
+      <a href="cinema.html?kind=film" data-nav="film">🎬 فیلم خارجی</a>
+      <a href="cinema.html?kind=series" data-nav="series">📺 سریال</a>
+      <a href="cinema.html?mine=1" data-nav="mine">🔖 لیست من</a>
+    </nav>
+
+    <div class="cx-search">
+      <span aria-hidden="true">🔍</span>
+      <input id="cxq" type="search" autocomplete="off" placeholder="جست‌وجوی فیلم، سریال، انیمه، ژانر یا استودیو…" aria-label="جست‌وجو">
+      <button id="cxqClear" class="cx-qx" type="button" title="پاک کردن" hidden>✕</button>
+    </div>
+
+    <div class="cx-act">
+      <button id="cxFilterBtn" class="cx-ico" type="button" title="فیلترها" aria-label="فیلترها">⚙️</button>
+      <button id="cxUploadBtn" class="cx-btn sm" type="button" title="آپلود فیلم/سریال" hidden>＋ آپلود</button>
+      <a id="cxAcct" class="cx-ico" href="index.html" title="حساب کاربری" aria-label="حساب">👤</a>
+    </div>
+  </header>
+
+  <main class="cx-wrap">
+    <section id="cxHero" class="cx-hero" aria-label="پیشنهاد ویژه"></section>
+
+    <div class="cx-ad" data-ad="cinema-top">
+      <span class="cx-ad-lb">جایگاه تبلیغات</span>
+      <span class="cx-ad-tx">اینجا می‌توانی محصول یا کانالت را به بازدیدکنندگان رونین فیلم نشان بدهی.</span>
+      <a href="index.html" class="cx-ad-btn">رزرو جایگاه</a>
+    </div>
+
+    <div class="cx-tabs" id="cxTabs" role="tablist" aria-label="نوع محتوا"></div>
+
+    <div class="cx-layout">
+      <aside class="cx-side" id="cxSide" aria-label="فیلترها"></aside>
+
+      <div class="cx-main">
+        <div class="cx-head">
+          <h1 id="cxTitle">همهٔ عنوان‌ها</h1>
+          <span id="cxCount" class="cx-count"></span>
+          <div class="cx-sortbox">
+            <label for="cxSort">مرتب‌سازی</label>
+            <select id="cxSort">
+              <option value="new">جدیدترین</option>
+              <option value="rate">بیشترین امتیاز</option>
+              <option value="year">سال تولید</option>
+              <option value="az">حروف الفبا</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cx-chips" id="cxChips"></div>
+        <div class="cx-grid" id="cxGrid"></div>
+        <div class="cx-more"><button id="cxMore" class="cx-btn ghost" type="button" hidden>نمایش بیشتر</button></div>
+        <p class="cx-note">همهٔ محتوا توسط تیم رونین آپلود و مدیریت می‌شود؛ لینک‌های پخش فقط برای استفادهٔ شخصی است.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="cx-foot">
+    <div class="cx-foot-in">
+      <div>
+        <b>RONIN 忍 FILM</b>
+        <p>کاتالوگ فیلم، سریال و انیمه با پلیر اختصاصی و امکان آپلود برای تیم.</p>
+      </div>
+      <nav>
+        <a href="index.html">صفحهٔ اصلی</a>
+        <a href="cinema.html?kind=anime">انیمه</a>
+        <a href="cinema.html?kind=film">فیلم</a>
+        <a href="cinema.html?kind=series">سریال</a>
+        <a href="index.html#premium">پرمیوم</a>
+      </nav>
+    </div>
+    <div class="cx-foot-lb">© RONIN STORE — تمام حقوق محفوظ است</div>
+  </footer>
+
+  <div id="cxSheet" class="cx-sheet" hidden></div>
+  <div id="cxModal" class="cx-modal" hidden></div>
+  <div id="cxPlayer" class="cxp-wrap" hidden></div>
+  <div id="cxToast" class="cx-toastwrap" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div style="padding:24px;text-align:center">برای دیدن کاتالوگ و پلیر، جاوااسکریپت را روشن کن.</div>
+  </noscript>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="cinema-app.js?v=2"></script>
+</body>
+</html>
