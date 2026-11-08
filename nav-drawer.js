@@ -27,6 +27,7 @@
     profile: ["👤", "پروفایل"],
     myworld: ["🧭", "دنیای من"],
     premium: ["💎", "پرمیوم"],
+    archive: ["🥷", "آرشیو همراه"],
     settings: ["⚙", "تنظیمات"],
     team: ["🛡", "شبکه فرماندهی"],
     owner: ["👑", "پنل مالک"]
@@ -86,6 +87,11 @@
         "border-radius:10px;display:grid;place-items:center;font-size:10px;font-weight:800;" +
         "color:#04060f;background:linear-gradient(135deg,#2fe6ff,#8b5cff)}" +
       "#rail .ditem .cnt.hide{display:none}" +
+      "#rail .ditem[data-cine=\"link\"]{color:#fff!important;font-weight:800;" +
+        "background:linear-gradient(135deg,rgba(124,92,255,.92),rgba(34,211,238,.82));" +
+        "border:1px solid rgba(255,255,255,.26);box-shadow:0 7px 18px rgba(62,43,170,.24)}" +
+      "#rail .ditem[data-cine=\"link\"] i{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}" +
+      "#rail .ditem[data-cine=\"link\"]:hover{filter:brightness(1.08);transform:translateX(-2px)}" +
       "#rail .railuser{margin-top:6px}" +
       "@media (max-width:420px){#rail{width:min(290px,90vw)!important}}";
     document.head.appendChild(s);
@@ -149,6 +155,15 @@
     return d;
   }
 
+  function makeLink(icon, label, href) {
+    var a = document.createElement("a");
+    a.className = "ditem";
+    a.href = href;
+    a.setAttribute("data-cine", "link");
+    a.innerHTML = "<i>" + icon + "</i>" + label;
+    return a;
+  }
+
   function group(icon, title, open) {
     var g = document.createElement("div");
     g.className = "rgroup" + (open ? " open" : "");
@@ -203,6 +218,9 @@
     nav.appendChild(takeItem("home"));
 
     var g1 = group("🧭", "کاوش", true);
+    /* صفحهٔ مستقل فیلم و انیمه؛ در موبایل نوار بالایی مخفی است و باید
+       از همین منو قابل دسترس باشد. */
+    g1.body.appendChild(makeLink("🎬", "فیلم و انیمه", "cinema.html"));
     ["bulletin", "discover", "rank", "events"].forEach(function (k) {
       g1.body.appendChild(takeItem(k));
     });
@@ -230,7 +248,7 @@
     nav.appendChild(g3.root);
 
     var g4 = group("👤", "حساب من", true);
-    ["profile", "myworld", "premium", "settings"].forEach(function (k) {
+    ["profile", "myworld", "premium", "archive", "settings"].forEach(function (k) {
       var it = takeItem(k);
       if (k === "myworld" && !railItem("myworld") && !it) return;
       g4.body.appendChild(it);
@@ -275,9 +293,11 @@
     bellRow.appendChild(bellBadge);
     g6.body.appendChild(bellRow);
 
-    var themeRow = makeRow("🌙", "تم: تیره", function (row) {
-      var b = el("themeToggle");
-      if (b) b.click();
+    /* تم: تیره ← روشن ← خودکار */
+    var themeRow = makeRow("🌗", "تم: خودکار", function (row) {
+      var api = (window.R && R.theme) || window.RoninTheme;
+      if (api && api.cycle) api.cycle();
+      else { var b = el("themeToggle"); if (b) b.click(); }
       setTimeout(function () { syncTools(); }, 80);
     });
     themeRow.id = "nvdTheme";
@@ -326,8 +346,12 @@
     /* تم */
     var tr = el("nvdTheme");
     if (tr) {
-      var dark = (document.documentElement.dataset.theme || "dark") === "dark";
-      tr.innerHTML = "<i>" + (dark ? "🌙" : "☀️") + "</i>تم: " + (dark ? "تیره" : "روشن");
+      var api = (window.R && R.theme) || window.RoninTheme;
+      var light = (document.documentElement.dataset.theme || "dark") === "light";
+      var m = api && api.mode ? api.mode()
+        : (document.documentElement.dataset.themeMode || "auto");
+      tr.innerHTML = "<i>" + (m === "auto" ? "🌗" : light ? "☀️" : "🌙") +
+        "</i>تم: " + (m === "auto" ? "خودکار" : light ? "روشن" : "تیره");
     }
     /* زبان */
     var lr = el("nvdLang");
