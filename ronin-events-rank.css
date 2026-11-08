@@ -328,6 +328,96 @@
   padding:5px 9px;border-radius:9px;font-size:9.5px;font-weight:800;color:#9eeeff;
   border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.08)}
 
+/* ── صفحهٔ اختصاصی رویداد ───────────────────────────────────── */
+#sec-events .erx-evhero[hidden],
+#sec-events .erx-evtools[hidden],
+#sec-events .erx-evlist[hidden],
+#sec-events .erx-detail[hidden]{display:none!important}
+.erx-detail{display:block;animation:erxIn .25s ease}
+.erx-detailbar{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin:12px 0 10px;flex-wrap:wrap}
+.erx-backbtn{color:#dfe7ff!important;background:rgba(9,13,34,.74)!important;
+  border-color:rgba(255,255,255,.14)!important}
+.erx-backbtn:hover{background:rgba(34,211,238,.12)!important;
+  border-color:rgba(34,211,238,.35)!important}
+.erx-evpage{--erx-accent:#2fe6ff;position:relative;overflow:hidden;padding:18px;
+  border-radius:22px;border:1px solid rgba(255,255,255,.11);
+  background:
+    radial-gradient(120% 120% at 0% 0%,rgba(34,211,238,.14),transparent 55%),
+    linear-gradient(155deg,rgba(14,24,48,.94),rgba(6,10,24,.97));
+  box-shadow:0 18px 42px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.05);
+  color:#eef2ff}
+.erx-evpage::before{content:"";position:absolute;inset-inline:8%;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,.75),transparent)}
+.erx-evpage.live{--erx-accent:#3ddb9b;
+  background:radial-gradient(120% 120% at 0% 0%,rgba(61,219,155,.15),transparent 55%),
+    linear-gradient(155deg,rgba(12,32,33,.95),rgba(6,10,22,.97))}
+.erx-evpage.past{--erx-accent:#657091}
+.erx-evpage.nodate{--erx-accent:#8b7bd8}
+.erx-evpagehero{position:relative;display:flex;align-items:flex-start;gap:13px}
+.erx-evpageicon{display:grid;place-items:center;flex:0 0 auto;width:54px;height:54px;
+  border-radius:16px;font-size:25px;line-height:1;
+  border:1px solid color-mix(in srgb,var(--erx-accent) 40%,transparent);
+  background:color-mix(in srgb,var(--erx-accent) 10%,transparent)}
+.erx-evpagecopy{min-width:0;flex:1}
+.erx-evpagecopy .erx-evtop{margin-bottom:5px}
+.erx-evpagecopy h3{margin:0;font-size:24px;line-height:1.45;font-weight:900;
+  letter-spacing:-.3px;color:#f4f7ff;overflow-wrap:anywhere}
+.erx-evpagemeta{margin:5px 0 0;font-size:10px;line-height:1.8;color:#9fa9c9;
+  overflow-wrap:anywhere}
+.erx-evpagegrid{display:grid;grid-template-columns:1.35fr .9fr;gap:11px;margin-top:15px}
+.erx-evpagebody,.erx-evpageside{padding:13px;border-radius:15px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(3,7,18,.28)}
+.erx-evpagebody h4{margin:0 0 7px;font-size:11.5px;font-weight:900;color:#dfe7ff}
+.erx-evpagebody p{margin:0;font-size:11px;line-height:2;color:#b4bdd9;
+  white-space:pre-wrap;overflow-wrap:anywhere}
+.erx-evpagebody .erx-linkbtn{display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+  padding:6px 10px;border-radius:9px;text-decoration:none;font-size:9.5px;font-weight:800;
+  color:#9eeeff;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.08)}
+.erx-evpagebody .erx-linkbtn:hover{background:rgba(34,211,238,.14)}
+.erx-evpagecd{display:flex;align-items:baseline;gap:7px;margin-top:11px;padding-top:9px;
+  border-top:1px dashed rgba(255,255,255,.09)}
+.erx-evpagecd span{font-size:9px;color:#8f99b9}
+.erx-evpagecd b{font-size:21px;line-height:1.2;font-weight:900;color:var(--erx-accent);
+  font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.erx-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.erx-fact{min-width:0;padding:6px 8px;border-radius:9px;background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.06)}
+.erx-fact span{display:block;font-size:8px;color:#8993b3;margin-bottom:2px}
+.erx-fact b{display:block;font-size:9.5px;line-height:1.6;font-weight:800;color:#dfe6fa;
+  overflow-wrap:anywhere}
+.erx-capbar{height:5px;margin-top:8px;border-radius:99px;overflow:hidden;
+  background:rgba(255,255,255,.08)}
+.erx-capbar i{display:block;height:100%;border-radius:99px;background:var(--erx-accent);
+  opacity:.8;transition:width .4s ease}
+.erx-attendees{margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.07)}
+.erx-attendeeshead{display:flex;align-items:center;justify-content:space-between;gap:6px;
+  margin-bottom:4px}
+.erx-attendeeshead b{font-size:9.5px;color:#dbe4fb}
+.erx-attendeeshead span{font-size:8.5px;color:#8d97b6}
+.erx-attendees p{margin:0;font-size:9px;color:#8d97b6}
+.erx-attendees .erx-peoplelist{max-height:112px;overflow:auto}
+.erx-evpageacts{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+#sec-events .erx-evpageacts .btn{flex:0 0 auto;justify-content:center;color:#d8e0f7!important;
+  background:rgba(255,255,255,.055)!important;border-color:rgba(255,255,255,.14)!important}
+#sec-events .erx-evpageacts .btn:hover{background:rgba(255,255,255,.10)!important}
+#sec-events .erx-evpageacts .erx-join{color:#a9f1ff!important;
+  background:rgba(34,211,238,.13)!important;border-color:rgba(34,211,238,.4)!important}
+#sec-events .erx-evpageacts .erx-join.on{color:#a5f6ce!important;
+  background:rgba(61,219,155,.14)!important;border-color:rgba(61,219,155,.45)!important}
+#sec-events .erx-evpageacts .erx-join:disabled{opacity:.45;color:#9aa3bd!important;
+  background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.1)!important}
+#sec-events .erx-evpageacts .erx-editbtn{color:#ffe08a!important;
+  border-color:rgba(255,211,107,.28)!important;background:rgba(255,211,107,.07)!important}
+#sec-events .erx-evpageacts .erx-delbtn{color:#ff9aae!important;
+  border-color:rgba(255,95,125,.3)!important;background:rgba(255,95,125,.05)!important}
+.erx-titleopen{display:inline-flex;align-items:center;gap:3px;max-width:100%;padding:0;
+  border:0;background:transparent;color:inherit;font:inherit;line-height:inherit;
+  text-align:start;cursor:pointer}
+.erx-titleopen span{font-size:10px;color:#8de9ff;opacity:.8;flex:0 0 auto}
+.erx-titleopen:hover{color:#a9efff}
+
 /* ── ریسپانسیو ─────────────────────────────────────────────── */
 @media (max-width:820px){
   .erx-rkgrid,.erx-evgrid{grid-template-columns:1fr;gap:12px}
@@ -336,6 +426,7 @@
   .erx-mine{min-height:auto}
   .erx-podium{padding-top:5px}
   .erx-search{max-width:none}
+  .erx-evpagegrid{grid-template-columns:1fr}
 }
 @media (max-width:560px){
   .erx-head{margin:18px 0 11px}
@@ -385,6 +476,16 @@
   .erx-evbtns .btn{flex:1;justify-content:center}
   .erx-nextcd b{font-size:18px}
   .erx-acts .btn{flex:1;justify-content:center}
+  .erx-evpage{padding:13px;border-radius:17px}
+  .erx-evpageicon{width:43px;height:43px;font-size:20px;border-radius:13px}
+  .erx-evpagecopy h3{font-size:19px;line-height:1.5}
+  .erx-evpagemeta{font-size:9px}
+  .erx-evpagebody,.erx-evpageside{padding:10px;border-radius:12px}
+  .erx-evpagebody p{font-size:10px}
+  .erx-facts{grid-template-columns:1fr 1fr}
+  .erx-evpageacts{gap:5px}
+  #sec-events .erx-evpageacts .btn{flex:1 1 45%;font-size:9.5px;padding:7px 6px}
+  .erx-detailbar .erx-kicker{order:-1;width:100%;font-size:8px}
 }
 @media (prefers-reduced-motion:reduce){
   .erx-live i,.erx-kicker i,.erx-skel i{animation:none!important}
