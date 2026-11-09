@@ -1,0 +1,47 @@
+name: Deploy Ronin Market Pro
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ronin-market-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Download bundle
+        env:
+          BUNDLE_URL: "https://litter.catbox.moe/5hcwsd.gz"
+          BUNDLE_SHA: "690af4bd835e968a35fc960d09bc5ca4c3dcc457cc2b9efd315b10f2de714af6"
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 4 --retry-delay 3 -o /tmp/ronin.tar.gz "$BUNDLE_URL"
+          echo "$BUNDLE_SHA  /tmp/ronin.tar.gz" | sha256sum -c -
+          mkdir -p /tmp/ronin
+          tar -xzf /tmp/ronin.tar.gz -C /tmp/ronin
+      - name: Apply and push
+        run: |
+          set -euo pipefail
+          cp -a /tmp/ronin/. .
+          git config user.name "ronin-deploy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "No content changes"
+          else
+            git commit -m "feat: upgrade market, ads, discover and add real video ads" -m "🤖 Generated with Codebuff" -m "Co-Authored-By: Codebuff <noreply@codebuff.com>"
+            git push origin HEAD:main
+          fi
+      - name: Remove temporary workflow
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          git rm .github/workflows/deploy-ronin-market.yml
+          git commit -m "chore: remove temporary market deploy workflow"
+          git push origin HEAD:main
