@@ -10,7 +10,7 @@
   var PATH = "bulletins";
   var MAX = 15;
   var DATA = {};
-  var ST = { kind: "news", tab: "all", img: "" };
+  var ST = { kind: "news", tab: "all", img: "", q: "" };
 
   var KINDS = {
     news:    { ic: "📰", fa: "خبر",         cls: "cy" },
@@ -82,45 +82,65 @@
     sec.className = "sec";
     sec.id = "sec-bulletin";
     sec.innerHTML =
-      '<div class="head"><h2 class="h2">🛰 اطلاعیه‌ها</h2>' +
-      '<span class="chip cy">خبر • تریلر • میم • فروش</span></div>' +
-      '<div class="tabs mb" id="bulTabs">' +
-      '<div class="tab on" data-bulk="all">همه</div>' +
-      '<div class="tab" data-bulk="news">📰 خبر</div>' +
-      '<div class="tab" data-bulk="air">📅 اعلان پخش</div>' +
-      '<div class="tab" data-bulk="trailer">🎬 تریلر</div>' +
-      '<div class="tab" data-bulk="meme">😂 میم</div>' +
-      '<div class="tab" data-bulk="sale">🛒 فروش</div>' +
+      '<div class="bulHero">' +
+        '<div class="bulHeroCopy">' +
+          '<span class="bulKicker">RONIN SIGNAL / 24</span>' +
+          '<h2 class="bulTitle">اطلاعیه‌ها و تریلرها</h2>' +
+          '<p class="bulLead">خبرها، اعلان پخش، تریلرها و سیگنال‌های تازهٔ رونین — همه در یک اتاق خبر زنده.</p>' +
+          '<div class="bulHeroActions">' +
+            '<button class="btn p mini" type="button" data-bulscroll="1">✍️ ارسال سیگنال</button>' +
+            '<button class="btn mini" type="button" data-bulk="trailer">🎬 تماشای تریلرها</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="bulHeroStats">' +
+          '<div class="bulHStat"><b id="bulStatAll">۰</b><span>سیگنال</span></div>' +
+          '<div class="bulHStat"><b id="bulStatTr">۰</b><span>تریلر</span></div>' +
+          '<div class="bulHStat"><b id="bulStatNew">—</b><span>آخرین خبر</span></div>' +
+        '</div>' +
       '</div>' +
+      '<div class="bulToolbar">' +
+        '<div class="bulSearch"><input id="bulSearch" type="search" placeholder="جستجو در اطلاعیه‌ها…" maxlength="60" autocomplete="off"><i aria-hidden="true">⌕</i></div>' +
+        '<div class="tabs bulTabs" id="bulTabs">' +
+          '<div class="tab on" data-bulk="all">همه</div>' +
+          '<div class="tab" data-bulk="news">📰 خبر</div>' +
+          '<div class="tab" data-bulk="air">📅 اعلان پخش</div>' +
+          '<div class="tab" data-bulk="trailer">🎬 تریلر</div>' +
+          '<div class="tab" data-bulk="meme">😂 میم</div>' +
+          '<div class="tab" data-bulk="sale">🛒 فروش</div>' +
+        '</div>' +
+      '</div>' +
+      '<div id="bulSpot" class="bulSpot hide"></div>' +
       '<div class="card mb hide" id="bulForm">' +
-      '<div class="between"><span class="sm b">✍️ انتشار اطلاعیه</span>' +
-      '<span class="chip gd" id="bulWho">مجاز</span></div>' +
-      '<div class="brow" id="bulKinds"></div>' +
-      '<input class="inp mb" id="bulTitle" placeholder="عنوان (مثلاً: فصل جدید Attack on Titan)" maxlength="120">' +
-      '<textarea class="area mb" id="bulBody" placeholder="توضیحات / اطلاعات پخش / قیمت…" maxlength="1500"></textarea>' +
-      '<div class="grid g2 mb">' +
-      '<input class="inp" id="bulDate" placeholder="تاریخ/ساعت (جمعه ۲۱ آذر، ۲۱:۰۰)" maxlength="60">' +
-      '<input class="inp" id="bulLink" placeholder="لینک یوتیوب یا لینک خرید" dir="ltr" maxlength="300">' +
+        '<div class="between"><span class="sm b">✍️ انتشار اطلاعیه</span>' +
+        '<span class="chip gd" id="bulWho">مجاز</span></div>' +
+        '<div class="brow" id="bulKinds"></div>' +
+        '<input class="inp mb" id="bulTitle" placeholder="عنوان (مثلاً: فصل جدید Attack on Titan)" maxlength="120">' +
+        '<textarea class="area mb" id="bulBody" placeholder="توضیحات / اطلاعات پخش / قیمت…" maxlength="1500"></textarea>' +
+        '<div class="grid g2 mb">' +
+        '<input class="inp" id="bulDate" placeholder="تاریخ/ساعت (جمعه ۲۱ آذر، ۲۱:۰۰)" maxlength="60">' +
+        '<input class="inp" id="bulLink" placeholder="لینک یوتیوب یا لینک خرید" dir="ltr" maxlength="300">' +
+        '</div>' +
+        '<input class="inp mb" id="bulImg" placeholder="لینک عکس (اختیاری) — یا از گالری بگیر" dir="ltr" maxlength="500">' +
+        '<div class="brow">' +
+        '<label class="btn mini">🖼 عکس از گالری<input id="bulFile" type="file" accept="image/*" hidden></label>' +
+        '<button class="btn mini" id="bulClear" type="button">پاک کردن</button>' +
+        '<button class="btn p mini" id="bulGo" type="button">🚀 انتشار</button>' +
+        '</div>' +
+        '<div class="xs mut mt" id="bulPrev"></div>' +
       '</div>' +
-      '<input class="inp mb" id="bulImg" placeholder="لینک عکس (اختیاری) — یا از گالری بگیر" dir="ltr" maxlength="500">' +
-      '<div class="brow">' +
-      '<label class="btn mini">🖼 عکس از گالری<input id="bulFile" type="file" accept="image/*" hidden></label>' +
-      '<button class="btn mini" id="bulClear" type="button">پاک کردن</button>' +
-      '<button class="btn p mini" id="bulGo" type="button">🚀 انتشار</button>' +
-      '</div>' +
-      '<div class="xs mut mt" id="bulPrev"></div>' +
-      '</div>' +
+      '<div class="bulSectionHead"><div><b>آخرین سیگنال‌ها</b><small>زنده از اتاق خبر رونین</small></div><span class="chip cy" id="bulCount">۰</span></div>' +
       '<div id="bulWrap"></div>';
     el("stage").appendChild(sec);
 
-    /* آیتم منو: بعد از «اخبار» */
-    var a = document.querySelector("#rail [data-go='news']");
-    if (a && a.parentNode) {
+    /* آیتم منو: اگر در HTML نیست، خودمان در گروه «کاوش» بسازیم */
+    if (!document.querySelector("#rail [data-go='bulletin']")) {
       var it = document.createElement("div");
       it.className = "ditem";
       it.setAttribute("data-go", "bulletin");
-      it.innerHTML = "<i>🛰</i>اطلاعیه‌ها";
-      a.parentNode.insertBefore(it, a.nextSibling);
+      it.innerHTML = "<i>📣</i>اطلاعیه‌ها";
+      var host = document.querySelector("#rail .rgroup .rgbody") ||
+                 document.querySelector("#rail .rnav");
+      if (host) host.appendChild(it);
     }
 
     /* مدال ویدیو */
@@ -169,6 +189,11 @@
     });
     var li = el("bulImg");
     if (li && window.R && R.debounce) li.addEventListener("input", R.debounce(prev, 260));
+    var si = el("bulSearch");
+    if (si && window.R && R.debounce) si.addEventListener("input", R.debounce(function () {
+      ST.q = String(si.value || "").trim();
+      render();
+    }, 180));
   }
 
   /* ── فشرده‌سازی عکس گالری ─────────────────────────────── */
@@ -253,41 +278,92 @@
     var y = ytId(d.link);
     var img = d.img || (y ? "https://img.youtube.com/vi/" + y + "/hqdefault.jpg" : "");
     var mine = R.isOwner() || d.by === R.ME;
-    var h = '<div class="bulc">';
+    var h = '<article class="bulc bulc-' + esc(d.kind || "news") + '">';
     if (mine) h += '<div class="btools"><button type="button" data-buldel="' + esc(d.id) + '" title="حذف">🗑</button></div>';
     if (img || y) {
       h += '<div class="bimg">' +
         (img ? '<img src="' + esc(img) + '" loading="lazy" alt="">' : "") +
-        (y ? '<button type="button" class="play" data-bulyt="' + esc(y) + '" data-bult="' + esc(d.title || "") + '">▶</button>' : "") +
+        '<span class="bkindtag">' + K.ic + " " + K.fa + "</span>" +
+        (y ? '<button type="button" class="play" data-bulyt="' + esc(y) + '" data-bult="' + esc(d.title || "") + '" aria-label="پخش تریلر"><span>▶</span><small>پخش تریلر</small></button>' : "") +
         "</div>";
     }
     h += '<div class="bd">' +
       '<div class="bmeta"><span class="chip ' + K.cls + '">' + K.ic + " " + K.fa + "</span>" +
       "<span>" + (R.time ? R.time(d.t) : "") + "</span></div>" +
       '<div class="bt">' + esc(d.title || "") + "</div>";
-    if (d.date) h += '<div class="bdate">📅 ' + esc(d.date) + "</div>";
+    if (d.date) h += '<div class="bdate">🗓 ' + esc(d.date) + "</div>";
     if (d.body) h += '<div class="bb">' + esc(d.body).replace(/\n/g, "<br>") + "</div>";
-    if (y) h += '<button type="button" class="btn mini" data-bulyt="' + esc(y) + '" data-bult="' + esc(d.title || "") + '">🎬 دیدن تریلر</button>';
+    if (y) h += '<button type="button" class="btn mini bulTrailerBtn" data-bulyt="' + esc(y) + '" data-bult="' + esc(d.title || "") + '">🎬 دیدن تریلر</button>';
     else if (d.link) h += '<a class="btn mini" href="' + esc(d.link) + '" target="_blank" rel="noopener">🔗 بازکردن لینک</a>';
-    h += '<div class="bmeta"><span>👤 ' + esc(d.byn || "تیم رونین") + "</span></div></div></div>";
+    h += '<div class="bmeta"><span>👤 ' + esc(d.byn || "تیم رونین") + "</span></div></div></article>";
     return h;
+  }
+
+  function spotlight(d) {
+    if (!d) return "";
+    var y = ytId(d.link);
+    var img = d.img || (y ? "https://img.youtube.com/vi/" + y + "/maxresdefault.jpg" : "");
+    var fallback = y ? "https://img.youtube.com/vi/" + y + "/hqdefault.jpg" : "";
+    var K = KINDS[d.kind] || KINDS.trailer;
+    var play = y
+      ? '<button type="button" class="bSpotPlay" data-bulyt="' + esc(y) + '" data-bult="' + esc(d.title || "") + '"><span>▶</span><b>پخش تریلر</b></button>'
+      : (d.link ? '<a class="btn p mini" href="' + esc(d.link) + '" target="_blank" rel="noopener">🔗 تماشا</a>' : "");
+    return '<div class="bSpotCard">' +
+      '<div class="bSpotImg">' +
+        (img ? '<img src="' + esc(img) + '" alt="" loading="lazy"' + (fallback ? ' onerror="this.onerror=null;this.src=\'' + fallback + '\'"' : "") + ">" : "") +
+        '<span class="bSpotGlow"></span>' + play +
+      "</div>" +
+      '<div class="bSpotCopy">' +
+        '<span class="bSpotKicker">' + K.ic + " SIgnal Spotlight</span>" +
+        '<h3>' + esc(d.title || "تریلر ویژه") + "</h3>" +
+        '<p>' + esc(d.body || d.date || "آخرین تریلر منتشرشده در اتاق خبر رونین را ببین.") + "</p>" +
+        '<div class="bSpotMeta"><span>👤 ' + esc(d.byn || "تیم رونین") + "</span><span>🕒 " + (R.time ? R.time(d.t) : "") + "</span></div>" +
+        play +
+      "</div></div>";
+  }
+
+  function updateMeta(all, shown) {
+    var trailers = all.filter(function (d) { return d.kind === "trailer"; }).length;
+    var latest = all.length ? (R.time ? R.time(all[0].t) : "") : "—";
+    var set = function (id, v) { var x = el(id); if (x) x.textContent = v; };
+    set("bulStatAll", R.fa ? R.fa(all.length) : String(all.length));
+    set("bulStatTr", R.fa ? R.fa(trailers) : String(trailers));
+    set("bulStatNew", latest);
+    set("bulCount", (R.fa ? R.fa(shown.length) : String(shown.length)) + " مورد");
   }
 
   function render() {
     var box = el("bulWrap");
     if (!box) return;
-    var arr = Object.keys(DATA).map(function (k) {
+    var all = Object.keys(DATA).map(function (k) {
       var d = DATA[k] || {};
       d.id = k;
       return d;
-    }).filter(function (d) {
-      return ST.tab === "all" || d.kind === ST.tab;
     }).sort(function (a, b) {
       return (b.t || 0) - (a.t || 0);
     });
+    var q = String(ST.q || "").toLowerCase();
+    var arr = all.filter(function (d) {
+      if (ST.tab !== "all" && d.kind !== ST.tab) return false;
+      if (!q) return true;
+      return String(d.title || "").toLowerCase().indexOf(q) >= 0 ||
+        String(d.body || "").toLowerCase().indexOf(q) >= 0 ||
+        String(d.byn || "").toLowerCase().indexOf(q) >= 0;
+    });
+    updateMeta(all, arr);
+
+    var spot = el("bulSpot");
+    if (spot) {
+      var feat = arr.filter(function (d) { return d.kind === "trailer" && (ytId(d.link) || d.img); })[0] || null;
+      if (feat) { spot.classList.remove("hide"); spot.innerHTML = spotlight(feat); }
+      else { spot.classList.add("hide"); spot.innerHTML = ""; }
+    }
+
     box.innerHTML = arr.length
       ? arr.map(card).join("")
-      : '<div class="empty">هنوز اطلاعیه‌ای منتشر نشده 🛰</div>';
+      : '<div class="bulEmpty"><b>🔭 سیگنالی پیدا نشد</b><span>' +
+        (q ? "عبارت دیگری را جستجو کن یا فیلتر را عوض کن." : "هنوز اطلاعیه‌ای در این دسته منتشر نشده.") +
+        "</span></div>";
   }
 
   /* ── لیسنر دیتابیس ─────────────────────────────────────── */
@@ -316,11 +392,33 @@
     if (el("bmVid")) el("bmVid").innerHTML = "";
   }
 
+  /* API کوچک برای «دنیای من» و سایر بخش‌ها */
+  R.bulletin = {
+    data: function () { return DATA; },
+    open: openVid,
+    render: render,
+    tab: function (k) {
+      ST.tab = KINDS[k] || k === "all" ? k : "all";
+      R.qa("#bulTabs .tab").forEach(function (x) { x.classList.toggle("on", x.getAttribute("data-bulk") === ST.tab); });
+      render();
+    }
+  };
+
   /* ── کلیک‌ها ───────────────────────────────────────────── */
   document.addEventListener("click", function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
     if (t.closest("#bulGo")) { e.preventDefault(); return publish(); }
+    if (t.closest("[data-bulscroll]")) {
+      e.preventDefault();
+      var f = el("bulForm");
+      if (!f || f.classList.contains("hide")) {
+        if (!canPost()) return R.toast("ارسال سیگنال فقط برای مالک یا دارندهٔ دسترسی اخبار است 🔒", "err");
+        f = el("bulForm"); if (f) f.classList.remove("hide");
+      }
+      try { f.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (er) {}
+      return;
+    }
     if (t.closest("#bulClear")) { e.preventDefault(); return reset(); }
     if (t.closest("#bmClose") || t.id === "bulMod") { e.preventDefault(); return closeVid(); }
     var pb = t.closest("[data-bulyt]");
@@ -345,8 +443,18 @@
     }
   }, true);
 
+  /* ── فرم را هر بار که بخش باز شد دوباره بررسی کن ─────────── */
+  function watchSection() {
+    var sec = el("sec-bulletin");
+    if (!sec || !window.MutationObserver || sec.__bulWatch) return;
+    sec.__bulWatch = true;
+    new MutationObserver(function () {
+      if (sec.classList.contains("on")) { form(); watch(); }
+    }).observe(sec, { attributes: true, attributeFilter: ["class"] });
+  }
+
   /* ── راه‌اندازی ────────────────────────────────────────── */
-  function boot() { build(); form(); }
+  function boot() { build(); form(); watchSection(); }
   var prevLogin = window.R && R.onLogin;
   if (window.R) {
     R.onLogin = function () {
