@@ -1,4 +1,4 @@
-/* ═══ RONIN STORE — FOOTER v5 · ronin-footer.js · سه‌زبانه و سبک
+/* ═══ RONIN STORE — FOOTER v6 · ronin-footer.js · سه‌زبانه و سبک
    برند • پشتیبانی • دسترسی سریع • قوانین و پرسش‌ها
    فرم پیام به پشتیبانی • کارت پیام‌ها در پنل مالک • وضعیت اتصال
    همهٔ متن‌ها با زبان سایت عوض می‌شوند. */
@@ -6,7 +6,7 @@
 (function () {
   var MSG = "contact", CFG = "settings/contact", LS = "ronin_contact_at";
   var LANGS = ["fa", "en", "tr"], LNAMES = { fa: "فارسی", en: "English", tr: "Türkçe" };
-  var VER = "v5", lastLang = null;
+  var VER = "v6", lastLang = null;
 
   function el(i) { return document.getElementById(i); }
   function esc(s) { return (window.R && R.esc) ? R.esc(s) : String(s == null ? "" : s); }
@@ -252,45 +252,7 @@
       "#ftOwnerList .ftm .grow{flex:1 1 auto;min-width:0}" +
       "@media (max-width:900px){.ftShell{grid-template-columns:1.4fr 1fr 1fr;gap:16px;padding:18px}.ftSupportLink{display:none}}" +
       "@media (max-width:640px){.ftShell{grid-template-columns:1fr 1fr;gap:16px;padding:16px;border-radius:19px}.ftIntro{grid-column:1/-1}.ftSupportLink{display:inline-block}.ftBar{font-size:10px}}" +
-      "@media (max-width:420px){.ftShell{grid-template-columns:1fr}.ftCol{gap:6px}.ftIntroFoot{justify-content:flex-start}}" +
-      ".ftGrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:16px}" +
-      "@media (max-width:980px){.ftGrid{grid-template-columns:1fr 1fr 1fr}}" +
-      "@media (max-width:640px){.ftGrid{grid-template-columns:1fr 1fr;gap:14px}}" +
-      ".ftCol{display:flex;flex-direction:column;gap:7px;min-width:0}" +
-      ".ftCol>b{font-size:12.5px;font-weight:900;opacity:.95;margin-bottom:2px}" +
-      ".ftCol a{cursor:pointer;font-size:12.5px;opacity:.8;text-decoration:none;transition:.2s;width:fit-content}" +
-      ".ftCol a:hover{opacity:1;color:#7ee7ff;transform:translateX(-2px)}" +
-      ".ftLogo{display:flex;align-items:center;gap:9px;font-weight:900;font-size:16px}" +
-      ".ftLogo i{font-style:normal;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;" +
-      "background:linear-gradient(135deg,#7c5cff,#22d3ee);font-size:16px;color:#fff}" +
-      ".ftTx{font-size:12px;opacity:.72;line-height:1.9;margin:2px 0 0;max-width:340px}" +
-      ".ftLang{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}" +
-      ".ftLang button{border:1px solid rgba(140,160,255,.25);background:rgba(255,255,255,.04);color:inherit;" +
-      "font:inherit;font-size:11px;padding:4px 9px;border-radius:20px;cursor:pointer}" +
-      ".ftLang button.on{background:linear-gradient(135deg,#7c5cff,#22d3ee);color:#fff;border-color:transparent}" +
-      ".ftStats{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:11px;opacity:.68}" +
-      ".ftStats b{display:block;font-size:13px;opacity:1}" +
-      ".ftNet{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;padding:3px 9px;" +
-      "border-radius:20px;border:1px solid rgba(140,160,255,.22);background:rgba(255,255,255,.04);" +
-      "margin-top:6px;opacity:.85;width:fit-content}" +
-      ".ftNet b{width:7px;height:7px;border-radius:50%;background:#5df0b0;box-shadow:0 0 8px #5df0b0}" +
-      ".ftNet.off b{background:#ff8fa3;box-shadow:0 0 8px #ff8fa3}" +
-      ".ftPanel{margin-top:16px;border:1px solid rgba(140,160,255,.2);border-radius:16px;overflow:hidden;" +
-      "background:rgba(255,255,255,.035);display:none}" +
-      ".ftPanel.on{display:block}" +
-      ".ftPanel .ftPh{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;" +
-      "border-bottom:1px solid rgba(140,160,255,.16);font-size:13px;font-weight:800}" +
-      ".ftPanel .ftPb{padding:13px}" +
-      ".ftBar{margin-top:16px;padding-top:12px;border-top:1px solid rgba(140,160,255,.14);" +
-      "display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;font-size:11.5px;opacity:.75}" +
-      ".ftBar .side{display:flex;gap:7px;align-items:center;flex-wrap:wrap}" +
-      ".ftMini{border:1px solid rgba(140,160,255,.22);background:rgba(255,255,255,.04);color:inherit;" +
-      "font:inherit;font-size:10.5px;padding:4px 9px;border-radius:20px;cursor:pointer}" +
-      ".ftMini:hover{border-color:rgba(124,92,255,.6);background:rgba(124,92,255,.14)}" +
-      "#ftOwnerList .ftm{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border-radius:12px;" +
-      "border:1px solid rgba(140,160,255,.16);background:rgba(255,255,255,.03);margin-top:7px}" +
-      "#ftOwnerList .ftm.un{border-color:rgba(34,211,238,.55)}" +
-      "#ftOwnerList .ftm .grow{flex:1 1 auto;min-width:0}";
+      "@media (max-width:420px){.ftShell{grid-template-columns:1fr}.ftCol{gap:6px}.ftIntroFoot{justify-content:flex-start}}";
     document.head.appendChild(s);
   }
 
