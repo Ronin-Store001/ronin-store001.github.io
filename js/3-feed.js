@@ -12,6 +12,66 @@ R.BM = {};         /* ذخیره‌شده‌ها */
 R.OPEN_CMT = {};   /* کامنت‌های باز */
 R.feedMode = "foryou";
 
+/* ── ۰. کمک‌های زبانی و جامعه ──────────────────────────────── */
+function tr(s) { return (window.R && R.i18n && R.i18n.t) ? R.i18n.t(s) : s; }
+function num(n) { return (window.R && R.i18n && R.i18n.num) ? R.i18n.num(n) : R.fa(String(n)); }
+function shortNum(n) { return num(R.num ? R.num(n) : n); }
+
+R.feedCounts = function () {
+  var arr = Object.keys(R.POSTS || {}).map(function (k) {
+    var p = R.POSTS[k]; p.id = k; return p;
+  }).filter(function (p) { return p.status !== "pending"; });
+  return {
+    foryou: arr.length,
+    trending: arr.length,
+    following: arr.filter(function (p) { return R.FOLLOW[p.uid]; }).length,
+    mine: arr.filter(function (p) { return p.uid === R.ME; }).length
+  };
+};
+
+R.renderCommunity = function () {
+  var posts = Object.keys(R.POSTS || {}).map(function (k) {
+    var p = R.POSTS[k]; p.id = k; return p;
+  }).filter(function (p) { return p.status !== "pending"; });
+  var authors = {};
+  posts.forEach(function (p) { if (p.uid) authors[p.uid] = 1; });
+  var members = Object.keys(R.USERS || {}).length || Object.keys(authors).length;
+  var online = Object.keys(R.ONLINE || {}).length;
+  var counts = R.feedCounts();
+
+  var set = function (id, v) { var e = R.$(id); if (e) e.textContent = v; };
+  set("comPosts", num(posts.length));
+  set("comMembers", num(members));
+  set("comOnline", num(online));
+  R.qa("[data-feed-count]").forEach(function (e) {
+    var k = e.getAttribute("data-feed-count");
+    e.textContent = num(counts[k] || 0);
+  });
+
+  var hot = R.$("comHot");
+  if (hot) {
+    var top = posts.slice().sort(function (a, b) { return R.score(b) - R.score(a); }).slice(0, 3);
+    hot.innerHTML = top.length ? top.map(function (p, i) {
+      var likes = p.lk ? Object.keys(p.lk).length : 0;
+      return '<div class="comRailItem"><div class="rk">' + num(i + 1) + '</div>' +
+        '<div class="grow"><div class="t ellip">' + R.esc((p.text || tr("پست بدون متن")).slice(0, 54)) + '</div>' +
+        '<div class="m">' + R.esc(p.n || tr("کاربر")) + ' · ❤️ ' + shortNum(likes) + '</div></div></div>';
+    }).join("") : '<div class="comRailEmpty">' + tr("هنوز گفتگویی داغ نشده — تو شروعش کن.") + '</div>';
+  }
+
+  var voices = R.$("comVoices");
+  if (voices) {
+    var topUsers = Object.keys(R.USERS || {}).map(function (k) {
+      var u = R.USERS[k]; u.uid = k; return u;
+    }).sort(function (a, b) { return (b.xp || 0) - (a.xp || 0); }).slice(0, 4);
+    voices.innerHTML = topUsers.length ? topUsers.map(function (u, i) {
+      return '<div class="comRailItem"><div class="rk">' + num(i + 1) + '</div>' +
+        R.avHTML(u, "sm") + '<div class="grow"><div class="t ellip">' + R.esc(u.name || tr("کاربر")) +
+        '</div><div class="m">' + tr("سطح") + " " + num(R.level(u.xp || 0)) + " · " + shortNum(u.xp || 0) + ' XP</div></div></div>';
+    }).join("") : '<div class="comRailEmpty">' + tr("با اولین پست، صدای برتر اینجا شکل می‌گیرد.") + '</div>';
+  }
+};
+
 /* ── ۱. امتیاز ترند ───────────────────────────────────────── */
 R.score = function (p) {
   var l = p.lk ? Object.keys(p.lk).length : 0;
@@ -59,17 +119,17 @@ R.pollHTML = function (p) {
     counts[votes[u]] = (counts[votes[u]] || 0) + 1; total++;
   });
   var mine = R.ME ? votes[R.ME] : null;
-  var h = '<div class="poll"><div class="sm b">' + R.esc(p.poll.q || "نظرسنجی") + "</div>";
+  var h = '<div class="poll"><div class="sm b">' + R.esc(p.poll.q || tr("نظرسنجی")) + "</div>";
   p.poll.a.forEach(function (o, i) {
     var n = counts[i] || 0;
     var pc = total ? Math.round(n * 100 / total) : 0;
     h += '<div class="pollopt" data-vote="' + p.id + '" data-opt="' + i + '">' +
       '<span style="width:' + pc + '%"></span>' +
       '<div class="row between" style="position:relative">' +
-      "<span>" + R.esc(o) + "</span><b>" + R.fa(pc) + "٪</b></div></div>";
+      "<span>" + R.esc(o) + "</span><b>" + num(pc) + "٪</b></div></div>";
   });
-  h += '<div class="xs mut">' + R.fa(total) + " رأی" +
-    (mine == null ? " • برای رأی‌دادن بزن" : " • رأی تو ثبت شد ✅") + "</div></div>";
+  h += '<div class="xs mut">' + num(total) + " " + tr("رأی") +
+    (mine == null ? " • " + tr("برای رأی‌دادن بزن") : " • " + tr("رأی تو ثبت شد ✅")) + "</div></div>";
   return h;
 };
 
@@ -79,7 +139,7 @@ R.cmtsHTML = function (p) {
   var list = p.cm || {};
   var keys = Object.keys(list).sort(function (a, b) { return (list[a].t || 0) - (list[b].t || 0); });
   var h = '<div class="cmts">';
-  if (!keys.length) h += '<div class="xs mut">هنوز کامنتی نیست — اولی باش 💬</div>';
+  if (!keys.length) h += '<div class="xs mut">' + tr("هنوز کامنتی نیست — اولی باش 💬") + '</div>';
   keys.forEach(function (k) {
     var c = list[k];
     var can = c.uid === R.ME || R.isOwner() || R.can("mod");
@@ -92,10 +152,10 @@ R.cmtsHTML = function (p) {
         p.id + "/" + k + '">✕</button>' : "") + "</div>";
   });
   if (R.ME) {
-    h += '<div class="row"><input class="inp" maxlength="300" placeholder="کامنت بنویس…" id="ci-' +
-      p.id + '"><button class="btn p mini" data-sendc="' + p.id + '">ارسال</button></div>';
+    h += '<div class="row"><input class="inp" maxlength="300" placeholder="' + R.esc(tr("کامنت بنویس…")) + '" id="ci-' +
+      p.id + '"><button class="btn p mini" data-sendc="' + p.id + '">' + tr("ارسال") + '</button></div>';
   } else {
-    h += '<button class="btn mini" data-authopen="login">برای کامنت وارد شو</button>';
+    h += '<button class="btn mini" data-authopen="login">' + tr("برای کامنت وارد شو") + '</button>';
   }
   return h + "</div>";
 };
@@ -117,8 +177,8 @@ R.postCard = function (p) {
     (staff ? '<span class="chip" style="padding:1px 7px;font-size:9.5px">' + R.roleFa(p.urole) + "</span>"
            : "") + "</div>" +
     '<div class="xs mut">' + R.time(p.t) + "</div></div>" +
-    (mine || canMod ? '<button class="icobtn" title="حذف" data-del="' + p.id + '">🗑</button>' : "") +
-    '<button class="icobtn" title="گزارش" data-rp="' + p.id + '">🚩</button></div>';
+    (mine || canMod ? '<button class="icobtn" title="' + R.esc(tr("حذف")) + '" data-del="' + p.id + '">🗑</button>' : "") +
+    '<button class="icobtn" title="' + R.esc(tr("گزارش")) + '" data-rp="' + p.id + '">🚩</button></div>';
 
   if (p.text) h += '<div class="pbody">' + R.esc(p.text).replace(/\n/g, "<br>") + "</div>";
   if (p.img) h += '<div class="pimg"><img src="' + R.esc(p.img) + '" loading="lazy" alt=""></div>';
@@ -142,11 +202,13 @@ R.renderFeed = function () {
   var arr = R.feedList();
   box.innerHTML = "";
   if (!arr.length) {
-    box.innerHTML = '<div class="empty">هنوز پستی اینجا نیست ✨<br>' +
-      (R.feedMode === "following" ? "چند نفر را دنبال کن تا پست‌هاشون بیاد" : "اولین نفر باش!") + "</div>";
+    box.innerHTML = '<div class="empty">' + tr("هنوز پستی اینجا نیست ✨") + '<br>' +
+      tr(R.feedMode === "following" ? "چند نفر را دنبال کن تا پست‌هاشون بیاد" : "اولین نفر باش!") + "</div>";
+    R.renderCommunity();
     return;
   }
   arr.forEach(function (p) { box.appendChild(R.postCard(p)); });
+  R.renderCommunity();
 };
 
 /* ── ۸. پست گذاشتن ────────────────────────────────────────── */
@@ -302,15 +364,46 @@ R.bindFeed = function () {
       R.renderFeed();
     });
   });
+  R.bindCommunity();
+};
+
+R.bindCommunity = function () {
+  var ta = R.$("pText");
+  var count = function () {
+    var e = R.$("pCount");
+    if (e) e.textContent = num(ta ? ta.value.length : 0) + " / " + num(1200);
+  };
+  if (ta && !ta.__comCount) {
+    ta.__comCount = true;
+    ta.addEventListener("input", count);
+    count();
+  }
+  if (!R.__composeBound) {
+    R.__composeBound = true;
+    document.addEventListener("click", function (e) {
+      var b = e.target && e.target.closest ? e.target.closest("[data-compose]") : null;
+      if (!b) return;
+      e.preventDefault();
+      if (!R.ME) { R.needLogin(tr("پست گذاشتن")); return; }
+      var box = R.$("pText");
+      if (box) { box.focus(); try { box.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (er) {} }
+    }, true);
+  }
 };
 
 /* ── ۱۱. آماده‌سازی ───────────────────────────────────────── */
 R.bootFeed = function () {
   R.bindFeed();
+  R.renderCommunity();
   R.watchPosts();
   R.watchVotes();
   if (R.ME) R.watchMe();
+  setTimeout(R.renderCommunity, 900);
 };
+
+document.addEventListener("ronin:lang", function () { try { R.renderFeed(); } catch (e) {} });
+
+document.addEventListener("ronin:presence", function () { try { R.renderCommunity(); } catch (e) {} });
 
 R.onLogout = function () {
   R.FOLLOW = {}; R.BM = {}; R.OPEN_CMT = {};

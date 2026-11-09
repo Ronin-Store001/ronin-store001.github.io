@@ -1,0 +1,218 @@
+/* ═══════════════════════════════════════════════════════════════
+   RONIN STORE — COMMUNITY PRO · css/5-community.css
+   ظاهر تازهٔ انجمن: هیرو، آمار، فید، ریل داغ‌ترین‌ها و قوانین
+   ═══════════════════════════════════════════════════════════════ */
+
+#sec-community{
+  --com-line:rgba(130,215,255,.16);
+  --com-line2:rgba(124,92,255,.38);
+  --com-panel:rgba(12,17,40,.72);
+  --com-panel2:rgba(21,28,61,.68);
+  --com-mint:#55f0c2;
+}
+
+/* ── هیرو ───────────────────────────────────────────────────── */
+#sec-community .comHero{
+  position:relative;overflow:hidden;display:grid;
+  grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;
+  padding:26px 28px;margin:4px 0 18px;border-radius:26px;
+  border:1px solid var(--com-line2);
+  background:
+    radial-gradient(90% 140% at 4% 4%,rgba(124,92,255,.34),transparent 60%),
+    radial-gradient(75% 120% at 96% 96%,rgba(34,211,238,.22),transparent 64%),
+    linear-gradient(140deg,rgba(16,22,52,.92),rgba(7,11,29,.8));
+  box-shadow:0 24px 70px rgba(0,0,0,.34)
+}
+#sec-community .comHero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px)
+}
+#sec-community .comHero::after{
+  content:"忍";position:absolute;inset-inline-start:38%;top:50%;
+  translate:0 -50%;font-size:210px;font-weight:900;line-height:1;
+  color:rgba(255,255,255,.045);pointer-events:none;font-family:serif
+}
+.comHeroCopy{position:relative;z-index:1;min-width:0}
+.comKicker{
+  display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:900;
+  letter-spacing:.18em;color:var(--cy);text-transform:uppercase
+}
+.comTitle{
+  margin-top:8px;font-size:clamp(24px,3.2vw,38px);font-weight:900;line-height:1.25;
+  letter-spacing:-.03em;color:transparent;
+  background:linear-gradient(100deg,#fff 6%,#b9f4ff 55%,#cdb9ff);
+  -webkit-background-clip:text;background-clip:text
+}
+.comLead{max-width:520px;margin-top:8px;color:#cbd3ee;font-size:13.5px;line-height:1.9}
+.comHeroActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.comHeroActions .btn{border-radius:12px}
+
+.comHeroStats{
+  position:relative;z-index:1;display:flex;align-items:stretch;gap:9px;flex-wrap:wrap;
+  justify-content:flex-end;max-width:330px
+}
+.comStat{
+  min-width:78px;padding:11px 13px;border-radius:15px;
+  border:1px solid var(--com-line);background:rgba(5,9,25,.46);
+  text-align:center;backdrop-filter:blur(10px)
+}
+.comStat b{display:block;font-size:20px;font-weight:900;line-height:1.2;color:#fff}
+.comStat span{font-size:10px;color:var(--mut);white-space:nowrap}
+.comStat.live b{color:var(--com-mint)}
+.comStat.live{position:relative}
+.comStat.live::after{
+  content:"";position:absolute;top:9px;inset-inline-end:10px;width:6px;height:6px;
+  border-radius:50%;background:var(--com-mint);box-shadow:0 0 10px var(--com-mint)
+}
+.comMark{
+  align-self:center;font-size:38px;font-weight:900;line-height:1;color:rgba(255,255,255,.1);
+  padding-inline:5px;font-family:serif
+}
+
+/* ── چیدمان ─────────────────────────────────────────────────── */
+#sec-community .comGrid{
+  display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start
+}
+.comMain{min-width:0}
+.comRail{position:sticky;top:calc(var(--top) + 14px);display:flex;flex-direction:column;gap:12px}
+.comPanel{
+  padding:14px;border:1px solid var(--com-line);border-radius:18px;
+  background:linear-gradient(155deg,rgba(18,24,55,.72),rgba(7,11,27,.72));
+  box-shadow:0 14px 34px rgba(0,0,0,.24)
+}
+.comPanelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.comPanelHead b{font-size:12.5px}
+.comPanelHead span{font-size:9.5px;color:var(--mut);opacity:.8}
+.comRailList{display:flex;flex-direction:column;gap:7px}
+.comRailItem{
+  display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:11px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(130,215,255,.09);
+  min-width:0
+}
+.comRailItem .rk{
+  flex:0 0 22px;height:22px;display:grid;place-items:center;border-radius:7px;
+  background:linear-gradient(135deg,rgba(124,92,255,.5),rgba(34,211,238,.32));
+  font-size:10px;font-weight:900;color:#fff
+}
+.comRailItem .grow{min-width:0}
+.comRailItem .t{font-size:11px;line-height:1.6;color:#e4e8ff}
+.comRailItem .m{font-size:9.5px;color:var(--mut);margin-top:2px}
+.comRailItem .thumb{
+  flex:0 0 24px;height:24px;display:grid;place-items:center;border-radius:8px;
+  background:rgba(124,92,255,.2);font-size:12px
+}
+.comRailEmpty{padding:10px 5px;font-size:10.5px;color:var(--mut);line-height:1.8}
+.comRules ul{display:flex;flex-direction:column;gap:7px;padding-inline-start:15px;list-style:disc;color:#c6cde8}
+.comRules li{font-size:10.5px;line-height:1.8}
+.comRuleLink{
+  margin-top:10px;border:0;background:transparent;color:var(--cy);font:inherit;
+  font-size:10.5px;font-weight:800;padding:0;cursor:pointer
+}
+
+/* ── نوشتن پست ──────────────────────────────────────────────── */
+#sec-community .comComposer{padding:16px;border-color:var(--com-line2)}
+.composerHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.composerHead b{font-size:13px}
+.composerBar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;flex-wrap:wrap}
+.composerBar .check{font-size:11px}
+.comCount{font-size:10px;color:var(--mut);letter-spacing:.03em}
+#pText{min-height:104px;resize:vertical}
+#sec-community .comGuest{border-style:dashed;background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(34,211,238,.08))}
+
+/* ── تب‌ها ───────────────────────────────────────────────────── */
+.comFeedHead{display:flex;align-items:center;gap:8px;margin:2px 0 12px}
+.comTabs{
+  display:flex;gap:4px;flex:1;min-width:0;padding:4px;border-radius:14px;overflow-x:auto;
+  scrollbar-width:none;border:1px solid var(--com-line);background:rgba(4,8,22,.58)
+}
+.comTabs::-webkit-scrollbar{display:none}
+.comTab{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:8px 11px;
+  border:0;border-radius:10px;background:transparent;color:var(--mut);
+  font:inherit;font-size:11.5px;font-weight:800;white-space:nowrap;cursor:pointer;transition:.2s
+}
+.comTab span{
+  min-width:18px;padding:1px 5px;border-radius:7px;font-size:9px;line-height:1.5;
+  background:rgba(255,255,255,.08);color:inherit
+}
+.comTab:hover{color:#fff;background:rgba(255,255,255,.06)}
+.comTab.on{color:#fff;background:linear-gradient(135deg,rgba(124,92,255,.9),rgba(34,211,238,.72));box-shadow:0 8px 20px rgba(124,92,255,.28)}
+.comTab.on span{background:rgba(0,0,0,.16)}
+.comMiniCompose{
+  flex:0 0 42px;width:42px;height:42px;border-radius:13px;border:1px solid var(--com-line2);
+  background:linear-gradient(135deg,rgba(124,92,255,.2),rgba(34,211,238,.14));
+  color:#fff;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;transition:.25s
+}
+.comMiniCompose:hover{transform:translateY(-2px) rotate(4deg);border-color:var(--cy);box-shadow:0 10px 24px rgba(34,211,238,.2)}
+
+/* ── فید ────────────────────────────────────────────────────── */
+#sec-community .comFeed{gap:11px}
+#sec-community .comFeed .post{
+  position:relative;overflow:hidden;border-radius:19px;border-color:var(--com-line);
+  background:linear-gradient(155deg,rgba(18,24,56,.75),rgba(7,11,27,.72));
+  box-shadow:0 12px 30px rgba(0,0,0,.22)
+}
+#sec-community .comFeed .post::before{
+  content:"";position:absolute;inset-block:0;inset-inline-start:0;width:3px;
+  background:linear-gradient(180deg,var(--vio),var(--cy));opacity:.7
+}
+#sec-community .comFeed .post:hover{transform:translateY(-2px);border-color:var(--com-line2)}
+#sec-community .comFeed .post .pbody{font-size:13.5px}
+#sec-community .comFeed .pfoot{border-top-color:rgba(130,215,255,.1)}
+#sec-community .comFeed .act{border-radius:9px}
+#sec-community .comFeed .act:hover{background:rgba(34,211,238,.1)}
+#sec-community .comFeed .empty{min-height:190px;display:grid;place-items:center;line-height:2}
+
+/* ── تم روشن ────────────────────────────────────────────────── */
+html[data-theme="light"] #sec-community .comHero{
+  background:
+    radial-gradient(90% 140% at 4% 4%,rgba(124,92,255,.17),transparent 60%),
+    radial-gradient(75% 120% at 96% 96%,rgba(34,211,238,.13),transparent 64%),
+    linear-gradient(140deg,rgba(255,255,255,.96),rgba(241,244,253,.9));
+  box-shadow:0 18px 42px rgba(30,40,80,.12)
+}
+html[data-theme="light"] #sec-community .comHero::after{color:rgba(40,45,90,.07)}
+html[data-theme="light"] #sec-community .comTitle{
+  background:linear-gradient(100deg,#241a68 6%,#0a6d8b 58%,#6c3baa);
+  -webkit-background-clip:text;background-clip:text
+}
+html[data-theme="light"] #sec-community .comLead{color:#48516f}
+html[data-theme="light"] .comStat{background:rgba(255,255,255,.72)}
+html[data-theme="light"] .comStat b{color:#151b36}
+html[data-theme="light"] .comPanel,
+html[data-theme="light"] #sec-community .comFeed .post,
+html[data-theme="light"] .comTabs{background:rgba(255,255,255,.8)}
+html[data-theme="light"] .comRailItem{background:rgba(20,30,70,.035)}
+html[data-theme="light"] .comRailItem .t{color:#1b2240}
+html[data-theme="light"] .comRules ul{color:#3e4764}
+html[data-theme="light"] .comTab:hover{color:#151b36;background:rgba(20,30,70,.06)}
+html[data-theme="light"] .comTab.on{color:#fff}
+html[data-theme="light"] .comTab span{background:rgba(0,0,0,.1)}
+
+/* ── موبایل ─────────────────────────────────────────────────── */
+@media (max-width:1080px){
+  #sec-community .comGrid{grid-template-columns:minmax(0,1fr) 270px}
+}
+@media (max-width:960px){
+  #sec-community .comGrid{grid-template-columns:1fr}
+  .comRail{position:static;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .comRules{grid-column:1/-1}
+  #sec-community .comHeroStats{max-width:none;justify-content:flex-start}
+  .comMark{display:none}
+}
+@media (max-width:640px){
+  #sec-community .comHero{grid-template-columns:1fr;padding:20px 17px;border-radius:21px;gap:16px}
+  .comHeroStats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .comStat{min-width:0;padding:9px 7px}
+  .comStat b{font-size:17px}
+  .comRail{grid-template-columns:1fr}
+  .comFeedHead{align-items:flex-start}
+  .comTabs{padding:3px}
+  .comTab{padding:8px 9px;font-size:10.5px;gap:4px}
+  .comTab span{font-size:8.5px}
+  .comMiniCompose{width:38px;height:38px;flex-basis:38px;border-radius:11px}
+  #sec-community .comFeed .post{padding:12px;border-radius:16px}
+  .composerHead{font-size:12px}
+  .composerBar{gap:6px}
+  .comCount{font-size:9px}
+}

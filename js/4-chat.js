@@ -82,8 +82,12 @@ R.watchOnline = function () {
   if (!R.db) return;
   R.db.ref("online").on("value", function (s) {
     R.ONLINE = s.val() || {};
-    var txt = "🟢 " + R.fa(Object.keys(R.ONLINE).length) + " نفر آنلاین";
+    var n = Object.keys(R.ONLINE).length;
+    var txt = "🟢 " + (R.i18n ? R.i18n.num(n) : R.fa(n)) + " " +
+      (R.i18n ? R.i18n.t("نفر آنلاین") : "نفر آنلاین");
     R.qa("[data-online]").forEach(function (e) { e.textContent = txt; });
+    if (R.renderCommunity) { try { R.renderCommunity(); } catch (e) {} }
+    try { document.dispatchEvent(new CustomEvent("ronin:presence")); } catch (e) {}
   });
 };
 
