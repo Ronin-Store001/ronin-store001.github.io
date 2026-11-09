@@ -1,8 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════
-   RONIN STORE — OFFLINE + GAME · ronin-offline.js · v1
+   RONIN STORE — OFFLINE + GAME · ronin-offline.js · v2
    ───────────────────────────────────────────────────────────────
    • صفحهٔ «آفلاین» با تم رونین (نوار بالا + کارت وسط)
-   • بازی «شوریکن رانر»: دوندهٔ نئونی مثل دایناسور کروم
+   • بازی «شوریکن رانر ۲»: دوندهٔ نئونی، پرش واقعی روی مانع‌ها،
+     کمبو، شوریکن قابل پرتاب و جلوه‌های نئونی
    • رکورد در localStorage • صدا با WebAudio • کنترل کیبورد و لمس
    • بدون وابستگی به R — روی offline.html هم کار می‌کند
    ═══════════════════════════════════════════════════════════════ */
@@ -20,7 +21,9 @@
   var G = {
     on: false, over: false, paused: false, score: 0, best: 0, speed: 1,
     t: 0, ob: [], coins: [], parts: [], dust: [], shake: 0, night: 0,
-    raf: 0, last: 0, started: false, mute: false, dpr: 1
+    raf: 0, last: 0, started: false, mute: false, dpr: 1,
+    combo: 0, comboT: 0, got: 0, ammo: 2, shots: [], cooldown: 0,
+    jumpBuf: 0, groundT: 0, flash: 0, pop: 0
   };
   var P = { x: 92, y: 0, vy: 0, w: 38, h: 58, duck: false, jumps: 0, run: 0, sq: 0, spinT: 0 };
 
@@ -98,6 +101,10 @@
       "#rnOff .rnHud span{padding:4px 10px;border-radius:99px;background:rgba(6,10,24,.6);" +
         "border:1px solid rgba(150,170,255,.22);color:#dfe7ff}",
       "#rnOff .rnHud .sp{flex:1}",
+      "#rnOff .rnHud .combo{color:#ffd66b;border-color:rgba(255,176,58,.55);" +
+        "background:rgba(50,25,4,.75);box-shadow:0 0 14px rgba(255,176,58,.18)}",
+      "#rnOff .rnHud .combo.off{display:none}",
+      "#rnOff .rnHud .ammo{color:#8fe9ff;border-color:rgba(143,233,255,.32)}",
       "#rnOff .rnCtr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;" +
         "justify-content:center;gap:10px;text-align:center;padding:16px;" +
         "background:radial-gradient(80% 80% at 50% 40%,rgba(6,9,22,.55),rgba(6,9,22,.9))}",
@@ -109,8 +116,12 @@
         "font-size:13px;font-weight:900;color:#e9edff;border:1px solid rgba(150,170,255,.24);" +
         "background:rgba(255,255,255,.06);user-select:none;-webkit-user-select:none}",
       "#rnOff .rnPad:active{background:rgba(124,92,255,.28)}",
+      "#rnOff .rnPad.throw{color:#ffd66b;border-color:rgba(255,176,58,.42);" +
+        "background:linear-gradient(135deg,rgba(255,176,58,.12),rgba(255,84,112,.08))}",
+      "#rnOff .rnPad.throw:active{background:rgba(255,176,58,.28)}",
       "#rnOff .rnTip{font-size:10px;color:#8f9ac0;text-align:center;padding:0 12px 10px}",
-      "@media(max-width:560px){#rnOff .rnBody{padding:10px;gap:10px}#rnOff .rnIntro h2{font-size:16px}}",
+      "@media(max-width:560px){#rnOff .rnBody{padding:10px;gap:10px}#rnOff .rnIntro h2{font-size:16px}" +
+        "#rnOff .rnPads{gap:6px}#rnOff .rnPad{font-size:11.5px;padding:0 4px}}",
       "@media(prefers-reduced-motion:reduce){#rnOff.on{animation:none}}",
       "body.rnNoScroll{overflow:hidden!important}"
     ].join("\n");
@@ -150,13 +161,15 @@
         '<b>🥷 شوریکن رانر</b>' +
         '<span class="st"><i></i>آفلاین</span>' +
         '<span class="sp"></span>' +
+        '<button class="ico" type="button" data-rn="pause" title="توقف">⏸</button>' +
         '<button class="ico" type="button" data-rn="sound" title="صدا">🔊</button>' +
         '<button class="ico" type="button" data-rn="close" title="بستن">✕</button>' +
       "</div>" +
       '<div class="rnBody">' +
         '<div class="rnIntro">' +
           "<h2>اینترنت قطع شده — وقت بازی است</h2>" +
-          "<p>با فاصله/↑ بپر، دوبار بپر تا دوبل‌جامپ بزنی، با ↓ سر خم کن. سکه‌ها را بگیر و تا جای ممکن زنده بمان.</p>" +
+          "<p>با فاصله/↑ بپر، دوبار بپر تا دوبل‌جامپ بزنی، با ↓ سر خم کن و با X شوریکن پرتاب کن. " +
+          "روی مانع‌ها بپر، سکه‌ها را بگیر و تا جای ممکن زنده بمان.</p>" +
           '<div class="rnRow">' +
             '<button class="rnBtn p" type="button" data-rn="start">شروع بازی 🎮</button>' +
             '<button class="rnBtn" type="button" data-rn="retry">↺ اتصال را چک کن</button>' +
@@ -164,13 +177,16 @@
         "</div>" +
         '<div class="rnStage">' +
           '<canvas id="rnCv"></canvas>' +
-          '<div class="rnHud"><span id="rnScore">۰</span><span id="rnBest">رکورد ۰</span><span class="sp"></span></div>' +
+          '<div class="rnHud"><span id="rnScore">امتیاز ۰</span><span id="rnBest">رکورد ۰</span>' +
+            '<span class="sp"></span><span id="rnCombo" class="combo off">×۲</span>' +
+            '<span id="rnAmmo" class="ammo">🌀 ۲</span></div>' +
           '<div class="rnCtr" id="rnCtr"><h3>آماده‌ای؟</h3>' +
-            '<div class="s">فاصله یا ↑ = پرش • ↓ = خم • P = توقف</div>' +
+            '<div class="s">فاصله یا ↑ = پرش • ↓ = خم • X = شوریکن • P = توقف</div>' +
             '<button class="rnBtn p" type="button" data-rn="start">شروع</button></div>' +
         "</div>" +
         '<div class="rnPads">' +
           '<button class="rnPad" type="button" data-rn="jump">⬆ پرش</button>' +
+          '<button class="rnPad throw" type="button" data-rn="throw">🌀 شوریکن</button>' +
           '<button class="rnPad" type="button" data-rn="duck">⬇ خم</button>' +
         "</div>" +
         '<div class="rnTip">رکوردت همین‌جا روی گوشی ذخیره می‌شود — بدون اینترنت هم کار می‌کند.</div>' +
@@ -197,18 +213,20 @@
   }
 
   function reset() {
-    G.ob = []; G.coins = []; G.parts = []; G.dust = [];
+    G.ob = []; G.coins = []; G.parts = []; G.dust = []; G.shots = [];
     G.score = 0; G.speed = 1; G.t = 0; G.over = false; G.paused = false;
     G.shake = 0; G.night = 0; G.started = true;
+    G.combo = 0; G.comboT = 0; G.got = 0; G.ammo = 2; G.cooldown = 0;
+    G.jumpBuf = 0; G.groundT = 0; G.flash = 0; G.pop = 0;
     P.y = GY - P.h; P.vy = 0; P.duck = false; P.jumps = 0;
-    P.sq = 0; P.spinT = 0; G.airT = 0;
+    P.sq = 0; P.spinT = 0;
     spawn(0);
     hud();
     var c = el("rnCtr"); if (c) c.classList.add("hide");
   }
 
   function spawn(extra) {
-    var gap = Math.max(230, 470 - G.score * 0.05 - Math.random() * 140) + (extra || 0);
+    var gap = Math.max(270, 480 - G.score * 0.045 - Math.random() * 120) + (extra || 0);
     var lastX = G.ob.length ? Math.max.apply(null, G.ob.map(function (o) { return o.x; })) : W;
     var x = Math.max(W + 40, lastX + gap);
     var fly = Math.random() < 0.38 && G.score > 120;
@@ -232,39 +250,73 @@
     }
   }
 
-  function jump() {
-    if (!G.on) return;
-    if (!G.started || G.over) { if (G.over) { reset(); } else { start(); } return; }
-    var grounded = P.y + P.h >= GY - 1.5;
-    if (!grounded && P.jumps === 0 && G.t - (G.airT || 0) < 0.1) grounded = true;  /* کویوتی */
-    if (grounded) {
-      P.vy = -980; P.jumps = 1; P.duck = false; P.sq = 0;
-      beep(520, 0.05);
-      dustPuff(9, false);
-    } else if (P.jumps < 2) {
-      P.vy = -850; P.jumps = 2; P.duck = false; P.spinT = 0.44;
-      beep(760, 0.05);
-      dustPuff(12, true);
+  function isGrounded() { return P.y >= GY - P.h - 0.75; }
+
+  function doJump(ground) {
+    if (ground) {
+      P.vy = -985; P.jumps = 1; P.duck = false; P.sq = 0;
+      G.groundT = -1; G.jumpBuf = 0;
+      beep(540, 0.05);
+      dustPuff(10, false);
+    } else {
+      P.vy = -860; P.jumps = 2; P.duck = false; P.spinT = 0.44;
+      G.jumpBuf = 0;
+      beep(780, 0.05);
+      dustPuff(13, true);
     }
   }
-  function cutJump() { if (P.vy < -260) P.vy = -260; }
+
+  function jump() {
+    if (!G.on || G.paused) return;
+    if (!G.started || G.over) { if (G.over) { reset(); } else { start(); } return; }
+    var coyote = G.groundT >= 0 && G.t - G.groundT < 0.11;
+    if (isGrounded() || coyote) {
+      doJump(true);
+    } else if (P.jumps < 2) {
+      doJump(false);
+    } else {
+      /* اگر وسط هوا دیر زدی، پرش را برای فرود نگه دار */
+      G.jumpBuf = 0.14;
+    }
+  }
+  function cutJump() { if (P.vy < -300) P.vy *= 0.56; }
 
   function duck(on) {
-    if (!G.started || G.over) return;
-    P.duck = !!on && P.y + P.h >= GY - 1;
+    if (!G.started || G.over || G.paused) return;
+    P.duck = !!on && isGrounded();
+  }
+
+  function playerBox() {
+    var ph = P.duck ? 30 : P.h;
+    var top = P.duck ? P.y + (P.h - ph) : P.y;
+    return { x: P.x + 5, y: top + 3, w: P.w - 10, h: ph - 4 };
   }
 
   function hit(o) {
-    var ph = P.duck ? 30 : P.h;
-    var py = GY - ph;
-    return P.x + P.w > o.x + 4 && P.x < o.x + o.w - 4 &&
-      py + ph > o.y + 4 && py < o.y + o.h - 4;
+    var b = playerBox();
+    return b.x + b.w > o.x + 4 && b.x < o.x + o.w - 4 &&
+      b.y + b.h > o.y + 3 && b.y < o.y + o.h - 3;
+  }
+
+  function throwShuriken() {
+    if (!G.on || !G.started || G.over || G.paused || G.cooldown > 0) return;
+    if (G.ammo <= 0) { G.cooldown = 0.2; beep(160, 0.06, "sawtooth"); return; }
+    G.ammo--; G.cooldown = 0.18;
+    G.shots.push({
+      x: P.x + P.w + 4,
+      y: P.y + (P.duck ? 20 : P.h * 0.46),
+      spin: 0, life: 1.7
+    });
+    beep(1180, 0.04, "triangle");
+    dustPuff(4, true);
+    hud();
   }
 
   function die() {
     if (G.over) return;
     G.over = true;
     G.shake = 1;
+    G.combo = 0; G.comboT = 0; G.shots = []; G.jumpBuf = 0;
     beep(150, 0.25, "sawtooth");
     for (var i = 0; i < 26; i++) {
       G.parts.push({ x: P.x + P.w / 2, y: GY - P.h / 2, vx: (Math.random() - 0.5) * 420,
@@ -289,14 +341,19 @@
     G.score += dt * 60 * G.speed;
     G.speed = Math.min(2.7, 1 + G.score / 1400);
     G.night = (Math.sin(G.score / 900) + 1) / 2;
+    if (G.cooldown > 0) G.cooldown = Math.max(0, G.cooldown - dt);
+    if (G.jumpBuf > 0) G.jumpBuf = Math.max(0, G.jumpBuf - dt);
+    if (G.comboT > 0) { G.comboT -= dt; if (G.comboT <= 0) G.combo = 0; }
+    if (G.flash > 0) G.flash = Math.max(0, G.flash - dt * 4);
+    if (G.pop > 0) G.pop = Math.max(0, G.pop - dt * 4);
 
+    if (isGrounded()) G.groundT = G.t;
     P.vy += 2600 * dt;
     P.y += P.vy * dt;
     if (P.y >= GY - P.h) {
       if (P.vy > 150) P.sq = 1;                       /* فرود: اسکواش */
-      P.y = GY - P.h; P.vy = 0; P.jumps = 0;
-    } else if (P.jumps === 0) {
-      G.airT = G.t;                                   /* زمان ترک زمین */
+      P.y = GY - P.h; P.vy = 0; P.jumps = 0; G.groundT = G.t;
+      if (G.jumpBuf > 0) { G.jumpBuf = 0; doJump(true); }
     }
     if (P.spinT > 0) P.spinT = Math.max(0, P.spinT - dt);
     if (P.sq > 0) P.sq = Math.max(0, P.sq - dt * 4.2);
@@ -307,7 +364,7 @@
     }
 
     var px = 300 * dt * G.speed;
-    var i, o;
+    var i, j, o;
     for (i = 0; i < G.ob.length; i++) {
       o = G.ob[i];
       o.x -= px + dt * 40;
@@ -318,13 +375,50 @@
     var last = G.ob.length ? Math.max.apply(null, G.ob.map(function (x) { return x.x; })) : 0;
     if (last < W - 120 || !G.ob.length) spawn(0);
 
+    /* شوریکن‌های پرتابی: مانع اول را می‌شکنند */
+    for (i = G.shots.length - 1; i >= 0; i--) {
+      var s = G.shots[i];
+      s.x += 980 * dt;
+      s.spin += dt * 28;
+      s.life -= dt;
+      var boom = false;
+      for (j = G.ob.length - 1; j >= 0; j--) {
+        o = G.ob[j];
+        if (s.x + 11 > o.x && s.x - 11 < o.x + o.w &&
+            s.y + 9 > o.y && s.y - 9 < o.y + o.h) {
+          G.ob.splice(j, 1);
+          boom = true;
+          G.score += 18;
+          beep(230, 0.08, "sawtooth");
+          for (var q = 0; q < 12; q++) {
+            G.parts.push({ x: s.x, y: s.y, vx: (Math.random() - 0.5) * 260,
+              vy: (Math.random() - 0.6) * 260, life: 0.5, max: 0.5,
+              r: 1.5 + Math.random() * 2.5 });
+          }
+          break;
+        }
+      }
+      if (boom || s.x > W + 40 || s.life <= 0) G.shots.splice(i, 1);
+    }
+
     for (i = 0; i < G.coins.length; i++) {
       var c = G.coins[i];
       c.x -= px;
       c.spin = (c.spin || 0) + dt * 6;
-      var dx = (P.x + P.w / 2) - c.x, dy = (GY - (P.duck ? 15 : P.h / 2)) - c.y;
+      var dx = (P.x + P.w / 2) - c.x;
+      var dy = (P.y + (P.duck ? 15 : P.h / 2)) - c.y;
       if (dx * dx + dy * dy < (c.r + 24) * (c.r + 24) && !c.got) {
-        c.got = 1; G.score += 25; beep(880, 0.06);
+        c.got = 1;
+        G.got++;
+        G.combo = Math.min(5, G.combo + 1);
+        G.comboT = 2.6;
+        G.score += 25 * G.combo;
+        G.pop = 1; G.flash = Math.max(G.flash, 0.22);
+        beep(760 + G.combo * 90, 0.06);
+        if (G.got % 4 === 0 && G.ammo < 3) {
+          G.ammo++;
+          beep(1250, 0.08, "triangle");
+        }
       }
     }
     G.coins = G.coins.filter(function (x) { return x.x > -40 && !x.got; });
@@ -340,9 +434,14 @@
   }
 
   function hud() {
-    var a = el("rnScore"), b = el("rnBest");
+    var a = el("rnScore"), b = el("rnBest"), c = el("rnCombo"), d = el("rnAmmo");
     if (a) a.textContent = "امتیاز " + num(G.score);
     if (b) b.textContent = "رکورد " + num(Math.max(G.best, G.score));
+    if (c) {
+      c.textContent = "×" + num(Math.min(5, G.combo));
+      c.classList.toggle("off", G.combo < 2);
+    }
+    if (d) d.textContent = "🌀 " + num(G.ammo);
   }
 
   /* ── ۵. نقاشی ───────────────────────────────────────────── */
@@ -360,6 +459,17 @@
     sky.addColorStop(1, n > 0.5 ? "#1a0f28" : "#2a1240");
     cx.fillStyle = sky; cx.fillRect(0, 0, W, GY + 2);
 
+    /* ماه نئونی */
+    var moonX = W * 0.76, moonY = Math.max(42, GY * 0.25);
+    var mg = cx.createRadialGradient(moonX, moonY, 4, moonX, moonY, 62);
+    mg.addColorStop(0, "rgba(255,255,255,.30)");
+    mg.addColorStop(0.38, "rgba(143,233,255,.13)");
+    mg.addColorStop(1, "rgba(143,233,255,0)");
+    cx.fillStyle = mg;
+    cx.beginPath(); cx.arc(moonX, moonY, 62, 0, 7); cx.fill();
+    cx.fillStyle = "rgba(230,240,255,.13)";
+    cx.beginPath(); cx.arc(moonX, moonY, 27, 0, 7); cx.fill();
+
     /* ستاره‌ها */
     cx.fillStyle = "rgba(220,230,255,.55)";
     for (var i = 0; i < 34; i++) {
@@ -370,6 +480,18 @@
       cx.fillRect(sx, sy, 2, 2);
     }
     cx.globalAlpha = 1;
+
+    /* شهر دور دوم، با پارالاکس آرام‌تر */
+    var off2 = (G.t * 9) % 170;
+    cx.fillStyle = "rgba(18,22,56,.55)";
+    for (var f = -1; f < W / 130 + 2; f++) {
+      var fx = f * 130 - off2;
+      var fh = 48 + ((f + 2) % 5) * 20;
+      cx.fillRect(fx, GY - fh, 92, fh);
+      cx.fillStyle = "rgba(255,176,58,.10)";
+      for (var fq = 0; fq < 2; fq++) cx.fillRect(fx + 14 + fq * 26, GY - fh + 14, 6, 4);
+      cx.fillStyle = "rgba(18,22,56,.55)";
+    }
 
     /* شهر دور */
     cx.fillStyle = "rgba(10,14,36,.85)";
@@ -398,6 +520,17 @@
     var gx = (G.t * 120 * G.speed) % 46;
     for (var x = -gx; x < W; x += 46) {
       cx.beginPath(); cx.moveTo(x, GY); cx.lineTo(x - 26, H); cx.stroke();
+    }
+
+    /* خطوط سرعت */
+    if (G.speed > 1.15 || P.y + P.h < GY - 4) {
+      cx.strokeStyle = "rgba(143,233,255,.16)";
+      cx.lineWidth = 1;
+      for (var sl = 0; sl < 7; sl++) {
+        var ly = GY * 0.18 + ((sl * 53) % Math.max(40, GY * 0.65));
+        var lx = W - ((G.t * (260 + sl * 55) + sl * 137) % (W + 160));
+        cx.beginPath(); cx.moveTo(lx, ly); cx.lineTo(lx + 34 + G.speed * 18, ly); cx.stroke();
+      }
     }
 
     /* گرد و خاک */
@@ -455,6 +588,38 @@
       }
     });
 
+    /* شوریکن‌های پرتابی */
+    G.shots.forEach(function (s) {
+      cx.save();
+      cx.translate(s.x, s.y);
+      cx.rotate(s.spin);
+      cx.fillStyle = "#8fe9ff";
+      cx.shadowColor = "#8fe9ff"; cx.shadowBlur = 16;
+      cx.beginPath();
+      for (var q = 0; q < 4; q++) {
+        var an = q * Math.PI / 2;
+        cx.lineTo(Math.cos(an) * 12, Math.sin(an) * 12);
+        cx.lineTo(Math.cos(an + 0.42) * 4, Math.sin(an + 0.42) * 4);
+      }
+      cx.closePath(); cx.fill();
+      cx.restore();
+    });
+    cx.shadowBlur = 0;
+
+    /* دنبالهٔ نئونی بازیکن در هوا */
+    if (P.y + P.h < GY - 4) {
+      for (var tr = 3; tr > 0; tr--) {
+        cx.globalAlpha = tr * 0.035;
+        cx.fillStyle = "#8fe9ff";
+        if (cx.roundRect) {
+          cx.beginPath(); cx.roundRect(P.x - tr * 12, P.y + 5, P.w, P.h - 10, 11); cx.fill();
+        } else {
+          cx.fillRect(P.x - tr * 12, P.y + 5, P.w, P.h - 10);
+        }
+      }
+      cx.globalAlpha = 1;
+    }
+
     /* بازیکن */
     drawRunner();
 
@@ -464,6 +629,14 @@
       cx.fillStyle = "#ffb03a";
       cx.fillRect(d.x, d.y, d.r, d.r);
     });
+    cx.globalAlpha = 1;
+
+    /* فلش کوتاه برداشتن سکه */
+    if (G.flash > 0) {
+      cx.globalAlpha = Math.min(0.16, G.flash * 0.35);
+      cx.fillStyle = "#8fe9ff";
+      cx.fillRect(-10, -10, W + 20, H + 20);
+    }
     cx.globalAlpha = 1;
     cx.restore();
   }
@@ -656,6 +829,7 @@
     o.classList.add("on");
     document.body.classList.add("rnNoScroll");
     G.on = true;
+    G.paused = false;
     cv = el("rnCv");
     size();
     G.best = parseInt(ls(HI, "0"), 10) || 0;
@@ -691,6 +865,25 @@
     if (b) { b.textContent = G.mute ? "🔇" : "🔊"; b.title = G.mute ? "صدا خاموش" : "صدا روشن"; }
   }
 
+  function paintPause() {
+    var c = el("rnCtr");
+    if (!c) return;
+    if (G.paused && G.started && !G.over) {
+      c.classList.remove("hide");
+      c.innerHTML = '<h3>⏸ بازی متوقف شد</h3>' +
+        '<div class="s">نفس بگیر؛ هر وقت آماده بودی ادامه بده.</div>' +
+        '<button class="rnBtn p" type="button" data-rn="resume">ادامه ▶</button>';
+    } else if (!G.over) {
+      c.classList.add("hide");
+    }
+  }
+
+  function togglePause(force) {
+    if (!G.on || !G.started || G.over) return;
+    G.paused = typeof force === "boolean" ? force : !G.paused;
+    paintPause();
+  }
+
   /* ── ۹. ورودی‌ها ────────────────────────────────────────── */
   document.addEventListener("click", function (e) {
     var t = e.target && e.target.closest ? e.target.closest("[data-rn]") : null;
@@ -703,8 +896,11 @@
     else if (a === "x") { var b = el("rnNet"); if (b) b.classList.remove("on"); document.body.style.paddingTop = ""; }
     else if (a === "close") { close(); }
     else if (a === "start") { start(); }
+    else if (a === "pause") { togglePause(); }
+    else if (a === "resume") { togglePause(false); }
     else if (a === "sound") { G.mute = !G.mute; lsSet(MUTE, G.mute ? "1" : "0"); paintSound(); }
     else if (a === "jump") { jump(); }
+    else if (a === "throw") { throwShuriken(); }
     else if (a === "duck") { duck(true); setTimeout(function () { duck(false); }, 420); }
   });
 
@@ -715,6 +911,9 @@
   function isDuckKey(e) {
     return e.code === "ArrowDown" || e.code === "KeyS" ||
       e.key === "ArrowDown" || e.key === "s" || e.key === "S";
+  }
+  function isThrowKey(e) {
+    return e.code === "KeyX" || e.key === "x" || e.key === "X";
   }
   function onKey(e, down) {
     if (!G.on) return;
@@ -728,8 +927,13 @@
       duck(down);
       return;
     }
+    if (isThrowKey(e)) {
+      e.preventDefault(); e.stopPropagation();
+      if (down) throwShuriken();
+      return;
+    }
     if (!down) return;
-    if (e.key === "p" || e.key === "P") { e.preventDefault(); G.paused = !G.paused; }
+    if (e.key === "p" || e.key === "P") { e.preventDefault(); togglePause(); }
     else if (e.key === "Escape") { e.preventDefault(); close(); }
     else if (e.key === "r" || e.key === "R") { e.preventDefault(); reset(); }
   }
@@ -745,7 +949,10 @@
 
   window.addEventListener("resize", function () { if (G.on) { size(); } });
   document.addEventListener("visibilitychange", function () {
-    if (G.on && document.hidden) G.paused = true;
+    if (G.on && document.hidden && G.started && !G.over) {
+      G.paused = true;
+      paintPause();
+    }
   });
 
   /* ── ۱۰. شبکه ───────────────────────────────────────────── */
@@ -787,7 +994,8 @@
     setInterval(beat, 25000);
   }
 
-  window.RoninGame = { open: open, close: close, start: start, jump: jump, duck: duck, state: G, player: P };
+  window.RoninGame = { open: open, close: close, start: start, jump: jump, duck: duck,
+    throw: throwShuriken, pause: togglePause, hit: hit, box: playerBox, state: G, player: P };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();
