@@ -24,6 +24,7 @@
     users: ["👤", "کاربران"],
     market: ["🛒", "فروشگاه"],
     ads: ["📢", "تبلیغات و آگهی"],
+    videoads: ["🎬", "تبلیغ ویدیویی"],
     profile: ["👤", "پروفایل"],
     myworld: ["🧭", "دنیای من"],
     premium: ["💎", "پرمیوم"],
@@ -233,7 +234,7 @@
     nav.appendChild(g2.root);
 
     var g3 = group("🛒", "بازار", true);
-    ["market", "ads"].forEach(function (k) { g3.body.appendChild(takeItem(k)); });
+    ["market", "ads", "videoads"].forEach(function (k) { g3.body.appendChild(takeItem(k)); });
     /* سبد خرید */
     var cartRow = makeRow("🛍", "سبد خرید", function () {
       var c = el("cartBtn");

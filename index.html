@@ -66,6 +66,7 @@
   <link rel="stylesheet" href="ronin-rail-scroll.css?v=1">
   <link rel="stylesheet" href="ronin-2026.css?v=1">
   <link rel="stylesheet" href="css/5-community.css?v=1">
+  <link rel="stylesheet" href="css/6-market.css?v=1">
   <link rel="stylesheet" href="ronin-events-rank.css?v=8">
   <link rel="stylesheet" href="ronin-intro.css?v=1">
   <link rel="stylesheet" href="ronin-intro-plus.css?v=1">
@@ -153,6 +154,7 @@
       <div class="rgbody">
         <div class="ditem" data-go="market"><i>🛒</i>فروشگاه</div>
         <div class="ditem" data-go="ads"><i>📢</i>تبلیغات</div>
+        <div class="ditem" data-go="videoads"><i>🎬</i>تبلیغ ویدیویی</div>
       </div>
     </div>
 
@@ -252,6 +254,8 @@
         <div class="comMark" aria-hidden="true">忍</div>
       </div>
     </div>
+
+    <div class="comTopics" id="comTopics" data-noi18n></div>
 
     <div class="comGrid">
       <div class="comMain">
@@ -357,29 +361,96 @@
 
   <!-- ── ۷. فروشگاه ─────────────────────────────────────────── -->
   <section class="sec" id="sec-market">
-    <div class="head"><h2 class="h2">🛒 فروشگاه رونین</h2><span class="chip cy">آگهی فعال: <b id="shopCount">۰</b></span></div>
+    <div class="mpHero">
+      <div>
+        <span class="mpKicker">RONIN MARKET 2.0</span>
+        <h2 class="h2 mpTitle">بازار رونین</h2>
+        <p class="mpLead">آگهی‌های تازه، فروشنده‌های واقعی و یک ویترین سریع برای پیدا کردن چیزی که دنبالش بودی.</p>
+        <div class="mpActions">
+          <button class="btn p mini" type="button" data-go="ads">＋ ثبت آگهی</button>
+          <button class="btn mini" type="button" data-cart="1">🛒 سبد خرید</button>
+          <button class="btn mini" type="button" data-go="videoads">🎬 تبلیغ ویدیویی</button>
+        </div>
+      </div>
+      <div class="mpStats">
+        <div class="mpStat hi"><b id="shopCount">۰</b><span>آگهی فعال</span></div>
+        <div class="mpStat"><b id="shopSellers">۰</b><span>فروشنده</span></div>
+        <div class="mpStat"><b id="shopFresh">۰</b><span>تازه امروز</span></div>
+        <div class="mpStat"><b>۲۴/۷</b><span>ویترین باز</span></div>
+      </div>
+    </div>
+
+    <div class="mpToolbar">
+      <div class="mpSearch"><input id="shopSearch" type="search" placeholder="جستجو در بازار…" maxlength="50" autocomplete="off"><i aria-hidden="true">⌕</i></div>
+      <select class="mpSort" id="shopSort" aria-label="ترتیب نمایش">
+        <option value="new">جدیدترین</option>
+        <option value="cheap">ارزان‌ترین</option>
+        <option value="expensive">گران‌ترین</option>
+        <option value="popular">پربازدیدترین</option>
+      </select>
+      <button class="mpClear" type="button" data-shopclear="1">پاک کردن</button>
+    </div>
+    <div class="mpCats" id="shopCats"></div>
+    <div class="mpResults"><h3>تازه رسیده</h3><span id="shopMeta">در حال بارگذاری…</span></div>
     <div class="grid auto" id="shopWall"></div>
   </section>
 
   <!-- ── ۸. تبلیغات ─────────────────────────────────────────── -->
   <section class="sec" id="sec-ads">
-    <div class="head"><h2 class="h2">📢 تبلیغات و آگهی</h2></div>
-
-    <div class="card mb hide" data-auth>
-      <div class="sm b mb">ثبت آگهی جدید</div>
-      <div class="grid g2">
-        <input class="inp" id="adName" placeholder="نام محصول" maxlength="60">
-        <input class="inp" id="adIcon" placeholder="ایموجی" maxlength="4">
-        <input class="inp" id="adPrice" placeholder="قیمت (فقط عدد)" maxlength="20">
-        <input class="inp" id="adCur" placeholder="واحد (تومان / دلار)" maxlength="10">
-        <select class="sel" id="adCat"><option>انتخاب دسته</option></select>
-        <input class="inp" id="adCompany" placeholder="نام شرکت / فروشگاه" maxlength="40">
-        <input class="inp" id="adContact" placeholder="راه ارتباطی" maxlength="60">
-        <input class="inp" id="adLoc" placeholder="شهر / منطقه" maxlength="40">
+    <div class="adsHero">
+      <div>
+        <span class="adsKicker">RONIN ADS · MARKETPLACE</span>
+        <h2 class="h2 adsTitle">📢 آگهی و کمپین</h2>
+        <p class="adsLead">محصول یا خدمتت را با یک آگهی تمیز معرفی کن؛ آگهی تو بعد از تایید مالک در بازار و کاوش دیده می‌شود.</p>
+        <div class="adsActions">
+          <button class="btn p mini" type="button" data-go="videoads">🎬 تبلیغ ویدیویی</button>
+          <button class="btn mini" type="button" data-go="market">دیدن بازار</button>
+        </div>
       </div>
-      <textarea class="area mt" id="adDesc" placeholder="توضیح محصول" maxlength="600"></textarea>
-      <button class="btn p mt" id="adBtn">ارسال آگهی</button>
-      <div class="xs mut mt">آگهی‌های کاربران عادی پس از تایید مالک منتشر می‌شوند.</div>
+      <div class="adsStats">
+        <div class="adsStat"><b id="adsActive">۰</b><span>آگهی فعال</span></div>
+        <div class="adsStat"><b id="adsPending">۰</b><span>در انتظار تایید</span></div>
+        <div class="adsStat"><b id="adsViews">۰</b><span>بازدید کل</span></div>
+        <div class="adsStat"><b id="adsImpr">۰</b><span>نمایش ویدیو</span></div>
+      </div>
+    </div>
+
+    <div class="adsWorkspace">
+      <div class="adsCard hide" data-auth>
+        <div class="adsCardHead"><div><b>ثبت آگهی جدید</b><span>با پیش‌نمایش زنده، قبل از انتشار ببین چطور دیده می‌شود.</span></div><span class="chip cy">۲ دقیقه</span></div>
+        <div class="adFormGrid">
+          <input class="inp full" id="adName" placeholder="نام محصول یا خدمت" maxlength="60">
+          <input class="inp" id="adIcon" placeholder="ایموجی" maxlength="4">
+          <select class="sel" id="adKind" aria-label="نوع آگهی"><option value="product">محصول</option><option value="service">خدمات</option><option value="brand">برند</option></select>
+          <input class="inp" id="adPrice" placeholder="قیمت (فقط عدد)" maxlength="20">
+          <input class="inp" id="adCur" placeholder="واحد (تومان / دلار)" maxlength="10">
+          <select class="sel" id="adCat"><option>انتخاب دسته</option></select>
+          <input class="inp" id="adCompany" placeholder="نام شرکت / فروشگاه" maxlength="40">
+          <input class="inp" id="adContact" placeholder="راه ارتباطی" maxlength="60">
+          <input class="inp" id="adLoc" placeholder="شهر / منطقه" maxlength="40">
+          <input class="inp full" id="adTags" placeholder="تگ‌ها با کاما: انیمه, فیگور, محدود" maxlength="100">
+          <input class="inp" id="adImg" placeholder="لینک تصویر (اختیاری)" dir="ltr" maxlength="300">
+          <input class="inp" id="adLink" placeholder="لینک مقصد (اختیاری)" dir="ltr" maxlength="300">
+          <textarea class="area full" id="adDesc" placeholder="توضیح محصول، ویژگی‌ها و شرایط تحویل…" maxlength="600"></textarea>
+        </div>
+        <div class="adsActionsRow">
+          <button class="btn p" id="adBtn" type="button">ارسال آگهی</button>
+          <button class="btn mini" type="button" data-adpreview="1">به‌روزرسانی پیش‌نمایش</button>
+          <span class="xs mut">آگهی‌های کاربران عادی پس از تایید مالک منتشر می‌شوند.</span>
+        </div>
+      </div>
+
+      <aside class="adPreviewWrap">
+        <div class="adsCard">
+          <div class="adsCardHead"><div><b>پیش‌نمایش آگهی</b><span>همان چیزی که خریدار می‌بیند</span></div><span class="chip">Live</span></div>
+          <div class="adPreview" id="adPreview"></div>
+          <div class="adsVideoPromo">
+            <div class="sm b">🎬 تبلیغ ویدیویی هم داری؟</div>
+            <div class="xs mut" style="margin-top:3px">کمپین ویدیویی رونین را ببین و با پرمیوم از تبلیغات کمتر لذت ببر.</div>
+            <button class="btn p mini mt" type="button" data-go="videoads">تماشای تبلیغ</button>
+          </div>
+        </div>
+      </aside>
     </div>
 
     <div class="card hide" data-guest>
@@ -389,13 +460,95 @@
       </div>
     </div>
 
-    <div class="head"><h3 class="h3">آگهی‌های من</h3></div>
+    <div class="head" style="margin-top:18px"><h3 class="h3">آگهی‌های من</h3><span class="chip cy">مدیریت وضعیت</span></div>
+    <div class="adsFilters">
+      <button class="adsFilter on" type="button" data-adfilter="all">همه</button>
+      <button class="adsFilter" type="button" data-adfilter="live">فعال</button>
+      <button class="adsFilter" type="button" data-adfilter="pending">در انتظار</button>
+      <button class="adsFilter" type="button" data-adfilter="rejected">رد شده</button>
+    </div>
     <div class="col" id="myAds"></div>
+  </section>
+
+  <!-- ── ۸.۵ تبلیغ ویدیویی ──────────────────────────────────── -->
+  <section class="sec" id="sec-videoads">
+    <div class="vaHero">
+      <div>
+        <span class="vaKicker">RONIN ADS · VIDEO</span>
+        <h2 class="h2 vaTitle">🎬 تبلیغ‌های ویدیویی</h2>
+        <p class="vaLead">ویدیوهای واقعی MP4 با پخش خودکار بی‌صدا؛ بعد از دیدن محصول، افزودن به سبد یا ورود به بازار یک تبلیغ کوتاه و قابل‌بستن پخش می‌شود.</p>
+        <div class="vaActions">
+          <button class="btn p mini" type="button" data-go="ads">ساخت کمپین</button>
+          <button class="btn mini" type="button" id="vaPrev">قبلی</button>
+          <button class="btn mini" type="button" id="vaNext">بعدی</button>
+        </div>
+      </div>
+      <div class="vaMetrics">
+        <div class="vaMetric"><b id="vaImpr">۰</b><span>نمایش</span></div>
+        <div class="vaMetric"><b id="vaClicks">۰</b><span>کلیک</span></div>
+        <div class="vaMetric"><b id="vaDone">۰</b><span>تماشای کامل</span></div>
+        <div class="vaMetric"><b>۲</b><span>کمپین فعال</span></div>
+      </div>
+    </div>
+
+    <div class="vaLayout">
+      <div class="vaStage" id="vaStage">
+        <video class="vaVideo" id="vaVideo" muted playsinline preload="metadata" poster="media/ronin-ad-elite.jpg" aria-label="تبلیغ ویدیویی رونین"></video>
+        <div class="vaOverlay">
+          <span class="vaBrand" id="vaBrand">RONIN STORE</span>
+          <div class="vaBigTitle" id="vaBigTitle">ELITE DROP</div>
+          <p class="vaCopy" id="vaCopy">کالکشن محدود فیگور و گجت‌های رونین.</p>
+          <a class="vaCta" id="vaCta" href="#market" data-go="market">مشاهدهٔ کالکشن</a>
+        </div>
+        <div class="vaTop">
+          <div class="vaTopLeft"><span class="vaAdBadge">AD</span><span class="chip" style="font-size:8px;padding:1px 5px">Sponsored</span></div>
+          <div class="row" style="gap:4px">
+            <button class="vaIcon" id="vaMute" type="button" aria-label="بی‌صدا">🔇</button>
+            <button class="vaIcon" id="vaClose" type="button" aria-label="بستن">✕</button>
+          </div>
+        </div>
+        <div class="vaBottom">
+          <button class="btn mini" id="vaPlay" type="button" aria-label="پخش">▶</button>
+          <span class="vaTime" id="vaTime">0:00</span>
+          <div class="vaProgress"><i class="vaBar" id="vaBar"></i></div>
+        </div>
+      </div>
+      <aside class="vaSide">
+        <div class="vaPanel">
+          <div class="vaPanelHead"><b>کمپین‌های فعال</b><span>۲ کمپین</span></div>
+          <div id="vaCampaigns"></div>
+        </div>
+        <div class="vaPanel">
+          <div class="vaPanelHead"><b>عملکرد این مرورگر</b><span>Local</span></div>
+          <div class="vaMetric" style="margin-bottom:6px"><b id="vaImprSide">۰</b><span>نمایش</span></div>
+          <div class="xs mut" style="line-height:1.9">آمار محلی است و برای گزارش واقعی کمپین می‌توانی بعداً به پنل مالک وصلش کنی.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="vaHow">
+      <div class="vaHowCard"><em>▶</em><b>پخش خودکار</b><span>پس از ورود به بخش یا اقدام در بازار، ویدیو بی‌صدا و خودکار پخش می‌شود.</span></div>
+      <div class="vaHowCard"><em>✕</em><b>قابل بستن</b><span>تبلیغ شناور تا ۱۰ دقیقه خاموش می‌شود و کاربر را اذیت نمی‌کند.</span></div>
+      <div class="vaHowCard"><em>↗</em><b>هدایت به فروشگاه</b><span>هر کمپین یک CTA مستقل دارد و کلیک‌ها در همین مرورگر ثبت می‌شوند.</span></div>
+    </div>
   </section>
 
   <!-- ── ۹. کاوش ────────────────────────────────────────────── -->
   <section class="sec" id="sec-discover">
-    <div class="head"><h2 class="h2">🧭 کاوش</h2></div>
+    <div class="discHero">
+      <div>
+        <span class="discKicker">RONIN EXPLORE</span>
+        <h2 class="h2 discTitle">کشف تازه‌ها</h2>
+        <p class="discLead">یک جا برای پیدا کردن محصولات تازه، گفتگوهای داغ و آدم‌های تازهٔ جامعه.</p>
+        <div class="discSearch"><input id="discSearch" type="search" placeholder="جستجو در کاوش…" maxlength="60" autocomplete="off"><i aria-hidden="true">⌕</i></div>
+      </div>
+      <div class="discStats">
+        <div class="discStat"><b id="discProducts">۰</b><span>محصول</span></div>
+        <div class="discStat"><b id="discPosts">۰</b><span>پست</span></div>
+        <div class="discStat"><b id="discPeople">۰</b><span>عضو</span></div>
+      </div>
+    </div>
+    <div class="discTags" id="discChips"></div>
     <div id="discBox"></div>
   </section>
 
@@ -601,10 +754,11 @@
   <script src="js/1-core.js"></script>
   <script src="fb-guard.js?v=1"></script>
   <script src="js/2-auth.js"></script>
-  <script src="js/3-feed.js?v=2"></script>
+  <script src="js/3-feed.js?v=3"></script>
   <script src="js/4-chat.js?v=2"></script>
   <script src="js/5-market.js"></script>
   <script src="js/7-extra.js"></script>
+  <script src="js/10-market-pro.js?v=1"></script>
   <script src="js/8-companion.js?v=2"></script>
 
   <!-- ── ۷.۳ ▸ پروفایل، برند، بوت (پروفایل باید قبل از 9-boot باشد) ── -->
@@ -629,8 +783,8 @@
   <script src="users.js?v=1"></script>
   <script src="notify-plus.js?v=1"></script>
   <script src="settings-plus.js?v=1"></script>
-  <script src="cart-plus.js?v=1"></script>
-  <script src="nav-drawer.js?v=5"></script>
+  <script src="cart-plus.js?v=2"></script>
+  <script src="nav-drawer.js?v=6"></script>
   <script src="ronin-burger-pro.js?v=6"></script>
   <script src="lite.js"></script>
   <script src="notif-prefs.js?v=2"></script>
@@ -643,10 +797,11 @@
   <script src="hero-plus.js?v=11"></script>
   <script src="ronin-events-rank.js?v=2"></script>
   <script src="ronin-nav.js"></script>
+  <script src="js/11-video-ads.js?v=1"></script>
 
   <!-- ── ۷.۵ ▸ منو، ترجمه، همراه، فوتر ─────────────────────────────── -->
-  <script src="ronin-menu.js?v=1"></script>
-  <script src="ronin-i18n.js?v=2"></script>
+  <script src="ronin-menu.js?v=2"></script>
+  <script src="ronin-i18n.js?v=3"></script>
   <script src="ronin-companion-plus.js?v=4"></script>
   <script src="ronin-footer.js?v=6"></script>
   <script src="ronin-footer-home.js?v=1"></script>

@@ -82,6 +82,8 @@ R.boot = function () {
     R.bootOwner();     /* پنل مالک */
     R.bootExtra();     /* انیمه، اخبار، پروفایل، اعلان */
     R.bootCompanion(); /* کاراکتر راهنما */
+    if (R.bootMarketPro) R.bootMarketPro(); /* بازار، آگهی، کاوش */
+    if (R.bootVideoAds) R.bootVideoAds();   /* تبلیغ ویدیویی */
     R.bindNav();       /* ناوبری */
     R.bindSearch();    /* جستجو */
     R.misc();

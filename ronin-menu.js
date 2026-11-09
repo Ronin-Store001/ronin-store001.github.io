@@ -8,7 +8,6 @@
 
   /* گروه‌ها — هر گروه با یکی از آیتم‌های داخلش شناسایی می‌شود */
   var GROUPS = [
-    { key: "anime",     ic: "🎬", name: "دنیای انیمه" },
     { key: "community", ic: "💬", name: "جامعه رونین" },
     { key: "market",    ic: "🛍", name: "بازار رونین" },
     { key: "profile",   ic: "👤", name: "حساب من" },
@@ -18,8 +17,6 @@
   /* آیتم‌های منو */
   var ITEMS = {
     home:      { ic: "🏠", name: "خانه" },
-    anime:     { ic: "🎬", name: "انیمه" },
-    news:      { ic: "📰", name: "اخبار انیمه" },
     bulletin:  { ic: "📣", name: "اطلاعیه و تریلر" },
     discover:  { ic: "🧭", name: "کشف تازه‌ها" },
     rank:      { ic: "🏆", name: "رتبه‌بندی" },
@@ -29,6 +26,7 @@
     groups:    { ic: "🏯", name: "گروه‌های چت" },
     market:    { ic: "🛒", name: "فروشگاه" },
     ads:       { ic: "📢", name: "تبلیغات و آگهی" },
+    videoads:  { ic: "🎬", name: "تبلیغ ویدیویی" },
     profile:   { ic: "👤", name: "پروفایل" },
     premium:   { ic: "💎", name: "پرمیوم" },
     settings:  { ic: "⚙", name: "تنظیمات" },
@@ -112,5 +110,5 @@
 
   run();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
-  [400, 1000, 1800, 3000, 5000].forEach(function (ms) { setTimeout(run, ms); });
+  setTimeout(run, 900);
 })();

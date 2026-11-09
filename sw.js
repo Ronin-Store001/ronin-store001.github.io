@@ -1,6 +1,6 @@
 /* RONIN STORE — service worker v3
    آفلاین واقعی: پوستهٔ سایت + صفحهٔ آفلاین + بازی کش می‌شوند */
-var CACHE = "ronin-v23";
+var CACHE = "ronin-v24";
 
 /* فقط چیزهایی که برای «باز شدن سایت بدون اینترنت» لازم‌اند */
 var CORE = [
@@ -15,12 +15,16 @@ var CORE = [
   "./ronin-zero.css?v=12",
   "./ronin-2026.css?v=1",
   "./css/5-community.css?v=1",
-  "./js/3-feed.js?v=2",
-  "./ronin-i18n.js?v=2",
+  "./css/6-market.css?v=1",
+  "./js/3-feed.js?v=3",
+  "./js/10-market-pro.js?v=1",
+  "./js/11-video-ads.js?v=1",
+  "./ronin-i18n.js?v=3",
   "./ronin-footer.js?v=6",
   "./ronin-events-rank.css?v=8",
   "./ronin-events-rank.js?v=2",
-  "./nav-drawer.js?v=5",
+  "./nav-drawer.js?v=6",
+  "./ronin-menu.js?v=2",
   "./cinema.html",
   "./cinema.css?v=5",
   "./cinema-player.css?v=3",
@@ -53,7 +57,7 @@ function isNav(req) {
 }
 
 function isStatic(u) {
-  return /\.(css|js|mjs|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|json|mp3|ogg|webmanifest)$/i.test(u.pathname);
+  return /\.(css|js|mjs|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|json|mp3|ogg|mp4|webm|webmanifest)$/i.test(u.pathname);
 }
 
 self.addEventListener("fetch", function (e) {

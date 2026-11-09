@@ -70,6 +70,7 @@ R.renderCommunity = function () {
         '</div><div class="m">' + tr("سطح") + " " + num(R.level(u.xp || 0)) + " · " + shortNum(u.xp || 0) + ' XP</div></div></div>';
     }).join("") : '<div class="comRailEmpty">' + tr("با اولین پست، صدای برتر اینجا شکل می‌گیرد.") + '</div>';
   }
+  if (R.renderCommunityTopics) { try { R.renderCommunityTopics(); } catch (e) {} }
 };
 
 /* ── ۱. امتیاز ترند ───────────────────────────────────────── */

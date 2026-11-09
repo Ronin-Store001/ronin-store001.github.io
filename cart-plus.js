@@ -123,6 +123,7 @@
     save();
     paintBadge();
     R.toast("به سبد اضافه شد 🛒", "ok");
+    try { document.dispatchEvent(new CustomEvent("ronin:action", { detail: { type: "cart-add", id: id } })); } catch (e) {}
     if (el("cartMod") && el("cartMod").classList.contains("on")) render();
   }
 
@@ -149,9 +150,10 @@
     w.className = "modal";
     w.id = "cartMod";
     w.innerHTML =
-      '<div class="box">' +
-        '<div class="between mb"><h3 class="h2">🛒 سبد خرید</h3>' +
-          '<button class="icobtn" type="button" data-cartx="1">✕</button></div>' +
+      '<div class="box cartBox">' +
+        '<div class="cartTop"><div><h3 class="h2" style="margin:0">🛒 سبد خرید</h3>' +
+          '<div class="xs mut" id="cartSub">در حال آماده‌سازی…</div></div>' +
+          '<button class="icobtn" type="button" data-cartx="1" aria-label="بستن">✕</button></div>' +
         '<div id="cartRows"></div>' +
         '<div id="cartFoot"></div>' +
       '</div>';
@@ -160,40 +162,73 @@
     w.addEventListener("click", function (e) {
       if (e.target === w) return R.mod("cartMod", false);
       if (e.target.closest && e.target.closest("[data-cartx]")) return R.mod("cartMod", false);
+      if (e.target.closest && e.target.closest("[data-cartshop]")) {
+        R.mod("cartMod", false);
+        if (R.go) R.go("market");
+        return;
+      }
+      if (e.target.closest && e.target.closest("[data-cart-copy]")) return copySummary();
+      if (e.target.closest && e.target.closest("[data-cart-clear]")) return clearCart();
     });
   }
 
+  function sellerOf(l) {
+    var p = prod(l.id);
+    return (p && (p.company || p.sellerName)) || "فروشگاه رونین";
+  }
+
   function render() {
-    var rows = el("cartRows"), foot = el("cartFoot");
+    var rows = el("cartRows"), foot = el("cartFoot"), sub = el("cartSub");
     if (!rows || !foot) return;
     var L = lines();
+    var groups = {}, order = [];
+    L.forEach(function (l) {
+      var k = l.sellerUid || "?";
+      if (!groups[k]) { groups[k] = []; order.push(k); }
+      groups[k].push(l);
+    });
+    if (sub) sub.textContent = L.length ?
+      fa(totalQty()) + " قلم از " + fa(order.length) + " فروشنده" : "سبد خرید خالی است";
 
     if (!L.length) {
-      rows.innerHTML = '<div class="empty">سبد خرید خالی است 🛒<br>' +
-        '<span class="xs mut">از فروشگاه روی 🛒 هر کالا بزن.</span></div>';
+      rows.innerHTML = '<div class="cartEmpty"><div class="cartEmptyIcon">🛒</div>' +
+        '<b>سبد خرید خالی است</b><span>از بازار رونین یک کالا انتخاب کن و دوباره برگرد.</span>' +
+        '<button class="btn p mini mt" type="button" data-cartshop="1">رفتن به بازار</button></div>';
       foot.innerHTML = "";
       return;
     }
 
-    rows.innerHTML = L.map(function (l) {
-      return '<div class="crow">' +
-        '<div class="cico">' + esc(l.icon) + "</div>" +
-        '<div class="ctx"><div class="sm b ellip">' + esc(l.name) + "</div>" +
-          '<div class="xs mut">' + esc(R.money ? R.money(l.unit) : l.unit) + " " + esc(l.cur) +
-          " × " + esc(fa(l.qty)) + "</div>" +
-          '<div class="xs cy">' + esc(R.money ? R.money(l.sum) : l.sum) + " " + esc(l.cur) + "</div></div>" +
-        '<div class="cq">' +
-          '<button type="button" data-cq="' + esc(l.id) + ':-1">−</button>' +
-          "<b>" + esc(fa(l.qty)) + "</b>" +
-          '<button type="button" data-cq="' + esc(l.id) + ':1">+</button>' +
-        "</div>" +
-        '<button class="icobtn" type="button" data-cdel="' + esc(l.id) + '" title="حذف">🗑</button>' +
-        "</div>";
+    rows.innerHTML = order.map(function (k) {
+      var items = groups[k], sum = 0, qty = 0, seller = sellerOf(items[0]);
+      items.forEach(function (i) { sum += i.sum; qty += i.qty; });
+      return '<div class="cartGroup"><div class="cartGroupHead"><b>🏷 ' + esc(seller) + '</b>' +
+        '<span>' + esc(fa(qty)) + " قلم · " + esc(R.money ? R.money(sum) : sum) + " " + esc(items[0].cur) + '</span></div>' +
+        items.map(function (l) {
+          return '<div class="crow">' +
+            '<div class="cico">' + esc(l.icon) + "</div>" +
+            '<div class="ctx"><div class="sm b ellip">' + esc(l.name) + "</div>" +
+              '<div class="xs mut">' + esc(R.money ? R.money(l.unit) : l.unit) + " " + esc(l.cur) +
+              " × " + esc(fa(l.qty)) + "</div>" +
+              '<div class="xs cy">' + esc(R.money ? R.money(l.sum) : l.sum) + " " + esc(l.cur) + "</div></div>" +
+            '<div class="cq">' +
+              '<button type="button" data-cq="' + esc(l.id) + ':-1">−</button>' +
+              "<b>" + esc(fa(l.qty)) + "</b>" +
+              '<button type="button" data-cq="' + esc(l.id) + ':1">+</button>' +
+            "</div>" +
+            '<button class="icobtn" type="button" data-cdel="' + esc(l.id) + '" title="حذف">🗑</button>' +
+            "</div>";
+        }).join("") + "</div>";
     }).join("");
 
     var total = totalSum();
     var cur = L[0] ? L[0].cur : "تومان";
     foot.innerHTML =
+      '<div class="cartSummary"><span class="chip cy">' + esc(fa(totalQty())) + " کالا</span>" +
+        '<span class="chip">' + esc(fa(order.length)) + " فروشنده</span>" +
+        '<span class="chip">ارسال با فروشنده</span></div>' +
+      '<div class="cartTools"><button class="btn mini" type="button" data-cart-copy="1">📋 کپی خلاصه</button>' +
+        '<button class="btn mini" type="button" data-cart-clear="1">🗑 خالی کردن</button>' +
+        '<button class="btn mini" type="button" data-cartshop="1">ادامه خرید</button></div>' +
       '<div class="ctotal"><span class="sm">جمع کل (' + esc(fa(L.length)) + " کالا)</span>" +
         "<b>" + esc(R.money ? R.money(total) : total) + " " + esc(cur) + "</b></div>" +
       '<div class="field"><label class="lbl">نام تو</label>' +
@@ -206,6 +241,49 @@
       '<div class="xs mt" id="cMsg"></div>' +
       '<button class="btn p blk mt" type="button" id="cCheckout">📩 ثبت سفارش</button>' +
       '<div class="xs mut center" style="margin-top:6px">برای هر فروشنده یک سفارش جدا ثبت می‌شود — پرداخت و ارسال با فروشنده است.</div>';
+  }
+
+  function copySummary() {
+    var L = lines();
+    if (!L.length) return R.toast("سبد خالی است", "err");
+    var groups = {}, order = [];
+    L.forEach(function (l) {
+      var k = l.sellerUid || "?";
+      if (!groups[k]) { groups[k] = []; order.push(k); }
+      groups[k].push(l);
+    });
+    var txt = "🛒 خلاصهٔ سبد رونین\n";
+    order.forEach(function (k) {
+      var items = groups[k];
+      txt += "\n🏷 " + sellerOf(items[0]) + "\n";
+      items.forEach(function (l) {
+        txt += "• " + l.name + " × " + l.qty + " = " + (R.money ? R.money(l.sum) : l.sum) + " " + l.cur + "\n";
+      });
+    });
+    txt += "\nجمع کل: " + (R.money ? R.money(totalSum()) : totalSum()) + " " + (L[0] ? L[0].cur : "تومان");
+    var done = function () { R.toast("خلاصهٔ سبد کپی شد 📋", "ok"); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done).catch(function () { fallbackCopy(txt, done); });
+    } else fallbackCopy(txt, done);
+  }
+
+  function fallbackCopy(txt, done) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+      done();
+    } catch (e) { R.toast("کپی نشد؛ دستی انتخاب کن", "err"); }
+  }
+
+  function clearCart() {
+    if (!lines().length) return;
+    if (window.confirm && !window.confirm("سبد خرید خالی شود؟")) return;
+    CART = {};
+    save();
+    paintBadge();
+    render();
+    R.toast("سبد خرید خالی شد", "ok");
   }
 
   function openCart() {
