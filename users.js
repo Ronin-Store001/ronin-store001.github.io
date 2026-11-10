@@ -1,12 +1,21 @@
-/* ═══ RONIN USERS v1 — لیست کاربران + پروفایل عمومی ═══ */
+/* ═══ RONIN USERS v2 — لیست کاربران + پروفایل عمومی ═══
+   فایل افزودنی: هیچ فایل قبلی عوض نمی‌شود.
+   - بخش تازه «👥 کاربران» با جستجو، حالت آنلاین و سطح
+   - کلیک روی آواتار/اسم نویسندهٔ پست و پیام چت → پروفایل او
+   - دکمهٔ بازگشت در پروفایل وقتی داری پروفایل دیگری را می‌بینی
+   (دکمهٔ «دنبال کن» و «💬 پیام» از قبل داخل پروفایل هست و کار می‌کند)
+*/
 "use strict";
 (function () {
   if (!window.R || R.__users) return;
   R.__users = true;
 
-  var ALL = {};
+  var ALL = {};        /* users/ */
   var WATCHED = false;
   var q = "";
+  var filterMode = "all";
+  var sortMode = "smart";
+  var loaded = false;
 
   function el(id) { return document.getElementById(id); }
   function esc(s) { return R.esc ? R.esc(s) : String(s == null ? "" : s); }
@@ -44,14 +53,49 @@
     s.className = "sec";
     s.id = "sec-users";
     s.innerHTML =
-      '<div class="head"><h2 class="h2">👥 کاربران رونین</h2>' +
+      '<div class="head"><div><div class="accKicker">RONIN PEOPLE</div>' +
+        '<h2 class="h2">👥 کاربران رونین</h2>' +
+        '<div class="xs mut">آدم‌های جامعه، آنلاین و فعال</div></div>' +
         '<span class="chip cy" id="usrCount">۰ نفر</span></div>' +
-      '<div class="card mb"><input class="inp" id="usrQ" placeholder="جستجوی نام کاربر…" maxlength="30"></div>' +
+      '<div class="accHero usrHero">' +
+        '<div><span class="chip vi">شبکهٔ رونین</span>' +
+          '<h3>آدم‌های درست را پیدا کن</h3>' +
+          '<p>اعضای جامعه را ببین، آنلاین‌ها و اعضای پرمیوم را جدا کن و با یک کلیک به پروفایلشان برو.</p></div>' +
+        '<div class="accStats">' +
+          '<div class="accStat"><b id="usrStatAll">۰</b><span>عضو</span></div>' +
+          '<div class="accStat"><b id="usrStatOnline">۰</b><span>آنلاین</span></div>' +
+          '<div class="accStat"><b id="usrStatPrem">۰</b><span>پرمیوم</span></div>' +
+          '<div class="accStat"><b id="usrStatLevel">۰</b><span>بالاترین سطح</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="accTools usrTools">' +
+        '<div class="accSearch"><input class="inp" id="usrQ" placeholder="جستجوی نام کاربر…" maxlength="30" autocomplete="off"><i>⌕</i></div>' +
+        '<div class="accPills" id="usrFilter">' +
+          '<button class="accPill on" type="button" data-ufilter="all">همه</button>' +
+          '<button class="accPill" type="button" data-ufilter="online">آنلاین</button>' +
+          '<button class="accPill" type="button" data-ufilter="premium">💎 پرمیوم</button>' +
+        '</div>' +
+        '<select class="sel" id="usrSort" aria-label="ترتیب کاربران">' +
+          '<option value="smart">هوشمند</option>' +
+          '<option value="xp">بیشترین XP</option>' +
+          '<option value="name">نام</option>' +
+        '</select>' +
+      '</div>' +
       '<div id="usrGrid"></div>';
     stage.appendChild(s);
 
     var inp = el("usrQ");
     if (inp) inp.addEventListener("input", function () { q = inp.value; paint(); });
+    var f = el("usrFilter");
+    if (f) f.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("[data-ufilter]") : null;
+      if (!b) return;
+      filterMode = b.getAttribute("data-ufilter") || "all";
+      R.qa("#usrFilter [data-ufilter]").forEach(function (x) { x.classList.toggle("on", x === b); });
+      paint();
+    });
+    var so = el("usrSort");
+    if (so) so.addEventListener("change", function () { sortMode = so.value || "smart"; paint(); });
   }
 
   /* ── ۳. آیتم‌های منو ─────────────────────────────────────── */
@@ -68,8 +112,8 @@
     }
 
     /* دکمه در انجمن و پروفایل (روی گوشی هم دیده می‌شود) */
-    ["sec-community", "sec-profile"].forEach(function (id) {
-      var head = document.querySelector("#" + id + " .head");
+    ["sec-community .head", "sec-community .comHeroActions", "sec-profile .head"].forEach(function (sel) {
+      var head = document.querySelector("#" + sel);
       if (!head || head.querySelector('[data-go="users"]')) return;
       var b = document.createElement("button");
       b.className = "btn mini";
@@ -86,14 +130,28 @@
     WATCHED = true;
     R.db.ref("users").on("value", function (s) {
       ALL = s.val() || {};
+      loaded = true;
       if (el("sec-users") && el("sec-users").classList.contains("on")) paint();
       paintCount();
     }, function (e) { console.warn("[Ronin] users:", e.message); });
   }
 
   function paintCount() {
+    var ids = Object.keys(ALL);
+    var online = 0, prem = 0, maxLv = 1;
+    ids.forEach(function (id) {
+      var u = ALL[id] || {};
+      if (R.ONLINE && R.ONLINE[id]) online++;
+      if (u.prem || u.premium) prem++;
+      var lv = R.level ? R.level(u.xp || 0) : 1;
+      if (lv > maxLv) maxLv = lv;
+    });
     var c = el("usrCount");
-    if (c) c.textContent = fa(Object.keys(ALL).length) + " نفر";
+    if (c) c.textContent = fa(ids.length) + " نفر";
+    var a = el("usrStatAll"); if (a) a.textContent = fa(ids.length);
+    var o = el("usrStatOnline"); if (o) o.textContent = fa(online);
+    var p = el("usrStatPrem"); if (p) p.textContent = fa(prem);
+    var l = el("usrStatLevel"); if (l) l.textContent = fa(maxLv);
   }
 
   /* ── ۵. کارت‌ها ─────────────────────────────────────────── */
@@ -103,14 +161,32 @@
     var lv = R.level ? R.level(u.xp || 0) : 1;
     var chips = '<span class="chip">' + esc(R.roleFa ? R.roleFa(u.role || "user") : "کاربر") + "</span>" +
       '<span class="chip cy">سطح ' + esc(fa(lv)) + "</span>" +
-      (u.prem ? '<span class="chip gd">💎</span>' : "");
+      (u.prem || u.premium ? '<span class="chip gd">💎</span>' : "");
     return '<div class="ucard" data-uopen="' + esc(uid) + '" role="button" tabindex="0">' +
+      '<div class="uCover"></div>' +
       (on ? '<span class="udot" title="آنلاین"></span>' : "") +
-      (R.avHTML ? R.avHTML({ name: u.name, av: u.av, avFrame: u.avFrame }, "md")
-                : '<div class="av md">' + esc((u.name || "؟").slice(0, 1)) + "</div>") +
-      '<b class="sm uname">' + esc(u.name || "کاربر") + "</b>" +
-      (u.bio ? '<div class="xs mut uname">' + esc(u.bio) + "</div>" : "") +
-      '<div class="uchips">' + chips + "</div></div>";
+      '<div class="uAv">' +
+        (R.avHTML ? R.avHTML({ name: u.name, av: u.av, avFrame: u.avFrame }, "md")
+                  : '<div class="av md">' + esc((u.name || "؟").slice(0, 1)) + "</div>") +
+      '</div>' +
+      '<div class="uBody">' +
+        '<div class="uNameRow"><b class="sm uname">' + esc(u.name || "کاربر") + "</b></div>" +
+        '<div class="uBio">' + esc(u.bio || "بیو ندارد — آدم مرموزی است 👀") + "</div>" +
+        '<div class="uchips">' + chips + "</div>" +
+        '<div class="uFoot"><span class="xs mut">XP ' + esc(fa(num(u.xp))) + '</span>' +
+          '<span class="uGo">مشاهده ›</span></div>' +
+      '</div></div>';
+  }
+
+  function skeletonHTML(n) {
+    var out = "";
+    for (var i = 0; i < (n || 4); i++) {
+      out += '<div class="ucard usrSkel" aria-hidden="true">' +
+        '<div class="uCover"></div><div class="uAv"><span class="skAv"></span></div>' +
+        '<div class="uBody"><span class="skLine w70"></span><span class="skLine w45"></span>' +
+        '<span class="skLine w90"></span><span class="skLine w60"></span></div></div>';
+    }
+    return out;
   }
 
   function paint() {
@@ -119,18 +195,27 @@
     paintCount();
     var ids = Object.keys(ALL);
     if (!ids.length) {
-      grid.innerHTML = '<div class="empty">' +
-        (R.ME ? "در حال خواندن کاربران…" : "برای دیدن کاربران وارد حساب شو 🔑") + "</div>";
+      if (R.ME && !loaded) {
+        grid.innerHTML = skeletonHTML(4);
+        return;
+      }
+      grid.innerHTML = '<div class="usrEmpty"><b>هنوز کاربری دیده نمی‌شود</b>' +
+        '<span class="xs mut">' + (R.ME ? "به‌زودی اعضای تازه اینجا ظاهر می‌شوند." : "برای دیدن کاربران وارد حساب شو 🔑") + "</span></div>";
       return;
     }
     var needle = String(q || "").trim().toLowerCase();
     ids = ids.filter(function (id) {
       var u = ALL[id] || {};
-      return !needle || String(u.name || "").toLowerCase().indexOf(needle) > -1;
+      if (filterMode === "online" && !(R.ONLINE && R.ONLINE[id])) return false;
+      if (filterMode === "premium" && !(u.prem || u.premium)) return false;
+      return !needle || String(u.name || "").toLowerCase().indexOf(needle) > -1 ||
+        String(u.bio || "").toLowerCase().indexOf(needle) > -1;
     });
 
     ids.sort(function (a, b) {
       var A = ALL[a] || {}, B = ALL[b] || {};
+      if (sortMode === "name") return String(A.name || "").localeCompare(String(B.name || ""), "fa");
+      if (sortMode === "xp") return num(B.xp) - num(A.xp);
       var oa = (R.ONLINE && R.ONLINE[a]) ? 1 : 0, ob = (R.ONLINE && R.ONLINE[b]) ? 1 : 0;
       if (oa !== ob) return ob - oa;
       if (!!A.prem !== !!B.prem) return B.prem ? 1 : -1;
@@ -138,7 +223,9 @@
     });
 
     if (!ids.length) {
-      grid.innerHTML = '<div class="empty">کاربری با این نام پیدا نشد</div>';
+      grid.innerHTML = '<div class="usrEmpty"><b>کاربری با این مشخصات پیدا نشد</b>' +
+        '<span class="xs mut">فیلتر را عوض کن یا نام دیگری جستجو کن.</span>' +
+        '<button class="btn mini mt" type="button" data-ureset="1">پاک کردن فیلترها</button></div>';
       return;
     }
     grid.innerHTML = ids.map(function (id) { return cardHTML(id, ALL[id]); }).join("");
@@ -180,6 +267,15 @@
   /* ── ۷. کلیک‌ها ─────────────────────────────────────────── */
   function bindClicks() {
     document.addEventListener("click", function (e) {
+      var rs = e.target.closest ? e.target.closest("[data-ureset]") : null;
+      if (rs) {
+        filterMode = "all"; q = "";
+        var inp = el("usrQ"); if (inp) inp.value = "";
+        R.qa("#usrFilter [data-ufilter]").forEach(function (x) {
+          x.classList.toggle("on", x.getAttribute("data-ufilter") === "all");
+        });
+        paint(); return;
+      }
       var t = e.target.closest ? e.target.closest("[data-uopen]") : null;
       if (!t) return;
       if (e.target.closest && e.target.closest("[data-follow],[data-dmto]")) return;
@@ -288,8 +384,9 @@
     if (prevOut) { try { prevOut(); } catch (e) {} }
     ALL = {};
     WATCHED = false;
+    loaded = false;
     paintCount();
-    if (el("usrGrid")) el("usrGrid").innerHTML = '<div class="empty">برای دیدن کاربران وارد حساب شو 🔑</div>';
+    if (el("usrGrid")) el("usrGrid").innerHTML = '<div class="usrEmpty"><b>برای دیدن کاربران وارد حساب شو 🔑</b></div>';
     var b = el("profBack"); if (b) b.classList.add("hide");
   };
 

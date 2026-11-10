@@ -1,12 +1,21 @@
-/* ═══ RONIN INBOX v1 — صندوق پیام خصوصی + گروه‌ها در نوار گوشی ═══ */
+/* ═══ RONIN INBOX v2 — صندوق پیام خصوصی + گروه‌ها در نوار گوشی ═══
+   فایل افزودنی: به groups.js / 4-chat.js / index.html دست نمی‌زند.
+   - آیتم «🏯 گروه‌ها» و «📥 پیام‌ها» به نوار پایین گوشی و منوی کنار اضافه می‌شود
+   - بخش پیام خصوصی حالت «لیست گفتگوها» می‌گیرد: آخرین پیام، زمان، تعداد نخوانده
+   ایندکس گفتگوها در dmBox/{uid}/{طرف مقابل} نگه داشته می‌شود
+   (وقتی پیام می‌فرستی، هم لیست خودت هم لیست طرف مقابل به‌روز می‌شود)
+*/
 "use strict";
 (function () {
   if (!window.R || R.__inbox) return;
   R.__inbox = true;
 
-  var BOX = {};
-  var NAMES = {};
-  var listRef = null;
+  var BOX = {};        /* dmBox من */
+  var NAMES = {};      /* کش نام/آواتار کاربران */
+  var listRef = null;  /* لیسنر dmBox */
+  var dfilter = "all";
+  var dq = "";
+  var boxLoaded = false;
 
   function el(id) { return document.getElementById(id); }
   function esc(s) { return R.esc ? R.esc(s) : String(s == null ? "" : s); }
@@ -96,7 +105,73 @@
     }
   }
 
-  /* ── ۳. نوشتن ایندکس گفتگو هنگام ارسال ───────────────────── */
+  /* ── ۳. هدر و ابزار پیام‌ها ──────────────────────────────── */
+  function ensureHero() {
+    var s = sec();
+    if (!s) return;
+    var head = s.querySelector(".head");
+    if (!head) return;
+    if (!el("dmHero")) {
+      var h = document.createElement("div");
+      h.className = "dmHero";
+      h.id = "dmHero";
+      h.innerHTML =
+        '<div><span class="accKicker">RONIN MESSENGER</span>' +
+          '<h3>پیام‌های خصوصی</h3>' +
+          '<p>گفتگوهایت را یک‌جا ببین، نخوانده‌ها را جدا کن و مستقیم جواب بده.</p></div>' +
+        '<div class="dmStats">' +
+          '<div class="dmStat"><b id="dmStatAll">۰</b><span>گفتگو</span></div>' +
+          '<div class="dmStat"><b id="dmStatUnread">۰</b><span>نخوانده</span></div>' +
+          '<div class="dmStat"><b id="dmStatOnline">۰</b><span>آنلاین</span></div>' +
+        '</div>';
+      head.insertAdjacentElement("afterend", h);
+    }
+    if (!el("dmTools")) {
+      var t = document.createElement("div");
+      t.className = "dmTools";
+      t.id = "dmTools";
+      t.innerHTML =
+        '<div class="accSearch"><input class="inp" id="dmQ" placeholder="جستجوی گفتگو…" maxlength="40" autocomplete="off"><i>⌕</i></div>' +
+        '<div class="dmFilter" id="dmFilter">' +
+          '<button class="on" type="button" data-dmfilter="all">همه</button>' +
+          '<button type="button" data-dmfilter="unread">نخوانده</button>' +
+          '<button type="button" data-dmfilter="online">آنلاین</button>' +
+        '</div>' +
+        '<button class="btn mini p" type="button" data-go="users">+ پیام جدید</button>';
+      el("dmHero").insertAdjacentElement("afterend", t);
+    }
+    var tools = el("dmTools");
+    if (tools && !tools.__bound) {
+      tools.__bound = true;
+      var inp = el("dmQ");
+      if (inp) inp.addEventListener("input", function () {
+        dq = inp.value;
+        if (!R.dmWith) renderList();
+      });
+      var f = el("dmFilter");
+      if (f) f.addEventListener("click", function (e) {
+        var b = e.target.closest ? e.target.closest("[data-dmfilter]") : null;
+        if (!b) return;
+        dfilter = b.getAttribute("data-dmfilter") || "all";
+        R.qa("#dmFilter [data-dmfilter]").forEach(function (x) { x.classList.toggle("on", x === b); });
+        if (!R.dmWith) renderList();
+      });
+    }
+    paintStats();
+  }
+
+  function paintStats() {
+    var ids = Object.keys(BOX), unread = 0, online = 0;
+    ids.forEach(function (u) {
+      unread += num(BOX[u] && BOX[u].unread);
+      if (R.ONLINE && R.ONLINE[u]) online++;
+    });
+    var a = el("dmStatAll"); if (a) a.textContent = fa(ids.length);
+    var n = el("dmStatUnread"); if (n) n.textContent = fa(unread);
+    var o = el("dmStatOnline"); if (o) o.textContent = fa(online);
+  }
+
+  /* ── ۴. نوشتن ایندکس گفتگو هنگام ارسال ───────────────────── */
   function indexMsg(key, o) {
     if (!R.db || !o || !o.uid || !o.to) return;
     var a = o.uid, b = o.to;
@@ -140,7 +215,7 @@
     R.add = wrapped;
   }
 
-  /* ── ۴. لیست گفتگوها ─────────────────────────────────────── */
+  /* ── ۵. لیست گفتگوها ─────────────────────────────────────── */
   function nameOf(uid, cb) {
     if (NAMES[uid]) return cb(NAMES[uid]);
     R.get("users/" + uid).then(function (u) {
@@ -155,9 +230,24 @@
     }).filter(function (e) { return e && (e.t || e.last); })
       .sort(function (x, y) { return num(y.t) - num(x.t); });
 
+    var total = arr.length;
+    var needle = String(dq || "").trim().toLowerCase();
+    arr = arr.filter(function (e) {
+      var un = num(e.unread);
+      var nm = (NAMES[e.uid] && NAMES[e.uid].name) || e.n || "";
+      if (dfilter === "unread" && !un) return false;
+      if (dfilter === "online" && !(R.ONLINE && R.ONLINE[e.uid])) return false;
+      return !needle || String(nm).toLowerCase().indexOf(needle) > -1 ||
+        String(e.last || "").toLowerCase().indexOf(needle) > -1;
+    });
+
+    if (!total) {
+      return '<div class="dmEmpty"><b>هنوز گفتگویی نداری</b><br>' +
+        '<span class="xs mut">از فروشگاه روی «پیام» بزن، یا از گروه‌ها/چت عمومی به کاربر پیام بده.</span></div>';
+    }
     if (!arr.length) {
-      return '<div class="empty">هنوز گفتگویی نداری.<br>' +
-        '<span class="xs mut">از فروشگاه روی «پیام» یک آگهی بزن، یا از گروه‌ها/چت عمومی به کاربر پیام بده.</span></div>';
+      return '<div class="dmEmpty"><b>گفتگویی با این مشخصات پیدا نشد</b><br>' +
+        '<span class="xs mut">فیلتر را عوض کن یا نام دیگری جستجو کن.</span></div>';
     }
 
     return arr.map(function (e) {
@@ -165,14 +255,16 @@
       var nm = (NAMES[e.uid] && NAMES[e.uid].name) || e.n || "کاربر";
       var av = (NAMES[e.uid] && NAMES[e.uid].av) || e.av || "";
       var fr = (NAMES[e.uid] && NAMES[e.uid].avFrame) || "";
+      var on = !!(R.ONLINE && R.ONLINE[e.uid]);
       var pre = e.from === R.ME ? "شما: " : "";
       return '<div class="dmi' + (un ? " has" : "") + '" data-dmopen="' + esc(e.uid) + '">' +
         '<div class="av sm' + (fr ? " fr-" + esc(fr) : "") + '">' +
           (av ? '<img src="' + esc(av) + '" alt="">' : esc(R.initials ? R.initials(nm) : "؟")) +
         "</div>" +
+        (on ? '<span class="dmOnline" title="آنلاین"></span>' : "") +
         '<div class="dmtx">' +
           '<div class="dmnm"><b class="sm ellip">' + esc(nm) + "</b>" +
-            '<span class="xs mut">' + (e.t && R.time ? esc(R.time(e.t)) : "") + "</span></div>" +
+            '<span class="dmtime">' + (e.t && R.time ? esc(R.time(e.t)) : "") + "</span></div>" +
           '<div class="dmlast xs mut">' + esc(pre + String(e.last || "")) + "</div>" +
         "</div>" +
         (un ? '<span class="un">' + esc(fa(un > 99 ? "99+" : un)) + "</span>" : "") +
@@ -189,17 +281,28 @@
     });
   }
 
+  function skeletonRows(n) {
+    var out = "";
+    for (var i = 0; i < (n || 4); i++) {
+      out += '<div class="dmi dmSkel" aria-hidden="true"><span class="skAv"></span>' +
+        '<div class="dmtx"><span class="skLine w45"></span><span class="skLine w85"></span></div></div>';
+    }
+    return out;
+  }
+
   function renderList() {
     var box = el("dmBox");
     if (!box) return;
     box.classList.add("inbox");
-    box.innerHTML = R.ME ? rowsHTML()
+    var loading = R.ME && !boxLoaded && !Object.keys(BOX).length;
+    box.innerHTML = R.ME ? (loading ? skeletonRows(4) : rowsHTML())
       : '<div class="empty">برای دیدن پیام‌هایت وارد حساب شو 🔑<br>' +
         '<button class="btn p mini mt" type="button" data-authopen="login">ورود</button></div>';
 
     var total = 0;
     Object.keys(BOX).forEach(function (u) { total += num(BOX[u].unread); });
     paintBadges(total);
+    paintStats();
 
     /* نام‌های نامعلوم را از دیتابیس بگیر */
     Object.keys(BOX).forEach(function (u) {
@@ -218,6 +321,7 @@
   function listMode() {
     var s = sec(); if (!s) return;
     s.classList.add("list");
+    ensureHero();
     R.dmWith = null;
     R.DM = {};
     if (R._dmRef) { try { R._dmRef.off(); } catch (e) {} R._dmRef = null; }
@@ -228,6 +332,7 @@
 
   function convMode() {
     var s = sec(); if (!s) return;
+    ensureHero();
     s.classList.remove("list");
     var box = el("dmBox"); if (box) box.classList.remove("inbox");
     var back = el("dmBack"); if (back) back.classList.remove("hide");
@@ -282,11 +387,13 @@
     listRef = R.db.ref("dmBox/" + R.ME);
     listRef.on("value", function (s) {
       BOX = s.val() || {};
+      boxLoaded = true;
       if (!R.dmWith && sec() && sec().classList.contains("list")) renderList();
       else {
         var total = 0;
         Object.keys(BOX).forEach(function (u) { total += num(BOX[u].unread); });
         paintBadges(total);
+        paintStats();
       }
     }, function (e) { console.warn("[Ronin] dmBox:", e.message); });
   }
@@ -294,7 +401,9 @@
   function stopBox() {
     if (listRef) { try { listRef.off(); } catch (e) {} listRef = null; }
     BOX = {};
+    boxLoaded = false;
     paintBadges(0);
+    paintStats();
   }
 
   /* ── ۸. ساخت اولیه از پیام‌های قدیمی ─────────────────────── */
@@ -333,6 +442,7 @@
   function boot() {
     css();
     ensureNav();
+    ensureHero();
     patchOpen();
     patchRender();
     patchHooks();
@@ -367,6 +477,7 @@
     R.onLogin = function () {
       if (prevIn) { try { prevIn(); } catch (e) {} }
       ensureNav();
+      ensureHero();
       watchBox();
       setTimeout(backfill, 1500);
     };
@@ -375,6 +486,7 @@
       if (prevOut) { try { prevOut(); } catch (e) {} }
       stopBox();
       NAMES = {};
+      ensureHero();
       listMode();
     };
   }
