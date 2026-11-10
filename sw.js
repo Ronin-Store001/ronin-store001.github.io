@@ -1,6 +1,6 @@
 /* RONIN STORE — service worker v3
    آفلاین واقعی: پوستهٔ سایت + صفحهٔ آفلاین + بازی کش می‌شوند */
-var CACHE = "ronin-v28";
+var CACHE = "ronin-v29";
 
 /* فقط چیزهایی که برای «باز شدن سایت بدون اینترنت» لازم‌اند */
 var CORE = [
@@ -33,6 +33,7 @@ var CORE = [
   "./ronin-support.js?v=1",
   "./ronin-team-chat.js?v=1",
   "./ronin-owner-suite.js?v=1",
+  "./ronin-owner-vault.js?v=1",
   "./ronin-auth-fun.js?v=1",
   "./ronin-events-rank.css?v=8",
   "./ronin-events-rank.js?v=2",
