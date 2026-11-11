@@ -5,14 +5,14 @@
 
 /* ── هیرو اسلایدر ─────────────────────────────────────────────── */
 #sec-anime .aphHero{
-  position:relative;overflow:hidden;border-radius:24px;min-height:300px;
-  border:1px solid rgba(140,160,255,.28);
+  position:relative;overflow:hidden;border-radius:24px;min-height:330px;
+  border:1px solid rgba(140,160,255,.28);margin-bottom:14px;
   background:#080a18;box-shadow:0 26px 60px rgba(0,0,0,.55);
-  isolation:isolate;
+  isolation:isolate;scroll-margin-top:104px;
 }
 #sec-anime .aphSlide{
   position:absolute;inset:0;display:flex;align-items:flex-end;
-  padding:24px 22px;opacity:0;pointer-events:none;
+  padding:22px;opacity:0;pointer-events:none;
   transition:opacity .65s ease;
 }
 #sec-anime .aphSlide.on{opacity:1;pointer-events:auto}
@@ -27,46 +27,47 @@
   content:"";position:absolute;inset:0;
   background:
     repeating-linear-gradient(115deg,rgba(255,255,255,.045) 0 1px,transparent 1px 9px),
-    linear-gradient(0deg,rgba(4,6,14,.92),transparent 62%);
+    linear-gradient(0deg,rgba(4,6,14,.94),rgba(4,6,14,.55) 55%,transparent 88%);
 }
 #sec-anime .aphArt{
-  position:absolute;z-index:1;inset-inline-end:4%;top:6%;
-  font-size:clamp(96px,17vw,190px);line-height:1;opacity:.92;
+  position:absolute;z-index:1;inset-inline-end:5%;top:10%;
+  font-size:clamp(84px,14vw,160px);line-height:1;opacity:.62;
   filter:drop-shadow(0 18px 50px rgba(0,0,0,.65));
   transform:translateY(4px);transition:transform 8s linear;
 }
 #sec-anime .aphSlide.on .aphArt{transform:translateY(-10px) scale(1.04)}
-#sec-anime .aphTx{position:relative;z-index:2;max-width:min(560px,72%)}
+#sec-anime .aphTx{position:relative;z-index:2;width:100%;max-width:600px}
 #sec-anime .aphKick{
-  display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:2.6px;
-  padding:5px 11px;border-radius:30px;color:#0b1020;
+  display:inline-block;font-size:9px;font-weight:900;letter-spacing:2.4px;
+  padding:4px 10px;border-radius:30px;color:#0b1020;
   background:linear-gradient(120deg,#22d3ee,#8b5cff 60%,#ff4fd8);
 }
 #sec-anime .aphTitle{
-  margin:11px 0 4px;font-size:clamp(20px,3.4vw,28px);font-weight:900;line-height:1.35;
+  margin:10px 0 3px;font-size:clamp(19px,3.2vw,26px);font-weight:900;line-height:1.45;
   color:#fff;text-shadow:0 6px 26px rgba(0,0,0,.7);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
-#sec-anime .aphJp{font-size:10.5px;color:rgba(190,200,240,.62);direction:ltr;text-align:start}
-#sec-anime .aphMeta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px}
+#sec-anime .aphJp{font-size:10px;color:rgba(190,200,240,.6);direction:ltr;text-align:start}
+#sec-anime .aphMeta{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0 9px}
 #sec-anime .aphRate{
-  font-size:11px;font-weight:900;padding:4px 9px;border-radius:20px;
+  white-space:nowrap;font-size:10.5px;font-weight:900;padding:3px 9px;border-radius:20px;
   color:#1b1405;background:linear-gradient(120deg,#ffe08a,#ffb43d);
+  box-shadow:0 4px 12px rgba(0,0,0,.28);
 }
 #sec-anime .aphTag{
-  font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;color:#dfe6ff;
-  background:rgba(9,12,26,.66);border:1px solid rgba(140,160,255,.3);
+  white-space:nowrap;font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:20px;color:#dfe6ff;
+  background:rgba(9,12,26,.72);border:1px solid rgba(140,160,255,.3);
   backdrop-filter:blur(4px);
 }
 #sec-anime .aphTag.live{color:#9dffcb;border-color:rgba(56,224,138,.5)}
 #sec-anime .aphDesc{
-  margin:0 0 12px;font-size:11.8px;line-height:1.95;color:rgba(224,229,255,.74);
+  margin:0 0 12px;font-size:11.5px;line-height:1.9;color:rgba(224,229,255,.72);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 #sec-anime .aphBtns{display:flex;gap:8px;flex-wrap:wrap}
 #sec-anime .aphGo,#sec-anime .aphGhost{
   font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:0;
-  padding:9px 16px;border-radius:12px;transition:.2s;
+  padding:9px 18px;border-radius:12px;transition:.2s;
 }
 #sec-anime .aphGo{
   color:#0a0820;background:linear-gradient(120deg,#22d3ee,#8b5cff 65%,#ff4fd8);
@@ -77,18 +78,18 @@
 #sec-anime .aphGhost:hover{border-color:rgba(34,211,238,.7);color:#fff}
 
 #sec-anime .aphNav{
-  position:absolute;z-index:4;top:14px;inset-inline-start:14px;
+  position:absolute;z-index:4;top:12px;inset-inline-start:12px;
   display:flex;gap:6px;
 }
 #sec-anime .aphNav button{
   width:28px;height:28px;border-radius:50%;cursor:pointer;font:inherit;font-size:13px;
   display:grid;place-items:center;color:#e8ecff;
-  background:rgba(8,11,24,.62);border:1px solid rgba(140,160,255,.32);
+  background:rgba(8,11,24,.6);border:1px solid rgba(140,160,255,.32);
   backdrop-filter:blur(4px);transition:.18s;
 }
 #sec-anime .aphNav button:hover{background:rgba(139,92,255,.4);border-color:rgba(139,92,255,.8)}
 #sec-anime .aphDots{
-  position:absolute;z-index:4;bottom:12px;inset-inline-start:22px;
+  position:absolute;z-index:4;bottom:11px;inset-inline-start:22px;
   display:flex;gap:6px;
 }
 #sec-anime .aphDots i{
@@ -137,11 +138,13 @@
 .apdDesc{font-size:12.5px;line-height:2;opacity:.92;border-top:1px dashed rgba(140,160,255,.22);padding-top:11px}
 .apdBtns{display:flex;gap:7px;flex-wrap:wrap}
 
-@media (max-width:560px){
-  #sec-anime .aphHero{min-height:250px;border-radius:20px}
+@media (max-width:620px){
+  #sec-anime .aphHero{min-height:300px;border-radius:20px}
   #sec-anime .aphSlide{padding:18px 16px}
-  #sec-anime .aphTx{max-width:100%}
-  #sec-anime .aphArt{font-size:92px;top:4%;inset-inline-end:2%;opacity:.5}
-  #sec-anime .aphDesc{-webkit-line-clamp:2}
+  #sec-anime .aphArt{font-size:86px;top:9%;inset-inline-end:3%;opacity:.42}
+  #sec-anime .aphTitle{font-size:19px}
+  #sec-anime .aphJp{font-size:9.5px}
+  #sec-anime .aphDesc{font-size:11px;-webkit-line-clamp:2}
   #sec-anime .aphDots{inset-inline-start:16px}
+  #sec-anime .aphGo,#sec-anime .aphGhost{padding:8px 15px;font-size:11.5px}
 }
