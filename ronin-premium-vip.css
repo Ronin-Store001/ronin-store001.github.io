@@ -1,0 +1,106 @@
+/* ══════════════════════════════════════════════════════════════════
+   RONIN STORE — VIP COUNTDOWN  ·  ronin-premium-vip.css
+   تایمر معکوس پرمیوم + کارت خرید اشتراک از تلگرام
+   ══════════════════════════════════════════════════════════════════ */
+
+#vipMnt{position:relative;z-index:3;display:flex;flex-direction:column;gap:11px}
+
+/* ── نوار پیشنهاد + شمارش معکوس ───────────────────────────────── */
+#vipMnt .vipOffer{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:14px 15px;border-radius:18px;
+  border:1px solid rgba(255,211,92,.42);
+  background:
+    radial-gradient(120% 140% at 0% 0%,rgba(255,211,92,.22),transparent 62%),
+    linear-gradient(120deg,rgba(46,26,10,.95),rgba(16,10,26,.96));
+  box-shadow:0 16px 38px rgba(0,0,0,.45),0 0 0 1px rgba(255,211,92,.14) inset;
+}
+#vipMnt .vipOfferTx{min-width:150px}
+#vipMnt .vipOfferTx b{
+  display:block;font-size:13px;font-weight:900;color:#ffe6a8;
+}
+#vipMnt .vipOfferTx span{font-size:10.5px;color:rgba(255,231,180,.66)}
+
+#vipMnt .vipClock{display:flex;gap:6px;direction:ltr}
+#vipMnt .vipClock b{
+  min-width:44px;padding:7px 4px 5px;border-radius:11px;text-align:center;
+  font-size:16px;font-weight:900;font-variant-numeric:tabular-nums;
+  color:#1b1405;background:linear-gradient(180deg,#ffe9a8,#ffbf4d);
+  box-shadow:0 8px 18px rgba(255,180,61,.24),0 0 0 1px rgba(255,255,255,.35) inset;
+}
+#vipMnt .vipClock b span{display:block;font-size:8px;font-weight:700;color:#5c4508;margin-top:1px;letter-spacing:.3px}
+#vipMnt .vipClock.flat b{
+  color:#e9edff;background:rgba(12,16,34,.8);
+  box-shadow:0 0 0 1px rgba(140,160,255,.3) inset;
+}
+#vipMnt .vipClock.flat b span{color:rgba(200,208,245,.6)}
+#vipMnt .vipClock i{
+  align-self:center;font-style:normal;font-size:15px;font-weight:900;
+  color:rgba(255,224,138,.75);animation:vipBlink 1s steps(1) infinite;
+}
+@keyframes vipBlink{50%{opacity:.25}}
+
+/* ── تایمر پرمیوم فعال ───────────────────────────────────────── */
+#vipMnt .vipActive{
+  padding:15px;border-radius:18px;
+  border:1px solid rgba(139,92,255,.42);
+  background:
+    radial-gradient(120% 140% at 100% 0%,rgba(139,92,255,.28),transparent 64%),
+    linear-gradient(150deg,rgba(22,16,44,.95),rgba(9,8,20,.97));
+  box-shadow:0 16px 38px rgba(0,0,0,.45);
+}
+#vipMnt .vipActiveTx{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:11.5px;font-weight:800;color:#dcd4ff;margin-bottom:10px;
+}
+#vipMnt .vipActiveTx .chip{
+  font-size:9.5px;padding:3px 9px;border-radius:20px;color:#241800;
+  background:linear-gradient(120deg,#ffe08a,#ffb43d);
+}
+#vipMnt .vipActiveInf{
+  font-size:45px;font-weight:900;line-height:1;text-align:center;
+  background:linear-gradient(180deg,#fff,#ffd35c);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+#vipMnt .vipActiveInf small{display:block;font-size:10.5px;font-weight:700;color:rgba(226,220,255,.6);margin-top:6px}
+#vipMnt .vipBar{
+  height:8px;border-radius:20px;overflow:hidden;margin:11px 0 0;
+  background:rgba(255,255,255,.1);
+}
+#vipMnt .vipBar>i{display:block;height:100%;border-radius:20px;
+  background:linear-gradient(90deg,#8b5cff,#ff4fd8 50%,#ffd35c);
+  box-shadow:0 0 14px rgba(255,180,61,.5)}
+
+/* ── خرید از تلگرام ──────────────────────────────────────────── */
+#vipMnt .vipBuy{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:13px 14px;border-radius:18px;
+  border:1px solid rgba(41,171,226,.42);
+  background:
+    radial-gradient(120% 140% at 100% 0%,rgba(41,171,226,.24),transparent 62%),
+    linear-gradient(150deg,rgba(10,26,38,.95),rgba(9,10,22,.96));
+}
+#vipMnt .vipBuyTx{flex:1 1 150px;min-width:140px}
+#vipMnt .vipBuyTx b{display:block;font-size:12.5px;font-weight:900;color:#d9f3ff}
+#vipMnt .vipBuyTx span{font-size:10.5px;color:rgba(200,232,255,.66)}
+#vipMnt .vipTg{
+  display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  font-size:12.5px;font-weight:900;color:#fff;padding:10px 16px;border-radius:13px;
+  background:linear-gradient(120deg,#37aee2,#1e96c8);
+  box-shadow:0 12px 28px rgba(41,171,226,.32);
+  transition:transform .18s,box-shadow .18s;
+}
+#vipMnt .vipTg:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(41,171,226,.45)}
+#vipMnt .vipTg:active{transform:translateY(0)}
+#vipMnt .vipSite{
+  font:inherit;font-size:11px;font-weight:700;cursor:pointer;padding:8px 12px;border-radius:11px;
+  color:#dbe2ff;background:rgba(12,16,34,.7);border:1px solid rgba(140,160,255,.3);
+}
+#vipMnt .vipSite:hover{border-color:rgba(139,92,255,.7);color:#fff}
+
+@media (max-width:560px){
+  #vipMnt .vipOffer,#vipMnt .vipBuy{padding:12px}
+  #vipMnt .vipClock b{min-width:38px;font-size:14px;padding:6px 3px 4px}
+  #vipMnt .vipActiveInf{font-size:38px}
+  #vipMnt .vipTg{flex:1 1 100%;justify-content:center}
+}
