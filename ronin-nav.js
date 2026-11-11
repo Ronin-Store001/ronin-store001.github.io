@@ -26,3 +26,21 @@
   s.defer=true;
   document.body.appendChild(s);
 })();
+
+/* RONIN ANIME PLUS — هیرو اسلایدری انیمه */
+(function(){
+  if(document.querySelector('script[src^="ronin-anime-plus.js"]'))return;
+  var s=document.createElement("script");
+  s.src="ronin-anime-plus.js?v=1";
+  s.defer=true;
+  document.body.appendChild(s);
+})();
+
+/* RONIN PREMIUM VIP — تایمر معکوس و خرید از تلگرام */
+(function(){
+  if(document.querySelector('script[src^="ronin-premium-vip.js"]'))return;
+  var s=document.createElement("script");
+  s.src="ronin-premium-vip.js?v=1";
+  s.defer=true;
+  document.body.appendChild(s);
+})();

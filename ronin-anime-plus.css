@@ -1,0 +1,147 @@
+/* ══════════════════════════════════════════════════════════════════
+   RONIN STORE — ANIME PLUS  ·  ronin-anime-plus.css
+   هیرو سینمایی اسلایدری + پالایش کارت‌ها (روی ronin-anime-pro.css)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── هیرو اسلایدر ─────────────────────────────────────────────── */
+#sec-anime .aphHero{
+  position:relative;overflow:hidden;border-radius:24px;min-height:300px;
+  border:1px solid rgba(140,160,255,.28);
+  background:#080a18;box-shadow:0 26px 60px rgba(0,0,0,.55);
+  isolation:isolate;
+}
+#sec-anime .aphSlide{
+  position:absolute;inset:0;display:flex;align-items:flex-end;
+  padding:24px 22px;opacity:0;pointer-events:none;
+  transition:opacity .65s ease;
+}
+#sec-anime .aphSlide.on{opacity:1;pointer-events:auto}
+#sec-anime .aphBg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(75% 90% at 88% 12%,var(--c1,#3b1d6e),transparent 62%),
+    radial-gradient(70% 80% at 8% 90%,var(--c2,#0c2a4a),transparent 66%),
+    linear-gradient(120deg,#0a0c1e,#07080f 70%);
+}
+#sec-anime .aphBg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(115deg,rgba(255,255,255,.045) 0 1px,transparent 1px 9px),
+    linear-gradient(0deg,rgba(4,6,14,.92),transparent 62%);
+}
+#sec-anime .aphArt{
+  position:absolute;z-index:1;inset-inline-end:4%;top:6%;
+  font-size:clamp(96px,17vw,190px);line-height:1;opacity:.92;
+  filter:drop-shadow(0 18px 50px rgba(0,0,0,.65));
+  transform:translateY(4px);transition:transform 8s linear;
+}
+#sec-anime .aphSlide.on .aphArt{transform:translateY(-10px) scale(1.04)}
+#sec-anime .aphTx{position:relative;z-index:2;max-width:min(560px,72%)}
+#sec-anime .aphKick{
+  display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:2.6px;
+  padding:5px 11px;border-radius:30px;color:#0b1020;
+  background:linear-gradient(120deg,#22d3ee,#8b5cff 60%,#ff4fd8);
+}
+#sec-anime .aphTitle{
+  margin:11px 0 4px;font-size:clamp(20px,3.4vw,28px);font-weight:900;line-height:1.35;
+  color:#fff;text-shadow:0 6px 26px rgba(0,0,0,.7);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+#sec-anime .aphJp{font-size:10.5px;color:rgba(190,200,240,.62);direction:ltr;text-align:start}
+#sec-anime .aphMeta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px}
+#sec-anime .aphRate{
+  font-size:11px;font-weight:900;padding:4px 9px;border-radius:20px;
+  color:#1b1405;background:linear-gradient(120deg,#ffe08a,#ffb43d);
+}
+#sec-anime .aphTag{
+  font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;color:#dfe6ff;
+  background:rgba(9,12,26,.66);border:1px solid rgba(140,160,255,.3);
+  backdrop-filter:blur(4px);
+}
+#sec-anime .aphTag.live{color:#9dffcb;border-color:rgba(56,224,138,.5)}
+#sec-anime .aphDesc{
+  margin:0 0 12px;font-size:11.8px;line-height:1.95;color:rgba(224,229,255,.74);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+#sec-anime .aphBtns{display:flex;gap:8px;flex-wrap:wrap}
+#sec-anime .aphGo,#sec-anime .aphGhost{
+  font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:0;
+  padding:9px 16px;border-radius:12px;transition:.2s;
+}
+#sec-anime .aphGo{
+  color:#0a0820;background:linear-gradient(120deg,#22d3ee,#8b5cff 65%,#ff4fd8);
+  box-shadow:0 12px 28px rgba(139,92,255,.4);
+}
+#sec-anime .aphGo:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(139,92,255,.55)}
+#sec-anime .aphGhost{color:#e7eaff;background:rgba(12,16,34,.7);border:1px solid rgba(140,160,255,.35)}
+#sec-anime .aphGhost:hover{border-color:rgba(34,211,238,.7);color:#fff}
+
+#sec-anime .aphNav{
+  position:absolute;z-index:4;top:14px;inset-inline-start:14px;
+  display:flex;gap:6px;
+}
+#sec-anime .aphNav button{
+  width:28px;height:28px;border-radius:50%;cursor:pointer;font:inherit;font-size:13px;
+  display:grid;place-items:center;color:#e8ecff;
+  background:rgba(8,11,24,.62);border:1px solid rgba(140,160,255,.32);
+  backdrop-filter:blur(4px);transition:.18s;
+}
+#sec-anime .aphNav button:hover{background:rgba(139,92,255,.4);border-color:rgba(139,92,255,.8)}
+#sec-anime .aphDots{
+  position:absolute;z-index:4;bottom:12px;inset-inline-start:22px;
+  display:flex;gap:6px;
+}
+#sec-anime .aphDots i{
+  width:18px;height:4px;border-radius:4px;cursor:pointer;display:block;
+  background:rgba(255,255,255,.25);transition:.25s;
+}
+#sec-anime .aphDots i.on{width:30px;background:linear-gradient(90deg,#22d3ee,#8b5cff)}
+
+/* ── پالایش کارت‌ها ─────────────────────────────────────────────── */
+#sec-anime .apCard{border-radius:16px}
+#sec-anime .apPoster::after{
+  background:linear-gradient(180deg,rgba(4,6,16,0) 26%,rgba(4,6,16,.42) 58%,rgba(4,6,16,.96));
+}
+#sec-anime .apPlay{
+  position:absolute;z-index:4;top:50%;inset-inline-start:50%;
+  transform:translate(50%,-50%) scale(.8);opacity:0;
+  width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  font-size:15px;color:#0b0820;
+  background:linear-gradient(135deg,#22d3ee,#8b5cff);
+  box-shadow:0 10px 26px rgba(0,0,0,.55);
+  transition:opacity .25s,transform .25s;
+}
+#sec-anime .apCard:hover .apPlay{opacity:1;transform:translate(50%,-50%) scale(1)}
+#sec-anime .apRank{
+  position:absolute;z-index:3;bottom:8px;inset-inline-start:8px;
+  font-size:11px;font-weight:900;padding:2px 7px;border-radius:8px;
+  color:#0b0820;background:linear-gradient(120deg,#fff,#c9d2ff);
+  box-shadow:0 4px 12px rgba(0,0,0,.45);
+}
+#sec-anime .apDubRibbon{
+  position:absolute;z-index:3;top:34px;inset-inline-start:8px;
+  font-size:8.5px;font-weight:900;letter-spacing:.4px;padding:2px 7px;border-radius:6px;
+  color:#fff;background:linear-gradient(120deg,#ff4fd8,#8b5cff);
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+#sec-anime .apBody{padding:11px 11px 13px}
+#sec-anime .apTitle{font-size:13px}
+
+/* مودال (در صورت نبود استایل اصلی) */
+.apd{display:flex;flex-direction:column;gap:13px}
+.apdTop{display:flex;gap:13px;align-items:flex-start}
+.apdPoster{position:relative;flex:0 0 92px;width:92px;aspect-ratio:2/3;border-radius:13px;overflow:hidden;display:grid;place-items:center}
+.apdPoster .apArt{font-size:38px;transform:none;inset:auto;position:static}
+.apdTitle{font-size:17px;font-weight:900;line-height:1.5}
+.apdJp{font-size:11px;opacity:.6;direction:ltr;text-align:start;margin-top:2px}
+.apdDesc{font-size:12.5px;line-height:2;opacity:.92;border-top:1px dashed rgba(140,160,255,.22);padding-top:11px}
+.apdBtns{display:flex;gap:7px;flex-wrap:wrap}
+
+@media (max-width:560px){
+  #sec-anime .aphHero{min-height:250px;border-radius:20px}
+  #sec-anime .aphSlide{padding:18px 16px}
+  #sec-anime .aphTx{max-width:100%}
+  #sec-anime .aphArt{font-size:92px;top:4%;inset-inline-end:2%;opacity:.5}
+  #sec-anime .aphDesc{-webkit-line-clamp:2}
+  #sec-anime .aphDots{inset-inline-start:16px}
+}
