@@ -18,29 +18,25 @@
   setTimeout(init,900);
 })();
 
-/* RONIN ANIME WORLD — بارگذاری بخش انیمه (خودش بخش، منو و استایل را می‌سازد) */
-(function(){
-  if(document.querySelector('script[src^="ronin-anime-pro.js"]'))return;
+/* لودر عمومی ماژول‌های رونین */
+function rl(src){
+  if(document.querySelector('script[src^="'+src+'"]'))return;
   var s=document.createElement("script");
-  s.src="ronin-anime-pro.js?v=1";
-  s.defer=true;
+  s.src=src; s.defer=true;
   document.body.appendChild(s);
-})();
+}
+
+/* RONIN ANIME WORLD — بخش انیمه (خودش بخش، منو و استایل را می‌سازد) */
+rl("ronin-anime-pro.js?v=1");
 
 /* RONIN ANIME PLUS — هیرو اسلایدری انیمه */
-(function(){
-  if(document.querySelector('script[src^="ronin-anime-plus.js"]'))return;
-  var s=document.createElement("script");
-  s.src="ronin-anime-plus.js?v=1";
-  s.defer=true;
-  document.body.appendChild(s);
-})();
+rl("ronin-anime-plus.js?v=1");
+
+/* RONIN ANIME PLAYER — پلیر کامل + دکمه بازگشت به خانه */
+rl("ronin-anime-player.js?v=1");
 
 /* RONIN PREMIUM VIP — تایمر معکوس و خرید از تلگرام */
-(function(){
-  if(document.querySelector('script[src^="ronin-premium-vip.js"]'))return;
-  var s=document.createElement("script");
-  s.src="ronin-premium-vip.js?v=1";
-  s.defer=true;
-  document.body.appendChild(s);
-})();
+rl("ronin-premium-vip.js?v=1");
+
+/* RONIN LANG & MONEY — زبان انگلیسی و واحد پول */
+rl("ronin-lang-money.js?v=1");
