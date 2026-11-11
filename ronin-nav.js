@@ -17,3 +17,12 @@
   else init();
   setTimeout(init,900);
 })();
+
+/* RONIN ANIME WORLD — بارگذاری بخش انیمه (خودش بخش، منو و استایل را می‌سازد) */
+(function(){
+  if(document.querySelector('script[src^="ronin-anime-pro.js"]'))return;
+  var s=document.createElement("script");
+  s.src="ronin-anime-pro.js?v=1";
+  s.defer=true;
+  document.body.appendChild(s);
+})();
