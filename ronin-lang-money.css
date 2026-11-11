@@ -1,0 +1,27 @@
+/* ══════════════════════════════════════════════════════════════════
+   RONIN STORE — LANG & MONEY  ·  ronin-lang-money.css
+   کنترل شناور تغییر زبان و واحد پول
+   ══════════════════════════════════════════════════════════════════ */
+#rlmBar{
+  position:fixed;z-index:72;inset-inline-start:12px;bottom:88px;
+  display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:14px;
+  background:rgba(10,14,30,.82);border:1px solid rgba(140,160,255,.26);
+  box-shadow:0 14px 34px rgba(0,0,0,.5);backdrop-filter:blur(9px);
+  font-family:inherit;
+}
+#rlmBar select{
+  font:inherit;font-size:11px;font-weight:800;padding:6px 7px;border-radius:9px;cursor:pointer;
+  color:#e6ebff;background:rgba(16,20,40,.95);border:1px solid rgba(140,160,255,.26);outline:0;
+}
+#rlmBar select option{background:#0b0f22;color:#e6ebff}
+#rlmBar button{
+  font:inherit;font-size:11px;font-weight:900;cursor:pointer;padding:6px 11px;border-radius:9px;
+  color:#dfe6ff;background:rgba(16,20,40,.95);border:1px solid rgba(140,160,255,.26);transition:.16s;
+}
+#rlmBar button:hover{color:#fff;border-color:rgba(34,211,238,.6)}
+#rlmBar button.on{color:#0a0820;background:linear-gradient(120deg,#22d3ee,#8b5cff);border:0}
+#rlmBar .rlmDot{width:6px;height:6px;border-radius:50%;background:#37ffb0;box-shadow:0 0 10px #37ffb0}
+@media (max-width:520px){
+  #rlmBar{bottom:84px;padding:5px 6px;gap:4px;border-radius:12px}
+  #rlmBar select,#rlmBar button{font-size:10px;padding:5px 7px}
+}
