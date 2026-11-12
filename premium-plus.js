@@ -1,11 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════
-   RONIN STORE — premium-plus.js v1 | ارتقای بخش پرمیوم
+   RONIN STORE — premium-plus.js v2 | ارتقای بخش پرمیوم + پرداخت تلگرام
    ───────────────────────────────────────────────────────────────
    • پلن‌های زمان‌دار: ۱۵ / ۳۰ / ۶۰ / ۹۰ روز
    • نمایش مدت باقی‌مانده، تاریخ انقضا و نوار پیشرفت داخل خود سایت
    • انقضای خودکار پرمیوم + یادآوری ۳ روز آخر
    • برچسب (عنوان) مخصوص پرمیوم‌دارها کنار نامشان
    • دادن/تمدید/حذف پرمیوم با انتخاب مدت از پنل مالک
+   • خرید با لینک تلگرام، کد سفارش و کیف پول مجازی مالک
+   • تایمر معکوس دقیق برای مدت باقی‌مانده
    فایل افزودنی است؛ به فایل‌های اصلی دست نمی‌زند.
    ═══════════════════════════════════════════════════════════════ */
 "use strict";
@@ -22,6 +24,10 @@
     { d: 60, price: 159000, tag: "بهترین ارزش" },
     { d: 90, price: 219000, tag: "حرفه‌ای" }
   ];
+
+  /* ── تنظیمات تلگرام و کیف پول مالک ─────────────────────── */
+  var OW = { loaded: false, loading: false, tgLoaded: false, busy: {}, reqs: {}, tg: null };
+  var TG_MODE = { bot: "ربات", user: "آیدی شخصی" };
 
   /* ── برچسب‌های آماده ─────────────────────────────────────── */
   var BADGES = ["💎 الیت", "🔥 افسانه", "⚡ رونین", "👑 سلطان", "🌙 شب‌گرد", "🗡 شمشیرزن"];
@@ -45,6 +51,40 @@
       return new Date(ms).toLocaleDateString("fa-IR",
         { year: "numeric", month: "long", day: "numeric" });
     } catch (e) { return fa(Math.round(ms / DAY)) + " روز"; }
+  }
+
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function when(t) {
+    if (R.time) return R.time(t);
+    try { return new Date(t).toLocaleString("fa-IR"); } catch (e) { return ""; }
+  }
+  function safeTgLink(v) {
+    var x = R.clean(v, 300);
+    if (!x) return "";
+    if (!/^https:\/\/(t|telegram)\.me\//i.test(x)) return "";
+    return x.replace(/\/+$/, "");
+  }
+  function tgURL(code) {
+    var base = (OW.tg && OW.tg.link) || "";
+    if (!base) return "";
+    if (OW.tg && OW.tg.mode === "bot") {
+      return base + (base.indexOf("?") >= 0 ? "&" : "?") + "start=" + encodeURIComponent(code || "");
+    }
+    return base;
+  }
+  function orderCode() {
+    return "RN" + Date.now().toString(36).slice(-5).toUpperCase() +
+      Math.random().toString(36).slice(2, 5).toUpperCase();
+  }
+  function reqArray() {
+    return Object.keys(OW.reqs || {}).map(function (k) {
+      var r = OW.reqs[k] || {}; r.id = k; return r;
+    }).sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+  }
+  function approvedTotal() {
+    return reqArray().reduce(function (n, r) {
+      return n + (r.st === "approved" ? num(r.price) : 0);
+    }, 0);
   }
 
   /* ── مدل پرمیوم ──────────────────────────────────────────── */
@@ -102,7 +142,21 @@
       ".pp-perk:last-child{border-bottom:0}",
       ".pp-ico{width:31px;height:31px;flex:0 0 auto;display:grid;place-items:center;",
       "border-radius:10px;background:rgba(255,203,82,.15);font-size:15px}",
-      ".pp-badge{background:linear-gradient(135deg,rgba(255,203,82,.28),rgba(255,157,61,.18))}"
+      ".pp-badge{background:linear-gradient(135deg,rgba(255,203,82,.28),rgba(255,157,61,.18))}",
+      ".pp-timer{font-variant-numeric:tabular-nums;font-size:18px;font-weight:900;letter-spacing:.4px;",
+      "color:var(--gold,#ffcb52);margin-top:10px;direction:ltr}",
+      ".pp-timer-sm{font-size:13px;margin-top:4px}",
+      ".pp-paybox{border:1px solid rgba(255,203,82,.35);border-radius:16px;padding:14px;",
+      "background:rgba(255,203,82,.07)}",
+      ".pp-code{font:900 20px/1.4 monospace;letter-spacing:2px;direction:ltr;text-align:center;",
+      "padding:10px;margin:8px 0;border-radius:12px;background:rgba(0,0,0,.18);color:var(--gold,#ffcb52)}",
+      ".pp-wallet{background:linear-gradient(135deg,rgba(255,203,82,.18),rgba(255,157,61,.07));",
+      "border:1px solid rgba(255,203,82,.35)}",
+      ".pp-walletbar{font-size:26px;font-weight:900;color:var(--gold,#ffcb52);direction:rtl;text-align:right}",
+      ".pp-req{padding:10px 0;border-bottom:1px dashed rgba(128,128,128,.22)}",
+      ".pp-req:last-child{border-bottom:0}",
+      ".pp-tgrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}",
+      ".pp-tgrow .inp{flex:1 1 190px}"
     ].join("");
     (document.head || document.documentElement).appendChild(s);
   }
@@ -185,7 +239,9 @@
       (perm
         ? '<div class="pp-big">∞</div><div class="sm mut mt">پرمیوم دائمی</div>'
         : '<div class="pp-big">' + fa(left) + '</div><div class="sm mut">روز باقی‌مانده</div>' +
-          '<div class="pp-bar"><i style="width:' + pct + '%"></i></div>' +
+          '<div class="pp-bar"><i id="ppBar" style="width:' + pct + '%"></i></div>' +
+          '<div class="pp-timer" id="ppTimer" data-exp="' + e + '" data-since="' + since + '">' +
+          timerText(e) + "</div>" +
           '<div class="xs mut">تا ' + esc(fmtDate(e)) + "</div>") +
       (u && u.premPlan ? '<div class="xs mut mt">پلن: ' + fa(u.premPlan) + " روزه</div>" : "") +
       "</div>";
@@ -202,16 +258,23 @@
       return '<div class="card mt center"><div class="sm mut mb">برای خرید پرمیوم وارد حساب شو</div>' +
         '<button class="btn p" type="button" data-authopen="login">ورود / ثبت‌نام</button></div>';
     }
-    if (premOn(u) && !isActive(u)) {
-      return '<div class="card mt center"><div class="chip bad mb">⌛ پرمیوم قبلی منقضی شده</div>' +
-        '<div class="sm mut mb">با تمدید، از همین حالا دوباره فعال می‌شود.</div>' +
-        '<button class="btn gd" type="button" data-pp-req="' + p.d + '">درخواست ' +
-        fa(p.d) + ' روزه 💎</button></div>';
-    }
-    return '<div class="card mt center">' +
-      '<div class="sm b mb">پلن انتخابی: ' + fa(p.d) + " روزه — " + money(p.price) + "</div>" +
-      '<div class="xs mut mb">پرداخت واقعی هنوز فعال نشده — درخواستت مستقیم به مالک می‌رسد و او فعال می‌کند.</div>' +
-      '<button class="btn gd" type="button" data-pp-req="' + p.d + '">درخواست پرمیوم 💎</button></div>';
+    var expired = premOn(u) && !isActive(u);
+    var ready = !!(OW.tg && OW.tg.link);
+    var tgVal = (u && u.tg) || "";
+    return '<div class="card mt">' +
+      (expired ? '<div class="chip bad mb">⌛ پرمیوم قبلی منقضی شده</div>' : "") +
+      '<div class="sm b mb">⚡ خرید پرمیوم با تلگرام</div>' +
+      '<div class="xs mut mb">پلن انتخابی: <b>' + fa(p.d) + " روزه — " + money(p.price) + "</b></div>" +
+      '<div class="xs mut mb">بعد از پرداخت، کد سفارش را برای مالک بفرست تا پرمیوم و مبلغ در کیف پول ثبت شود.</div>' +
+      '<label class="xs mut" for="ppTgUser">آیدی تلگرامت (برای هماهنگی)</label>' +
+      '<input class="inp mt" id="ppTgUser" maxlength="60" placeholder="@username" value="' + esc(tgVal) + '">' +
+      '<button class="btn gd w mt" type="button" data-pp-pay="' + p.d + '">✈️ پرداخت ' +
+      money(p.price) + " با تلگرام</button>" +
+      (ready ? "" : '<div class="xs bad mt">مالک هنوز لینک تلگرام را در پنل تنظیم نکرده — می‌توانی درخواست بدون پرداخت بفرستی.</div>') +
+      '<div class="row w mt" style="gap:7px;flex-wrap:wrap">' +
+      '<button class="btn mini" type="button" data-pp-req="' + p.d + '">فقط ثبت درخواست</button>' +
+      '<span class="xs mut">پرداخت واقعی فقط بعد از تأیید مالک فعال می‌شود.</span></div>' +
+      "</div>";
   }
 
   function render() {
@@ -228,33 +291,78 @@
       plansHTML() + "</div>";
     if (!on) h += requestCard(u);
     if (on) h += badgeCard(u);
+    if (R.isOwner && R.isOwner()) h += ownerCardHTML();
     h += perksHTML();
     h += "</div>";
 
     sec.innerHTML = h;
   }
 
-  /* ══════════ درخواست خرید ══════════ */
+  /* ══════════ درخواست خرید و پرداخت تلگرام ══════════ */
+  function timerText(e) {
+    e = num(e);
+    if (!e) return "∞";
+    var ms = e - Date.now();
+    if (ms <= 0) return "⌛ " + fa("00:00:00");
+    var s = Math.floor(ms / 1000);
+    var d = Math.floor(s / 86400); s -= d * 86400;
+    var hh = Math.floor(s / 3600); s -= hh * 3600;
+    var mm = Math.floor(s / 60); s -= mm * 60;
+    return (d ? fa(d) + " روز " : "") + fa(pad2(hh) + ":" + pad2(mm) + ":" + pad2(ss0(s)));
+  }
+  function ss0(n) { return n < 10 ? "0" + n : String(n); }
+  function tick() {
+    var t = el("ppTimer");
+    if (t) {
+      var e = num(t.getAttribute("data-exp"));
+      if (e) {
+        t.textContent = timerText(e);
+        var since = num(t.getAttribute("data-since"));
+        var bar = el("ppBar");
+        if (bar && since && e > since) {
+          bar.style.width = Math.max(0, Math.min(100,
+            Math.round((Date.now() - since) * 100 / (e - since)))) + "%";
+        }
+        if (e <= Date.now() && R.USER && premOn(R.USER) && expOf(R.USER) === e) expireCheck();
+      }
+    }
+    var chip = document.querySelector("[data-premstate]");
+    if (chip && R.ME) chip.textContent = chipText(R.USER);
+    var mini = el("ppProfTimer");
+    if (mini) {
+      var me = num(mini.getAttribute("data-exp"));
+      if (me) mini.textContent = timerText(me);
+    }
+  }
+
   function request(d) {
     if (!R.ME) { if (R.needLogin) R.needLogin("پرمیوم"); return; }
     var p = planOf(d) || PLANS[1];
     if (isActive(R.USER)) return R.toast("پرمیومت فعال است — از دکمهٔ تمدید استفاده کن 💎", "ok");
 
     R.get("premreq").then(function (all) {
-      var dup = false;
+      var dup = null, dupId = null;
       Object.keys(all || {}).forEach(function (k) {
         var r = all[k];
-        if (r && r.uid === R.ME && (r.st === "new" || r.st === "open")) dup = true;
+        if (r && r.uid === R.ME && (r.st === "new" || r.st === "open" || r.st === "pending")) {
+          dup = r; dupId = k;
+        }
       });
-      if (dup) { R.toast("درخواستت ثبت شده و در انتظار بررسی است ⏳", "ok"); return; }
+      if (dup) {
+        if (dup.code) showPayModal(p, dup.code, dupId, dup);
+        else R.toast("درخواستت ثبت شده و در انتظار بررسی است ⏳", "ok");
+        return;
+      }
       return R.add("premreq", {
         uid: R.ME,
         name: (R.USER && R.USER.name) || "",
         st: "new",
+        method: "manual",
         days: p.d,
         price: p.price,
+        code: orderCode(),
         at: Date.now()
-      }).then(function () {
+      }).then(function (ref) {
         R.toast("درخواست پرمیوم " + fa(p.d) + " روزه ثبت شد 💎", "ok");
         if (R.OWNER_UID && R.notify) {
           R.notify(R.OWNER_UID,
@@ -265,9 +373,232 @@
     }).catch(function (e) { R.toast("نشد: " + e.message, "err"); });
   }
 
+  function payTelegram(d) {
+    if (!R.ME) { if (R.needLogin) R.needLogin("پرمیوم"); return; }
+    var p = planOf(d) || PLANS[1];
+    if (isActive(R.USER)) return R.toast("پرمیومت فعال است — از دکمهٔ تمدید استفاده کن 💎", "ok");
+    var tg = R.clean((el("ppTgUser") || {}).value, 60);
+    if (!tg) return R.toast("آیدی تلگرامت را بنویس تا مالک بتواند پرداخت را تأیید کند", "err");
+    if (!OW.tg || !OW.tg.link) return R.toast("مالک هنوز لینک تلگرام را تنظیم نکرده ✈️", "err");
+
+    R.get("premreq").then(function (all) {
+      var dup = null, dupId = null;
+      Object.keys(all || {}).forEach(function (k) {
+        var r = all[k];
+        if (r && r.uid === R.ME && (r.st === "new" || r.st === "open" || r.st === "pending")) {
+          dup = r; dupId = k;
+        }
+      });
+      if (dup) {
+        showPayModal(p, dup.code || "", dupId, dup);
+        return;
+      }
+      var code = orderCode();
+      return R.add("premreq", {
+        uid: R.ME,
+        name: (R.USER && R.USER.name) || "",
+        st: "new",
+        method: "telegram",
+        days: p.d,
+        price: p.price,
+        tg: tg,
+        code: code,
+        at: Date.now()
+      }).then(function (ref) {
+        R.upd("users/" + R.ME, { tg: tg }).catch(function () {});
+        if (R.OWNER_UID && R.notify) {
+          R.notify(R.OWNER_UID,
+            "✈️ سفارش تلگرام " + code + " از " + ((R.USER && R.USER.name) || "کاربر") +
+            " — " + money(p.price), "info", "owner", "premium");
+        }
+        showPayModal(p, code, ref.key, { code: code, days: p.d, price: p.price, tg: tg });
+      });
+    }).catch(function (e) { R.toast("ثبت سفارش نشد: " + ((e && e.message) || ""), "err"); });
+  }
+
+  function showPayModal(p, code, id, req) {
+    if (req && num(req.days)) p = planOf(req.days) || p;
+    var url = tgURL(code);
+    var h = '<div class="pp-paybox">' +
+      '<div class="sm b">پلن ' + fa(p.d) + " روزه — " + money(p.price) + "</div>" +
+      '<div class="xs mut mt">کد سفارش را کپی کن و بعد از پرداخت برای مالک بفرست.</div>' +
+      '<div class="pp-code">' + esc(code || "—") + "</div>" +
+      '<div class="row w" style="gap:8px;flex-wrap:wrap">' +
+      '<button class="btn mini" type="button" data-pp-copy="' + esc(code || "") + '">📋 کپی کد</button>' +
+      (url ? '<a class="btn gd mini" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">✈️ باز کردن تلگرام</a>' : "") +
+      "</div>" +
+      '<div class="xs mut mt">بعد از تأیید مالک، پرمیوم فعال و مبلغ به کیف پول اضافه می‌شود.</div>' +
+      (id ? '<div class="xs mut mt">شناسهٔ سفارش: <span dir="ltr">' + esc(id) + "</span></div>" : "") +
+      "</div>";
+    if (R.openInfo) R.openInfo("⚡ پرداخت پرمیوم با تلگرام", h);
+    else R.toast("کد سفارش: " + (code || ""), "ok");
+  }
+
+  function copyText(txt) {
+    txt = String(txt || "");
+    if (!txt) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(function () { R.toast("کد کپی شد 📋", "ok"); })
+        .catch(function () { R.toast("کپی نشد — دستی انتخاب کن", "err"); });
+      return;
+    }
+    var ta = document.createElement("textarea");
+    ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); R.toast("کد کپی شد 📋", "ok"); }
+    catch (e) { R.toast("کپی نشد — دستی انتخاب کن", "err"); }
+    ta.remove();
+  }
+
+  /* ══════════ کیف پول مالک و مدیریت سفارش‌ها ══════════ */
+  function loadTelegram() {
+    if (!R.db || OW.tgLoaded) return;
+    R.get("settings/telegram").then(function (t) {
+      OW.tg = t || null;
+      OW.tgLoaded = true;
+      render();
+    }).catch(function () {
+      OW.tgLoaded = true;
+    });
+  }
+
+  function loadOwner() {
+    if (!R.isOwner || !R.isOwner() || !R.db) return;
+    if (OW.loading) return;
+    OW.loading = true;
+    Promise.all([R.get("premreq"), R.get("settings/telegram")]).then(function (a) {
+      OW.reqs = a[0] || {};
+      OW.tg = a[1] || null;
+      OW.tgLoaded = true;
+      OW.loaded = true;
+      OW.loading = false;
+      render();
+    }).catch(function () {
+      OW.loaded = true; OW.loading = false; render();
+    });
+  }
+
+  function saveTelegram() {
+    if (!R.isOwner || !R.isOwner()) return;
+    var raw = R.clean((el("ppTgLink") || {}).value, 300);
+    var link = safeTgLink(raw);
+    var mode = (el("ppTgMode") || {}).value === "user" ? "user" : "bot";
+    if (raw && !link) return R.toast("لینک باید با https://t.me/ شروع شود", "err");
+    R.set("settings/telegram", { link: link, mode: mode, at: Date.now(), by: R.ME || "" })
+      .then(function () {
+        OW.tg = { link: link, mode: mode };
+        R.toast("تنظیمات تلگرام ذخیره شد ✅", "ok");
+        loadOwner();
+      }).catch(function (e) { R.toast("ذخیره نشد: " + ((e && e.message) || ""), "err"); });
+  }
+
+  function approveReq(id) {
+    if (!R.isOwner || !R.isOwner()) return;
+    var r = (OW.reqs || {})[id];
+    if (!r) return;
+    if (r.st === "approved") return R.toast("این سفارش قبلاً تأیید شده ✅", "ok");
+    if (!num(r.days)) return R.toast("این درخواست پلن مشخصی ندارد — نمی‌توان خودکار تأیید کرد", "err");
+    var who = r.name || r.uid || "کاربر";
+    if (OW.busy[id]) return;
+    if (!window.confirm("پرداخت " + who + " تأیید شود؟\n" + money(r.price) + " به کیف پول اضافه می‌شود.")) return;
+    OW.busy[id] = true;
+
+    grant(r.uid, num(r.days)).then(function (ok) {
+      if (!ok) { OW.busy[id] = false; return; }
+      return R.upd("premreq/" + id, {
+        st: "approved",
+        approvedAt: Date.now(),
+        approvedBy: R.ME || "",
+        walletAt: Date.now()
+      }).then(function () {
+        R.toast("✅ تأیید شد — مبلغ به کیف پول اضافه شد", "ok");
+        if (r.uid && R.notify) {
+          R.notify(r.uid, "💎 پرمیوم " + fa(num(r.days)) + " روزه‌ات فعال شد — ممنون از خرید!",
+            "info", "premium", "premium");
+        }
+        OW.reqs[id].st = "approved";
+        OW.reqs[id].approvedAt = Date.now();
+        OW.busy[id] = false;
+        loadOwner();
+      });
+    }).catch(function (e) {
+      OW.busy[id] = false;
+      R.toast("تأیید نشد: " + ((e && e.message) || ""), "err");
+    });
+  }
+
+  function rejectReq(id) {
+    if (!R.isOwner || !R.isOwner()) return;
+    var r = (OW.reqs || {})[id];
+    if (!r) return;
+    if (!window.confirm("سفارش " + (r.name || r.uid || "کاربر") + " رد شود؟")) return;
+    R.upd("premreq/" + id, { st: "rejected", rejectedAt: Date.now(), rejectedBy: R.ME || "" })
+      .then(function () {
+        R.toast("سفارش رد شد", "ok");
+        if (r.uid && R.notify) R.notify(r.uid, "❌ سفارش پرمیوم رد شد", "warn", "premium", "premium");
+        if (OW.reqs[id]) OW.reqs[id].st = "rejected";
+        loadOwner();
+      }).catch(function (e) { R.toast("رد نشد: " + ((e && e.message) || ""), "err"); });
+  }
+
+  function ownerCardHTML() {
+    if (!R.isOwner || !R.isOwner()) return "";
+    var arr = reqArray();
+    var pending = arr.filter(function (r) {
+      return r.st === "new" || r.st === "open" || r.st === "pending";
+    });
+    var approved = arr.filter(function (r) { return r.st === "approved"; });
+    var total = approvedTotal();
+    var h = '<div class="card mt pp-wallet">' +
+      '<div class="between"><div><div class="sm b">👛 کیف پول مجازی مالک</div>' +
+      '<div class="xs mut">فقط پرداخت‌های تأییدشدهٔ پرمیوم</div></div>' +
+      '<span class="chip gd">' + fa(approved.length) + " تراکنش</span></div>" +
+      '<div class="pp-walletbar">' + money(total) + "</div>" +
+      '<div class="xs mut">موجودی قابل برداشت / درآمد ثبت‌شده</div>' +
+      '<div class="row w mt" style="gap:7px;flex-wrap:wrap">' +
+      '<span class="chip">⏳ ' + fa(pending.length) + " در انتظار</span>" +
+      '<span class="chip">✅ ' + fa(approved.length) + " تأییدشده</span></div></div>";
+
+    h += '<div class="card mt"><div class="sm b mb">✈️ تنظیمات پرداخت تلگرام</div>' +
+      '<div class="xs mut mb">لینک ربات یا آیدی شخصی. توکن ربات را هرگز اینجا نگذار.</div>' +
+      '<input class="inp" id="ppTgLink" maxlength="300" placeholder="https://t.me/YourBot" value="' +
+      esc((OW.tg && OW.tg.link) || "") + '">' +
+      '<div class="pp-tgrow"><select class="inp" id="ppTgMode">' +
+      '<option value="bot"' + ((!OW.tg || OW.tg.mode !== "user") ? " selected" : "") + ">ربات (کد با start می‌رود)</option>" +
+      '<option value="user"' + ((OW.tg && OW.tg.mode === "user") ? " selected" : "") + ">آیدی شخصی (کد را دستی بفرست)</option>" +
+      '</select><button class="btn p" type="button" data-pp-tgsave="1">ذخیره</button></div>' +
+      '<div class="xs mut mt">وضعیت: ' + (OW.tg && OW.tg.link
+        ? '<span class="chip ok">فعال</span> <span dir="ltr">' + esc(OW.tg.link) + "</span>"
+        : '<span class="chip bad">تنظیم نشده</span>') + "</div></div>";
+
+    h += '<div class="card mt"><div class="between mb"><span class="sm b">⏳ سفارش‌های در انتظار</span>' +
+      '<span class="chip gd">' + fa(pending.length) + "</span></div>" +
+      (pending.length ? pending.map(function (r) {
+        return '<div class="pp-req"><div class="between"><div><b>' + esc(r.name || r.uid || "کاربر") + "</b>" +
+          '<div class="xs mut">' + (r.method === "telegram" ? "✈️ تلگرام" : "📝 درخواست") + " • " +
+          esc(when(r.at)) + "</div></div>" +
+          '<span class="chip gd">' + fa(num(r.days)) + " روزه</span></div>" +
+          '<div class="xs mut mt">' + money(r.price) + " • " + esc(r.tg || "بدون آیدی") +
+          (r.code ? " • کد: <span dir=\"ltr\">" + esc(r.code) + "</span>" : "") + "</div>" +
+          '<div class="row w mt" style="gap:7px;flex-wrap:wrap">' +
+          '<button class="btn ok mini" type="button" data-pp-approve="' + esc(r.id) + '">✅ تأیید و واریز</button>' +
+          '<button class="btn d mini" type="button" data-pp-reject="' + esc(r.id) + '">❌ رد</button></div></div>';
+      }).join("") : '<div class="empty">سفارش در انتظاری نیست ✅</div>') + "</div>";
+
+    if (approved.length) {
+      h += '<div class="card mt"><div class="sm b mb">🧾 آخرین واریزها</div>' +
+        approved.slice(0, 10).map(function (r) {
+          return '<div class="pp-req"><div class="between"><div><b>' + esc(r.name || r.uid || "کاربر") + "</b>" +
+            '<div class="xs mut">' + esc(when(r.approvedAt || r.at)) + " • " + esc(r.code || "") + "</div></div>" +
+            '<b style=\"color:var(--gold,#ffcb52)\">+' + money(r.price) + "</b></div></div>";
+        }).join("") + "</div>";
+    }
+    return h;
+  }
+
   /* ══════════ دادن / تمدید / حذف (مالک) ══════════ */
   function grant(uid, days) {
-    if (!R.isOwner || !R.isOwner() || !uid) return;
+    if (!R.isOwner || !R.isOwner() || !uid) return Promise.resolve(false);
     var u = userOf(uid) || {};
     var d = num(days);
     var base = Math.max(Date.now(), expOf(u));
@@ -276,27 +607,31 @@
     var patch = { prem: true, premExp: exp, premSince: since, premBy: R.ME || "" };
     if (d) patch.premPlan = d;
 
-    R.upd("users/" + uid, patch).catch(function (e) { R.toast("نشد: " + e.message, "err"); });
+    return R.upd("users/" + uid, patch).then(function () {
+      if (R.USERS && R.USERS[uid]) {
+        R.USERS[uid].prem = true;
+        R.USERS[uid].premExp = exp;
+        R.USERS[uid].premSince = since;
+        if (d) R.USERS[uid].premPlan = d;
+      }
+      if (uid === R.ME && R.USER) {
+        R.USER.prem = true; R.USER.premExp = exp; R.prem = true;
+        if (d) R.USER.premPlan = d;
+        if (R.paintUser) R.paintUser();
+      }
 
-    if (R.USERS && R.USERS[uid]) {
-      R.USERS[uid].prem = true;
-      R.USERS[uid].premExp = exp;
-      R.USERS[uid].premSince = since;
-      if (d) R.USERS[uid].premPlan = d;
-    }
-    if (uid === R.ME && R.USER) {
-      R.USER.prem = true; R.USER.premExp = exp; R.prem = true;
-      if (d) R.USER.premPlan = d;
-      if (R.paintUser) R.paintUser();
-    }
-
-    var msg = d ? "پرمیوم " + fa(d) + " روزه فعال شد" : "پرمیوم دائمی فعال شد";
-    R.toast("💎 " + (uid === R.ME ? "" : (u.name ? u.name + ": " : "")) + msg, "ok");
-    if (R.notify) {
-      R.notify(uid, "💎 " + msg + (d ? " — تا " + fmtDate(exp) : ""), "info", "premium", "premium");
-    }
-    refreshOwner();
-    render();
+      var msg = d ? "پرمیوم " + fa(d) + " روزه فعال شد" : "پرمیوم دائمی فعال شد";
+      R.toast("💎 " + (uid === R.ME ? "" : (u.name ? u.name + ": " : "")) + msg, "ok");
+      if (R.notify) {
+        R.notify(uid, "💎 " + msg + (d ? " — تا " + fmtDate(exp) : ""), "info", "premium", "premium");
+      }
+      refreshOwner();
+      render();
+      return true;
+    }).catch(function (e) {
+      R.toast("نشد: " + ((e && e.message) || ""), "err");
+      return false;
+    });
   }
 
   function revoke(uid) {
@@ -383,6 +718,8 @@
         var left = leftDays(obj);
         strip.innerHTML = '<div class="between"><span class="sm b">💎 پرمیوم</span>' +
           '<span class="chip gd">' + (isPerm(obj) ? "دائمی" : fa(left) + " روز مانده") + "</span></div>" +
+          (isPerm(obj) ? "" : '<div class="pp-timer pp-timer-sm" id="ppProfTimer" data-exp="' +
+            expOf(obj) + '">' + timerText(expOf(obj)) + "</div>") +
           '<div class="xs mut mt">' +
           (isPerm(obj) ? "پرمیوم دائمی داری." : "تا " + esc(fmtDate(expOf(obj))) + " فعال است.") +
           ' <a href="#" data-gosearch="premium" style="color:inherit;text-decoration:underline">مدیریت / تمدید</a></div>';
@@ -456,6 +793,46 @@
         return;
       }
 
+      /* پرداخت تلگرام */
+      var pay = t.closest("[data-pp-pay]");
+      if (pay) {
+        ev.preventDefault();
+        payTelegram(num(pay.getAttribute("data-pp-pay")));
+        return;
+      }
+
+      /* کپی کد سفارش */
+      var cp = t.closest("[data-pp-copy]");
+      if (cp) {
+        ev.preventDefault();
+        copyText(cp.getAttribute("data-pp-copy"));
+        return;
+      }
+
+      /* ذخیرهٔ تنظیمات تلگرام */
+      var ts = t.closest("[data-pp-tgsave]");
+      if (ts) {
+        ev.preventDefault();
+        saveTelegram();
+        return;
+      }
+
+      /* تأیید یا رد سفارش توسط مالک */
+      var ap = t.closest("[data-pp-approve]");
+      if (ap) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        approveReq(ap.getAttribute("data-pp-approve"));
+        return;
+      }
+      var rj = t.closest("[data-pp-reject]");
+      if (rj) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        rejectReq(rj.getAttribute("data-pp-reject"));
+        return;
+      }
+
       /* برچسب */
       var bd = t.closest("[data-pp-badge]");
       if (bd) {
@@ -499,6 +876,8 @@
     reminder();
     render();
     if (R.ME) decorateProfile(R.ME);
+    loadTelegram();
+    if (R.isOwner && R.isOwner()) loadOwner();
   }
 
   /* پرمیوم بخش‌ها */
@@ -543,6 +922,9 @@
     setTimeout(boot, 700);
   };
 
+  /* تایمر معکوس هر ثانیه */
+  setInterval(tick, 1000);
+
   /* به‌روزرسانی دوره‌ای شمارش */
   setInterval(function () {
     try {
@@ -573,6 +955,13 @@
     grant: grant,
     revoke: revoke,
     request: request,
+    payTelegram: payTelegram,
+    timerText: timerText,
+    approvedTotal: approvedTotal,
+    loadOwner: loadOwner,
+    saveTelegram: saveTelegram,
+    approveReq: approveReq,
+    rejectReq: rejectReq,
     saveBadge: saveBadge,
     render: render,
     expireCheck: expireCheck,
