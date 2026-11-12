@@ -435,17 +435,19 @@ a { color: inherit; text-decoration: none; }
 
 /* ── مودال ─────────────────────────────────────────────────── */
 .cx-modal {
-  position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center;
-  padding: 16px; overflow-y: auto;
+  position: fixed; inset: 0; z-index: 9000; display: grid; place-items: start center;
+  padding: clamp(8px, 2.5vh, 24px) 12px; overflow-y: auto; overscroll-behavior: contain;
   background: rgba(3, 5, 14, .8); backdrop-filter: blur(10px);
 }
 .cx-modal[hidden] { display: none; }
 .cx-box {
   position: relative; width: 100%; max-width: 720px; border-radius: 22px;
+  max-height: calc(100dvh - clamp(16px, 5vh, 48px)); overflow-y: auto; overscroll-behavior: contain;
   border: 1px solid var(--ln2); background: var(--g3);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, .65); overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .65);
   animation: cxIn .22s ease;
 }
+.cx-box.wide { max-width: 840px; }
 .cx-box.wide { max-width: 780px; }
 @keyframes cxIn { from { opacity: 0; transform: translateY(14px) scale(.99); } to { opacity: 1; transform: none; } }
 .cx-x {
@@ -496,7 +498,7 @@ a { color: inherit; text-decoration: none; }
 .cx-ep span { margin-inline-start: auto; font-size: 9.5px; color: var(--mut); }
 
 /* ── فرم آپلود ─────────────────────────────────────────────── */
-.cx-form { padding: 16px; }
+.cx-form { padding: 16px 16px 0; }
 .cx-form h2 { margin: 0 0 4px; font-size: 16px; font-weight: 900; }
 .cx-form .hint { font-size: 10.5px; color: var(--mut); margin: 0 0 14px; line-height: 1.9; }
 .cx-fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
@@ -517,8 +519,80 @@ a { color: inherit; text-decoration: none; }
 .cx-prog { height: 6px; border-radius: 99px; background: rgba(255, 255, 255, .12); overflow: hidden; display: none; }
 .cx-prog.on { display: block; }
 .cx-prog i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--vio), var(--cy)); transition: width .2s; }
-.cx-fact { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.cx-fact {
+  position: sticky; bottom: 0; z-index: 4;
+  display: flex; gap: 7px; flex-wrap: wrap; align-items: center;
+  margin-top: 12px; padding: 10px 0 14px;
+  border-top: 1px solid var(--ln);
+  background: linear-gradient(180deg, rgba(8, 11, 26, .72), var(--g3) 35%);
+  backdrop-filter: blur(8px);
+}
 .cx-fact .sm { font-size: 10px; color: var(--mut); }
+
+/* ── پوستر و بخش پیشرفتهٔ فرم ─────────────────────────────── */
+.cx-poster-pick {
+  grid-column: 1 / -1; display: flex; flex-direction: row; gap: 12px; align-items: stretch;
+  margin-bottom: 10px;
+  padding: 10px; border: 1px solid var(--ln); border-radius: 14px;
+  background: rgba(124, 92, 255, .06);
+}
+.cx-poster-prev {
+  width: 88px; flex: none; aspect-ratio: 2/3; border-radius: 10px; overflow: hidden;
+  border: 1px dashed var(--ln2); background: rgba(4, 7, 18, .6);
+  display: grid; place-items: center; font-size: 24px; color: var(--mut);
+}
+.cx-poster-prev img { width: 100%; height: 100%; object-fit: cover; }
+.cx-poster-actions { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.cx-poster-actions b { font-size: 11px; }
+.cx-poster-actions small { font-size: 9.5px; color: var(--mut); line-height: 1.7; }
+.cx-poster-url {
+  width: 100%; padding: 8px 10px; border-radius: 9px; font: inherit; font-size: 11px;
+  border: 1px solid var(--ln); background: rgba(4, 7, 18, .6); color: var(--txt); direction: ltr;
+}
+.cx-poster-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.cx-poster-row .cx-btn { padding: 6px 10px; font-size: 10.5px; }
+.cx-adv {
+  grid-column: 1 / -1; border: 1px solid var(--ln); border-radius: 12px;
+  background: rgba(255, 255, 255, .03); padding: 9px 11px;
+}
+.cx-adv summary { cursor: pointer; font-size: 11px; font-weight: 800; color: #cfd7f7; }
+.cx-adv[open] summary { margin-bottom: 9px; }
+.cx-adv .cx-fgrid { gap: 8px; }
+
+/* ── نوار ویژهٔ انیمه ──────────────────────────────────────── */
+.cx-anime-band {
+  position: relative; overflow: hidden; isolation: isolate;
+  margin: 0 0 14px; border-radius: 20px; padding: 1px;
+  border: 1px solid rgba(255, 79, 216, .34);
+  background: linear-gradient(120deg, rgba(255, 79, 216, .22), rgba(124, 92, 255, .14) 48%, rgba(34, 211, 238, .10));
+  box-shadow: 0 22px 60px -38px rgba(255, 79, 216, .75), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+.cx-anime-band[hidden] { display: none; }
+.cx-anime-band::before {
+  content: "ANIME"; position: absolute; z-index: 0; pointer-events: none;
+  top: -18px; inset-inline-start: 10px; direction: ltr;
+  font-size: clamp(58px, 12vw, 138px); font-weight: 900; letter-spacing: -4px; line-height: 1;
+  color: rgba(255, 255, 255, .055); text-shadow: 0 0 60px rgba(255, 79, 216, .35);
+}
+.cx-ab-in { position: relative; z-index: 2; padding: 16px 20px; display: flex; flex-direction: column; gap: 4px; }
+.cx-ab-k { font-size: 8.5px; font-weight: 900; letter-spacing: 3px; color: #ffb7ef; direction: ltr; }
+.cx-ab-in h2 { margin: 0; font-size: clamp(20px, 3vw, 30px); font-weight: 900; line-height: 1.45; }
+.cx-ab-in p { margin: 0; font-size: 11px; color: #c8d0ee; line-height: 1.95; }
+.cx-ab-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+.cx-ab-chip {
+  border: 1px solid rgba(255, 255, 255, .18); background: rgba(255, 255, 255, .07);
+  color: #fff; border-radius: 99px; padding: 3px 10px; font: inherit; font-size: 9.5px;
+  font-weight: 800; cursor: pointer; transition: .15s;
+}
+.cx-ab-chip:hover { background: rgba(255, 79, 216, .28); border-color: rgba(255, 79, 216, .5); }
+.cx-ab-mark { position: absolute; z-index: 1; inset-inline-end: 18px; bottom: -26px; font-size: 116px; opacity: .16; transform: rotate(-12deg); pointer-events: none; }
+
+.cx-card[data-kind="anime"] { border-color: rgba(255, 79, 216, .24); }
+.cx-card[data-kind="anime"]:hover { border-color: rgba(255, 79, 216, .62); box-shadow: 0 22px 48px rgba(255, 79, 216, .22); }
+.cx-card[data-kind="anime"] .cx-kind {
+  background: linear-gradient(135deg, rgba(255, 79, 216, .92), rgba(124, 92, 255, .92));
+  border-color: transparent; color: #fff;
+}
 
 /* ── شیت فیلتر موبایل ──────────────────────────────────────── */
 .cx-sheet { position: fixed; inset: 0; z-index: 9500; background: rgba(3, 5, 14, .7); backdrop-filter: blur(6px); }
@@ -690,11 +764,14 @@ a { color: inherit; text-decoration: none; }
   .cx-det-post { width: 84px; }
   .cx-det-info { padding-top: 46px; }
   .cx-det-hero { height: 150px; }
-  .cx-fgrid { grid-template-columns: 1fr; }
   .cx-box { border-radius: 18px; }
   .cxp-row { gap: 6px; }
   .cxp-vol { display: none; }
   .cxp-txt { font-size: 9.5px; padding: 4px 7px; }
+}
+
+@media (max-width: 420px) {
+  .cx-fgrid { grid-template-columns: 1fr; }
 }
 
 /* ── تنظیمات صفحه ─────────────────────────────────────────── */

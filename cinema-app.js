@@ -191,7 +191,7 @@
     yf: "", yt: "", playable: false, mine: false, sort: "new", page: 1, size: 18,
     detail: null, tmpItem: null
   };
-  var EDIT_ID = null;
+  var EDIT_ID = null, POSTER_DATA = "";
   var db = null, auth = null, storage = null;
 
   /* ── تنظیمات ظاهری صفحه (فقط روی همین دستگاه) ─────────────── */
@@ -349,7 +349,7 @@
   }
   function cardHTML(it) {
     var saved = watch()[it.id], locked = it.prem && !S.prem;
-    return '<article class="cx-card' + (locked ? " premium" : "") + '" data-id="' + esc(it.id) + '" tabindex="0" role="button" aria-label="' + esc(it.title) + '">' +
+    return '<article class="cx-card' + (locked ? " premium" : "") + '" data-id="' + esc(it.id) + '" data-kind="' + esc(it.kind) + '" tabindex="0" role="button" aria-label="' + esc(it.title) + '">' +
       '<div class="cx-post">' + poster(it) +
         (it.rate ? '<span class="cx-rate">★ ' + fa(it.rate.toFixed ? it.rate.toFixed(1) : it.rate) + "</span>" : "") +
         '<span class="cx-kind">' + kindIc(it.kind) + " " + kindFa(it.kind) + "</span>" +
@@ -511,6 +511,27 @@
       a.classList.toggle("on", k === cur || (k === "all" && cur === "all"));
     });
   }
+  function paintAnimeBand() {
+    var band = $("#cxAnimeBand");
+    if (!band) return;
+    var on = S.kind === "anime" && !S.mine;
+    band.hidden = !on;
+    if (!on) { band.innerHTML = ""; return; }
+    var list = catalog().filter(function (x) { return x.kind === "anime"; });
+    if (!list.length) { band.hidden = true; return; }
+    var gens = {};
+    list.forEach(function (x) {
+      (x.genres || []).forEach(function (g) { gens[g] = (gens[g] || 0) + 1; });
+    });
+    var top = Object.keys(gens).sort(function (a, b) { return gens[b] - gens[a]; }).slice(0, 6);
+    band.innerHTML = '<div class="cx-ab-in"><span class="cx-ab-k">RONIN ANIME · 忍</span>' +
+      '<h2>دنیای انیمه</h2>' +
+      '<p>' + fa(list.length) + ' عنوان — از شونن و اکشن تا فانتزی و درام. روی ژانر بزن تا فیلتر شود.</p>' +
+      (top.length ? '<div class="cx-ab-chips">' + top.map(function (g) {
+        return '<button class="cx-ab-chip" type="button" data-anime-genre="' + esc(g) + '">' + esc(g) + "</button>";
+      }).join("") + "</div>" : "") +
+      '</div><div class="cx-ab-mark" aria-hidden="true">🌸</div>';
+  }
   function paintChips() {
     var box = $("#cxChips");
     if (!box) return;
@@ -546,7 +567,7 @@
     }
   }
   function paintAll() {
-    paintHero(); paintTabs(); paintTitle(); paintSide(); paintChips(); paintGrid(); paintChrome();
+    paintHero(); paintTabs(); paintTitle(); paintAnimeBand(); paintSide(); paintChips(); paintGrid(); paintChrome();
   }
   function paintResults() { paintChips(); paintGrid(); paintTabs(); }
 
@@ -724,6 +745,32 @@
         function () { task.snapshot.ref.getDownloadURL().then(res).catch(rej); });
     });
   }
+  function pickPoster(file, done) {
+    if (!file || !/^image\//i.test(file.type || "")) return toast("فقط عکس انتخاب کن 🖼", "err");
+    if (file.size > 6 * 1024 * 1024) return toast("عکس بزرگ‌تر از ۶ مگه ❌", "err");
+    var fr = new FileReader();
+    fr.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        try {
+          var W = 720, r = Math.min(1, W / (im.width || W));
+          var c = document.createElement("canvas");
+          c.width = Math.max(1, Math.round((im.width || W) * r));
+          c.height = Math.max(1, Math.round((im.height || W) * r));
+          c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+          var out = c.toDataURL("image/webp", 0.82);
+          if (out.indexOf("webp") === -1) out = c.toDataURL("image/jpeg", 0.82);
+          if (out.length > 220000) out = c.toDataURL("image/jpeg", 0.6);
+          if (out.length > 340000) return toast("عکس سنگینه، یکی سبک‌تر انتخاب کن ❌", "err");
+          done(out);
+        } catch (e) { toast("پردازش عکس نشد ❌", "err"); }
+      };
+      im.onerror = function () { toast("این عکس باز نشد ❌", "err"); };
+      im.src = fr.result;
+    };
+    fr.onerror = function () { toast("خواندن عکس نشد ❌", "err"); };
+    fr.readAsDataURL(file);
+  }
   function uploadForm(it) {
     var edit = !!it;
     it = it || { kind: "film", country: "خارجی", lang: "زیرنویس" };
@@ -731,9 +778,17 @@
     var srcs = (it.sources || []).map(function (s) { return s.href; });
     var eps = (it.eps || []).map(function (e) { return e.title + " | " + e.href; }).join("\n");
     return '<button class="cx-x" type="button" data-close="1">✕</button><div class="cx-form">' +
-      "<h2>" + (edit ? "ویرایش عنوان" : "آپلود فیلم / سریال / انیمه") + "</h2>" +
-      '<p class="hint">اطلاعات در Realtime Database (مسیر <b>cinema</b>) و فایل در Firebase Storage ذخیره می‌شود. ' +
-        "اگر Storage فعال نیست، فقط لینک مستقیم بده؛ همان لحظه در پلیر پخش می‌شود.</p>" +
+      "<h2>" + (edit ? "ویرایش عنوان" : "ثبت انیمه / فیلم / سریال") + "</h2>" +
+      '<p class="hint">مشخصات را کامل کن؛ برای پوستر می‌توانی عکس از گالری بدهی یا لینک بگذاری. اطلاعات در مسیر <b>cinema</b> ذخیره می‌شود.</p>' +
+      '<div class="cx-f full cx-poster-pick">' +
+        '<div class="cx-poster-prev" id="uPosterPrev">' +
+          (it.poster ? '<img src="' + v(it.poster) + '" alt="پوستر">' : '<span>🖼</span>') + '</div>' +
+        '<div class="cx-poster-actions"><b>پوستر انیمه / فیلم</b>' +
+          '<small>عکس عمودی از گالری انتخاب کن؛ خودکار فشرده می‌شود. یا لینک بده.</small>' +
+          '<div class="cx-poster-row"><label class="cx-btn ghost sm">🖼 انتخاب عکس<input id="uPosterFile" type="file" accept="image/*" hidden></label>' +
+          '<button class="cx-btn ghost sm" type="button" id="uPosterClear">حذف</button></div>' +
+          '<input class="cx-poster-url" id="uPoster" maxlength="500" value="' + v(it.poster) + '" placeholder="یا لینک پوستر https://…">' +
+        '</div></div>' +
       '<div class="cx-fgrid">' +
       '<label class="cx-f full">عنوان *<input id="uTitle" maxlength="90" value="' + v(it.title) + '" placeholder="مثلاً جوجوتسو کایسن"></label>' +
       '<label class="cx-f">عنوان لاتین<input id="uEn" maxlength="90" value="' + v(it.en) + '" placeholder="Jujutsu Kaisen"></label>' +
@@ -750,18 +805,20 @@
       '<label class="cx-f">زبان<select id="uLang">' +
         ["دوبله", "زیرنویس"].map(function (c) { return '<option value="' + c + '"' + (it.lang === c ? " selected" : "") + ">" + c + "</option>"; }).join("") +
       "</select></label>" +
-      '<label class="cx-f full">لینک پوستر <small>(اختیاری)</small><input id="uPoster" value="' + v(it.poster) + '" placeholder="https://…"></label>' +
       '<label class="cx-f full">خلاصه<textarea id="uDesc" maxlength="900">' + v(it.desc) + "</textarea></label>" +
       '<label class="cx-f full">لینک پخش ۱ <small>MP4 یا m3u8 یا امبد یوتیوب/آپارات</small><input id="uSrc1" value="' + v(srcs[0] || "") + '" placeholder="https://…/video.mp4"></label>' +
-      '<label class="cx-f full">لینک پخش ۲ <small>(کیفیت دوم، اختیاری)</small><input id="uSrc2" value="' + v(srcs[1] || "") + '"></label>' +
-      '<label class="cx-f full">قسمت‌ها <small>(هر خط: نام قسمت | لینک)</small><textarea id="uEps" placeholder="قسمت ۱ | https://…">' + v(eps) + "</textarea></label>" +
       '<label class="cx-f full cx-switch"><input id="uPrem" type="checkbox"' + (it.prem ? " checked" : "") + "> فقط برای کاربران پرمیوم</label>" +
-      '<div class="cx-drop">' +
-        "<b>یا فایل ویدیو را آپلود کن</b>" +
-        '<input id="uFile" type="file" accept="video/*,.m3u8">' +
-        '<div class="cx-prog" id="uProg"><i></i></div>' +
-        "<small>فایل در Firebase Storage ذخیره می‌شود؛ برای فایل‌های بزرگ آپلود ممکن است چند دقیقه طول بکشد.</small>" +
-      "</div></div>" +
+      '<details class="cx-adv"><summary>⚙ گزینه‌های پیشرفته — کیفیت دوم، قسمت‌ها و آپلود فایل</summary>' +
+        '<div class="cx-fgrid">' +
+        '<label class="cx-f full">لینک پخش ۲ <small>(کیفیت دوم، اختیاری)</small><input id="uSrc2" value="' + v(srcs[1] || "") + '"></label>' +
+        '<label class="cx-f full">قسمت‌ها <small>(هر خط: نام قسمت | لینک)</small><textarea id="uEps" placeholder="قسمت ۱ | https://…">' + v(eps) + "</textarea></label>" +
+        '<div class="cx-drop">' +
+          "<b>یا فایل ویدیو را آپلود کن</b>" +
+          '<input id="uFile" type="file" accept="video/*,.m3u8">' +
+          '<div class="cx-prog" id="uProg"><i></i></div>' +
+          "<small>فایل در Firebase Storage ذخیره می‌شود؛ برای فایل‌های بزرگ آپلود ممکن است چند دقیقه طول بکشد.</small>" +
+        "</div></div></details>" +
+      "</div>" +
       '<div class="cx-fact"><button class="cx-btn" type="button" id="uSave">' + (edit ? "💾 ذخیره تغییرات" : "🚀 انتشار در کاتالوگ") + "</button>" +
         '<button class="cx-btn ghost" type="button" data-close="1">انصراف</button>' +
         '<span class="sm" id="uMsg"></span></div></div>';
@@ -770,6 +827,7 @@
     if (!S.me) { toast("برای آپلود ابتدا در سایت وارد حساب شو", "err"); return; }
     if (!S.staff) { toast("آپلود فقط برای مالک و تیم است", "err"); return; }
     EDIT_ID = it && it.id ? it.id : null;
+    POSTER_DATA = "";
     modalOpen(uploadForm(it), true);
     setTimeout(function () { var el = $("#uTitle"); if (el) el.focus(); }, 60);
   }
@@ -785,7 +843,7 @@
       title: g("#uTitle"), en: g("#uEn"), kind: g("#uKind") || "film",
       year: num(g("#uYear")) || null, rate: num(g("#uRate")) || null,
       genres: g("#uGenres"), studio: g("#uStudio"), country: g("#uCountry") || "خارجی",
-      lang: g("#uLang") || "زیرنویس", poster: g("#uPoster"), desc: g("#uDesc"),
+      lang: g("#uLang") || "زیرنویس", poster: g("#uPoster") || POSTER_DATA, desc: g("#uDesc"),
       prem: chk("#uPrem"), t: Date.now(),
       sources: urls.reduce(function (o, u, i) { o[i] = { label: i === 0 ? "کیفیت اصلی" : "کیفیت دوم", href: u }; return o; }, {}),
       eps: eps.length ? eps.reduce(function (o, e, i) { o[i] = e; return o; }, {}) : null,
@@ -988,6 +1046,14 @@
     }
     var fk = t.closest("[data-fk]");
     if (fk) { S.kind = fk.getAttribute("data-fk") || "all"; S.mine = false; S.page = 1; paintAll(); syncURL(); return; }
+    var ag = t.closest("[data-anime-genre]");
+    if (ag) {
+      e.preventDefault();
+      S.kind = "anime"; S.mine = false; S.page = 1;
+      S.genres = [ag.getAttribute("data-anime-genre") || ""];
+      paintAll(); syncURL();
+      return;
+    }
     var fg = t.closest("[data-fg]");
     if (fg) {
       var g = fg.getAttribute("data-fg");
@@ -1030,6 +1096,13 @@
       var x2 = $("#cxqClear"); if (x2) x2.hidden = true;
       S.page = 1; paintResults(); syncURL(); return;
     }
+    if (t.closest("#uPosterClear")) {
+      e.preventDefault();
+      POSTER_DATA = "";
+      var pu = $("#uPoster"); if (pu) pu.value = "";
+      var pv = $("#uPosterPrev"); if (pv) pv.innerHTML = "<span>🖼</span>";
+      return;
+    }
     if (t.closest("#uSave")) { e.preventDefault(); saveItem(EDIT_ID); return; }
   });
 
@@ -1054,6 +1127,17 @@
       return;
     }
     if (!t.id) return;
+    if (t.id === "uPosterFile") {
+      var pf = t.files && t.files[0];
+      if (pf) pickPoster(pf, function (data) {
+        POSTER_DATA = data;
+        var prev = $("#uPosterPrev");
+        if (prev) prev.innerHTML = '<img src="' + data + '" alt="پوستر">';
+        var url = $("#uPoster"); if (url) url.value = "";
+        toast("پوستر آماده شد ✅", "ok");
+      });
+      return;
+    }
     if (t.id === "fPlay") { S.playable = t.checked; S.page = 1; paintResults(); paintSide(); syncURL(); }
     if (t.id === "cxSort") { S.sort = t.value; S.page = 1; paintGrid(); syncURL(); }
   });
