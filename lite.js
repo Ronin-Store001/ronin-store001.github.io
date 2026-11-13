@@ -27,4 +27,17 @@
   document.addEventListener("click", function (e) {
     if (e.target && e.target.closest && e.target.closest("#liteBtn")) { e.preventDefault(); flip(); }
   });
+
+  /* ── لایهٔ ارتقای پرمیوم (فقط در صفحه‌هایی که بخش پرمیوم دارند) ── */
+  function loadPremiumPro() {
+    if (!document.getElementById("sec-premium")) return;
+    if (window.__premPro || document.getElementById("premiumProJs")) return;
+    var s = document.createElement("script");
+    s.id = "premiumProJs";
+    s.src = "premium-pro.js?v=1";
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", loadPremiumPro);
+  else loadPremiumPro();
 })();
