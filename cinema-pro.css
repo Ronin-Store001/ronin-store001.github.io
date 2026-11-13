@@ -1,0 +1,153 @@
+/* ═══════════════════════════════════════════════════════════════
+   RONIN CINEMA — cinema-pro.css
+   ارتقای ظاهری صفحهٔ انیمه: اسپات‌لایت، مدال رتبه، کالکشن‌ها، آرورا
+   مستقل از cinema.css کار می‌کند و با آن تداخل ندارد.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── دکمهٔ بازگشت به صفحهٔ اصلی ─────────────────────────────── */
+.cx-back {
+  flex: none; display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 11px; border-radius: 10px; font-size: 11px; font-weight: 900;
+  border: 1px solid rgba(140, 160, 255, .18); background: rgba(11, 15, 34, .62);
+  color: #eef1ff; transition: .16s; white-space: nowrap;
+}
+.cx-back:hover { border-color: rgba(124, 92, 255, .45); background: rgba(124, 92, 255, .16); transform: translateY(-1px); }
+.cx-back i { font-style: normal; font-size: 13px; color: #22d3ee; }
+
+/* ── آرورای پس‌زمینهٔ حالت انیمه ───────────────────────────── */
+body.cx-anime-mode::before {
+  content: ""; position: fixed; inset: -10%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(620px 420px at 20% 18%, rgba(255, 79, 216, .20), transparent 60%),
+    radial-gradient(720px 470px at 82% 30%, rgba(124, 92, 255, .20), transparent 62%),
+    radial-gradient(620px 430px at 50% 92%, rgba(34, 211, 238, .15), transparent 62%);
+  filter: blur(12px);
+  animation: cxProAura 18s ease-in-out infinite alternate;
+}
+@keyframes cxProAura {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
+
+/* ── اسپات‌لایت انیمه (نوار بالای صفحه) ───────────────────── */
+.cx-anime-band {
+  position: relative; overflow: hidden; isolation: isolate;
+  margin: 0 0 16px; border-radius: 22px; padding: 1px;
+  border: 1px solid rgba(255, 79, 216, .38);
+  background:
+    linear-gradient(120deg, rgba(255, 79, 216, .26), rgba(124, 92, 255, .18) 46%, rgba(34, 211, 238, .12)),
+    radial-gradient(600px 300px at 90% -20%, rgba(255, 79, 216, .35), transparent 65%);
+  box-shadow: 0 26px 70px -40px rgba(255, 79, 216, .9), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.cx-anime-band::before {
+  content: "ANIME"; position: absolute; z-index: 0; pointer-events: none;
+  top: -26px; inset-inline-start: 6px; direction: ltr;
+  font-size: clamp(58px, 12vw, 148px); font-weight: 900; letter-spacing: -5px; line-height: 1;
+  color: rgba(255, 255, 255, .06); text-shadow: 0 0 70px rgba(255, 79, 216, .5);
+}
+.cx-ab-in { position: relative; z-index: 2; padding: 18px 22px 20px; display: flex; flex-direction: column; gap: 5px; }
+.cx-ab-k { font-size: 8.5px; font-weight: 900; letter-spacing: 3px; color: #ffb7ef; direction: ltr; }
+.cx-ab-in h2 {
+  margin: 0; font-size: clamp(22px, 3.4vw, 34px); font-weight: 900; line-height: 1.4;
+  background: linear-gradient(90deg, #ffffff, #ffd6f5 42%, #ffd66b);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 6px 26px rgba(255, 79, 216, .35));
+}
+.cx-ab-in p { margin: 0; font-size: 11px; color: #e2d6f4; line-height: 2; }
+.cx-ab-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.cx-ab-chip {
+  border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .08);
+  color: #fff; border-radius: 99px; padding: 4px 12px; font: inherit; font-size: 10px;
+  font-weight: 800; cursor: pointer; transition: .15s;
+}
+.cx-ab-chip:hover { background: rgba(255, 79, 216, .32); border-color: rgba(255, 79, 216, .6); transform: translateY(-1px); }
+.cx-ab-mark { position: absolute; z-index: 1; inset-inline-end: 18px; bottom: -30px; font-size: 124px; opacity: .18; transform: rotate(-12deg); pointer-events: none; }
+
+/* ── ریل محبوب‌ترین‌ها: مدال، نوار امتیاز، دکمهٔ پخش ──────── */
+.cx-ar-head { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 9px; }
+.cx-ar-head b { font-size: 13px; font-weight: 900; }
+.cx-anime-mode .cx-ar-head b,
+.cx-anime-mode .cx-head h1 {
+  background: linear-gradient(90deg, #ffd6f5, #ff9de2 45%, #ffd66b);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.cx-ar-head span { font-size: 8.5px; font-weight: 900; letter-spacing: 1.4px; color: #ffb7ef; direction: ltr; }
+
+.cx-ar-card { flex: 0 0 150px; border-radius: 15px; border-color: rgba(255, 79, 216, .3); }
+.cx-ar-card:hover { transform: translateY(-4px); border-color: rgba(255, 79, 216, .8); box-shadow: 0 20px 40px rgba(255, 79, 216, .28); }
+.cx-ar-art { position: relative; }
+.cx-ar-art::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(0deg, rgba(8, 5, 18, .85) 2%, transparent 55%);
+}
+.cx-ar-rank {
+  position: absolute; z-index: 4; top: 6px; inset-inline-start: 6px;
+  min-width: 24px; padding: 2px 7px; border-radius: 9px; text-align: center;
+  font-size: 10.5px; font-weight: 900; color: #1a0316;
+  background: linear-gradient(135deg, #ff9de2, #c9a6ff); box-shadow: 0 4px 14px rgba(0, 0, 0, .45);
+}
+.cx-ar-rank.g1 { background: linear-gradient(135deg, #ffe9a8, #ffb62e); color: #2a1400; box-shadow: 0 0 20px rgba(255, 182, 46, .65); }
+.cx-ar-rank.g2 { background: linear-gradient(135deg, #f4f7ff, #b9c6e6); color: #1a2036; box-shadow: 0 0 16px rgba(200, 215, 255, .5); }
+.cx-ar-rank.g3 { background: linear-gradient(135deg, #ffcda6, #e08a4b); color: #2a1200; box-shadow: 0 0 16px rgba(224, 138, 75, .55); }
+.cx-ar-play {
+  position: absolute; z-index: 4; top: 50%; inset-inline-start: 50%;
+  transform: translate(50%, -50%) scale(.8);
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(10, 4, 18, .55); border: 1px solid rgba(255, 255, 255, .6);
+  backdrop-filter: blur(5px); color: #fff; font-size: 14px; opacity: 0;
+  transition: .18s; pointer-events: none;
+}
+.cx-ar-card:hover .cx-ar-play { opacity: 1; transform: translate(50%, -50%) scale(1); }
+.cx-ar-meta { padding: 7px 9px 9px; }
+.cx-ar-meta b { font-size: 10.5px; }
+.cx-ar-meta small { color: #ffb7ef; }
+.cx-ar-bar { display: block; margin-top: 5px; height: 4px; border-radius: 99px; background: rgba(255, 255, 255, .14); overflow: hidden; }
+.cx-ar-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #ff4fd8, #ffd66b); }
+
+/* ── کالکشن‌های ژانر ───────────────────────────────────────── */
+.cx-anime-genres { margin: 0 0 16px; }
+.cx-anime-genres[hidden] { display: none; }
+.cx-ag-strip { display: flex; gap: 9px; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: thin; scroll-snap-type: x proximity; }
+.cx-ag-strip::-webkit-scrollbar { height: 5px; }
+.cx-ag-strip::-webkit-scrollbar-thumb { background: rgba(255, 79, 216, .35); border-radius: 99px; }
+.cx-ag-card {
+  position: relative; flex: 0 0 160px; min-height: 90px; border-radius: 15px; overflow: hidden;
+  cursor: pointer; text-align: start; padding: 12px 13px; font: inherit; color: #fff;
+  border: 1px solid rgba(255, 79, 216, .3); display: flex; flex-direction: column;
+  justify-content: space-between; scroll-snap-align: start; transition: .18s;
+}
+.cx-ag-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(210deg, rgba(255, 255, 255, .18), transparent 55%); }
+.cx-ag-card:hover { transform: translateY(-3px); border-color: rgba(255, 79, 216, .75); box-shadow: 0 18px 36px rgba(255, 79, 216, .26); }
+.cx-ag-card b { position: relative; z-index: 2; font-size: 12px; font-weight: 900; }
+.cx-ag-card small { position: relative; z-index: 2; font-size: 9px; color: rgba(255, 255, 255, .82); }
+.cx-ag-card i { position: absolute; inset-inline-end: 6px; bottom: -12px; font-size: 50px; font-style: normal; opacity: .22; pointer-events: none; }
+
+/* ── دربارهٔ سایت + سوالات پرتکرار ─────────────────────────── */
+.cx-info { max-width: 1400px; margin: 26px auto 0; padding: 0 clamp(12px, 3vw, 26px); }
+.cx-info-in { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.cx-info-card { border: 1px solid rgba(140, 160, 255, .14); border-radius: 18px; background: rgba(18, 23, 50, .78); padding: 15px 16px; }
+.cx-info-card > b { display: block; font-size: 12.5px; font-weight: 900; margin-bottom: 7px; }
+.cx-info-card p { margin: 0; font-size: 10.5px; line-height: 2; color: #9aa6cc; }
+.cx-info-links { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 11px; }
+.cx-info-card details { border-top: 1px solid rgba(140, 160, 255, .14); padding: 8px 0; }
+.cx-info-card details:first-of-type { border-top: 0; padding-top: 0; }
+.cx-info-card summary { cursor: pointer; font-size: 11px; font-weight: 800; color: #dfe5ff; list-style: none; }
+.cx-info-card summary::-webkit-details-marker { display: none; }
+.cx-info-card summary::before { content: "▸ "; color: #22d3ee; }
+.cx-info-card details[open] summary::before { content: "▾ "; }
+.cx-info-card details p { margin: 6px 0 0; font-size: 10px; }
+
+/* ── ریسپانسیو ─────────────────────────────────────────────── */
+@media (max-width: 980px) {
+  .cx-info-in { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .cx-ab-in { padding: 15px 15px 17px; }
+  .cx-ab-in h2 { font-size: 20px; }
+  .cx-back span { display: none; }
+  .cx-ar-card { flex: 0 0 134px; }
+  .cx-ag-card { flex: 0 0 142px; min-height: 82px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.cx-anime-mode::before { animation: none; }
+}
