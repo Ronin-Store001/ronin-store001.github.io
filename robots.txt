@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /artifacts/
+Disallow: /freebuff-sites-build/
+
+Sitemap: https://ronin-store001.github.io/sitemap.xml
