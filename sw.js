@@ -1,6 +1,6 @@
 /* RONIN STORE — service worker v3
    آفلاین واقعی: پوستهٔ سایت + صفحهٔ آفلاین + بازی کش می‌شوند */
-var CACHE = "ronin-v37";
+var CACHE = "ronin-v38";
 
 /* فقط چیزهایی که برای «باز شدن سایت بدون اینترنت» لازم‌اند */
 var CORE = [
@@ -48,8 +48,11 @@ var CORE = [
   "./cinema-pro.js?v=1",
   "./cinema-ads.css?v=1",
   "./cinema-ads.js?v=1",
+  "./cinema-ads2.js?v=1",
   "./cinema-skin.css?v=1",
+  "./cinema-skin2.css?v=1",
   "./cinema-player-pro.js?v=1",
+  "./cinema-ux2.js?v=1",
   "./premium-pro.js?v=1",
   "./ads-studio.js?v=1",
   "./lite.js"
