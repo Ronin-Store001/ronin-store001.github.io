@@ -128,15 +128,19 @@
     host.appendChild(bar);
   }
 
-  /* فوتر در صفحهٔ اصلی با تأخیر ساخته می‌شود؛ چند بار تلاش می‌کنیم */
-  var tries = 0;
-  function tick() {
-    lazy(); legal(); tries++;
-    if (!document.querySelector(".rn-legal") && tries < 20) setTimeout(tick, 700);
+  /* فوتر صفحهٔ اصلی با تأخیر ساخته و بازسازی می‌شود؛ تا ۳۰ ثانیه دوباره اضافه می‌کنیم */
+  function ensure() {
+    lazy();
+    legal();
+    return !!document.querySelector(".rn-legal");
   }
+  var ticks = 0;
+  var iv = setInterval(function () {
+    ticks++;
+    if (ensure() || ticks > 38) clearInterval(iv);
+  }, 800);
 
-  function boot() { lazy(); legal(); tick(); }
+  function boot() { ensure(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
-  setTimeout(boot, 1200);
 })();

@@ -1,8 +1,7 @@
 /* RONIN STORE — service worker v3
    آفلاین واقعی: پوستهٔ سایت + صفحهٔ آفلاین + بازی کش می‌شوند */
-var CACHE = "ronin-v40";
+var CACHE = "ronin-v41";
 
-/* فقط چیزهایی که برای «باز شدن سایت بدون اینترنت» لازم‌اند */
 var CORE = [
   "./",
   "./index.html",
@@ -55,7 +54,7 @@ var CORE = [
   "./cinema-ux2.js?v=1",
   "./premium-pro.js?v=1",
   "./ads-studio.js?v=1",
-  "./seo-pack.js?v=2",
+  "./seo-pack.js?v=3",
   "./site-analytics.js?v=1",
   "./privacy.html",
   "./terms.html",
@@ -67,7 +66,6 @@ var CORE = [
 self.addEventListener("install", function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (c) {
-      /* تک‌تک اضافه می‌کنیم تا یک ۴۰۴ کل نصب را خراب نکند */
       return Promise.all(CORE.map(function (u) {
         return c.add(new Request(u, { cache: "reload" })).catch(function () {});
       }));
@@ -96,9 +94,8 @@ self.addEventListener("fetch", function (e) {
   var req = e.request;
   if (req.method !== "GET") return;
   var u = new URL(req.url);
-  if (u.origin !== location.origin) return;            /* فایربیس/فونت دست‌نخورده */
+  if (u.origin !== location.origin) return;
 
-  /* ── صفحه‌ها: شبکه اول، بعد کش، بعد offline.html ── */
   if (isNav(req)) {
     e.respondWith(
       new Promise(function (res) {
@@ -134,7 +131,6 @@ self.addEventListener("fetch", function (e) {
     return;
   }
 
-  /* ── دارایی‌های ثابت: کش اول ── */
   if (isStatic(u)) {
     e.respondWith(
       caches.match(req).then(function (hit) {
@@ -158,7 +154,6 @@ self.addEventListener("fetch", function (e) {
     return;
   }
 
-  /* ── بقیهٔ درخواست‌ها: شبکه اول ── */
   e.respondWith(
     fetch(req).then(function (r) {
       var copy = r.clone();
