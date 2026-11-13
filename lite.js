@@ -38,7 +38,7 @@
   function boot() {
     if (document.getElementById("sec-premium") && !window.__premPro) load("premium-pro.js?v=1", "premiumProJs");
     if (document.getElementById("sec-ads") && !window.__adsStudio) load("ads-studio.js?v=1", "adsStudioJs");
-    if (!window.__rnSeo) load("seo-pack.js?v=1", "rnSeoJs");
+    if (!window.__rnSeo) load("seo-pack.js?v=2", "rnSeoJs");
     if (!window.__rnStats) load("site-analytics.js?v=1", "rnStatsJs");
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
