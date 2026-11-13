@@ -1,6 +1,6 @@
 /* RONIN STORE — service worker v3
    آفلاین واقعی: پوستهٔ سایت + صفحهٔ آفلاین + بازی کش می‌شوند */
-var CACHE = "ronin-v36";
+var CACHE = "ronin-v37";
 
 /* فقط چیزهایی که برای «باز شدن سایت بدون اینترنت» لازم‌اند */
 var CORE = [
@@ -51,6 +51,7 @@ var CORE = [
   "./cinema-skin.css?v=1",
   "./cinema-player-pro.js?v=1",
   "./premium-pro.js?v=1",
+  "./ads-studio.js?v=1",
   "./lite.js"
 ];
 
@@ -104,10 +105,9 @@ self.addEventListener("fetch", function (e) {
           if (done) return;
           done = true;
           var copy = r.clone();
-          /* صفحهٔ دیده‌شده را با کلید خودش کش کن (index.html جای صفحه‌های دیگر را نگیرد) */
           caches.open(CACHE).then(function (c) {
             c.put(req, copy).catch(function () {});
-            if (new URL(req.url).pathname.replace(/^\//, "") === "index.html" || req.url.indexOf(location.origin + "/") === 0 && new URL(req.url).pathname === "/") {
+            if (new URL(req.url).pathname === "/") {
               c.put("./index.html", r.clone()).catch(function () {});
             }
           });
