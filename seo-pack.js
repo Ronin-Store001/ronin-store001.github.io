@@ -37,7 +37,7 @@
   }
 
   try {
-    var url = ORIGIN + "/" + (PAGE === "" ? "" : PAGE);
+    var url = (!PAGE || PAGE === "index.html") ? ORIGIN + "/" : ORIGIN + "/" + PAGE;
     var img = ORIGIN + "/" + info.img;
     var title = document.title || "RONIN STORE";
 
@@ -128,8 +128,15 @@
     host.appendChild(bar);
   }
 
-  function boot() { lazy(); legal(); }
+  /* فوتر در صفحهٔ اصلی با تأخیر ساخته می‌شود؛ چند بار تلاش می‌کنیم */
+  var tries = 0;
+  function tick() {
+    lazy(); legal(); tries++;
+    if (!document.querySelector(".rn-legal") && tries < 20) setTimeout(tick, 700);
+  }
+
+  function boot() { lazy(); legal(); tick(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
-  setTimeout(boot, 1500);
+  setTimeout(boot, 1200);
 })();
