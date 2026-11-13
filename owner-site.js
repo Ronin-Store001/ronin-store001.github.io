@@ -54,7 +54,6 @@
     ".osBar{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}",
     ".osBar i{display:block;width:100%;border-radius:6px 6px 2px 2px;min-height:3px;",
     "  background:linear-gradient(180deg,#8ef0ff,#7c5cff);box-shadow:0 0 14px -4px rgba(124,92,255,.9);transition:height .4s}",
-    ".osBar.c i{background:linear-gradient(180deg,#ffd77a,#ff7a59);box-shadow:0 0 14px -4px rgba(255,167,82,.9)}",
     ".osBar em{font-size:8px;color:#7f8ab6;font-style:normal;white-space:nowrap}",
     ".osLg{display:flex;gap:12px;flex-wrap:wrap;font-size:9px;color:#9aa6cc;margin-top:8px}",
     ".osLg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-inline-end:4px;vertical-align:-1px}",
@@ -212,7 +211,7 @@
     var bars = series.map(function (s) {
       var h = Math.round((Math.max(s.all, s.idx + s.cin) / max) * 100);
       return '<div class="osBar" title="' + esc(s.label) + " — " + fa(s.all) + ' بازدید">' +
-        "<i style=\"height:" + Math.max(2, h) + '%"></i><em>' + s.label + "</em></div>";
+        "<i style=\"height:" + Math.max(2, h) + '%\"></i><em>' + s.label + "</em></div>";
     }).join("");
 
     return '<div class="osKpis">' +
@@ -223,7 +222,7 @@
       "</div>" +
       '<div class="osChart">' + bars + "</div>" +
       '<div class="osLg"><span><i style="background:linear-gradient(180deg,#8ef0ff,#7c5cff)"></i>کل بازدید روز</span>' +
-        '<span><i style="background:linear-gradient(180deg,#ffd77a,#ff7a59)"></i>فقط سینما</span></div>' +
+        '<span>تفکیک صفحه‌ها در کارت‌های بالا</span></div>' +
       '<div class="osNote">شمارش سبک و بدون سرویس بیرونی است: هر نشست یک‌بار در <b>site/views/&lt;صفحه&gt;/&lt;تاریخ&gt;</b> ثبت می‌شود (بدون IP و بدون شناسهٔ کاربر).</div>';
   }
 

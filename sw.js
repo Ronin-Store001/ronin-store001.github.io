@@ -1,5 +1,5 @@
 /* RONIN STORE — service worker v3 */
-var CACHE = "ronin-v43";
+var CACHE = "ronin-v44";
 
 var CORE = [
   "./", "./index.html", "./offline.html", "./ronin-offline.js?v=8", "./manifest.json",
