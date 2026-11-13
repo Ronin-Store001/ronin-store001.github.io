@@ -1,4 +1,4 @@
-/* ═══ RONIN LITE — حالت کم‌مصرف (فایل جدید؛ به چیزی دست نمی‌زند) ═══ */
+/* ═══ RONIN LITE — حالت کم‌مصرف + لودر لایه‌های تازه (فایل جدید؛ به چیزی دست نمی‌زند) ═══ */
 (function () {
   var K = "ronin_lite";
   function get() { try { return localStorage.getItem(K) === "1"; } catch (e) { return false; } }
@@ -23,21 +23,22 @@
     set(!get()); paint();
     try { if (window.R && R.toast) R.toast(get() ? "حالت کم‌مصرف روشن شد ⚡" : "حالت کم‌مصرف خاموش شد", "ok"); } catch (e) {}
   }
+  function load(src, id) {
+    if (document.getElementById(id)) return;
+    var s = document.createElement("script");
+    s.id = id; s.src = src; s.defer = true;
+    document.head.appendChild(s);
+  }
   css(); paint();
   document.addEventListener("click", function (e) {
     if (e.target && e.target.closest && e.target.closest("#liteBtn")) { e.preventDefault(); flip(); }
   });
 
   /* ── لایهٔ ارتقای پرمیوم (فقط در صفحه‌هایی که بخش پرمیوم دارند) ── */
-  function loadPremiumPro() {
-    if (!document.getElementById("sec-premium")) return;
-    if (window.__premPro || document.getElementById("premiumProJs")) return;
-    var s = document.createElement("script");
-    s.id = "premiumProJs";
-    s.src = "premium-pro.js?v=1";
-    s.defer = true;
-    document.head.appendChild(s);
+  function boot() {
+    if (document.getElementById("sec-premium") && !window.__premPro) load("premium-pro.js?v=1", "premiumProJs");
+    if (document.getElementById("sec-ads") && !window.__adsStudio) load("ads-studio.js?v=1", "adsStudioJs");
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", loadPremiumPro);
-  else loadPremiumPro();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 })();
