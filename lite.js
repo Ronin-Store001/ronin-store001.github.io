@@ -46,8 +46,20 @@
     })();
   }
 
+  /* پرمیوم: قیمت‌ها و تایمر — بعد از آماده شدن لایهٔ پرمیوم */
+  function premCore() {
+    var n = 0;
+    (function wait() {
+      if (window.R && R.premPlus) {
+        if (!window.__premCore) load("premium-core.js?v=1", "premCoreJs");
+        return;
+      }
+      if (n++ < 40) setTimeout(wait, 400);
+    })();
+  }
+
   function boot() {
-    if (document.getElementById("sec-premium") && !window.__premPro) load("premium-pro.js?v=1", "premiumProJs");
+    premCore();
     if (document.getElementById("sec-owner")) ownerLayer();
     if (document.getElementById("sec-ads") && !window.__adsStudio) load("ads-studio.js?v=1", "adsStudioJs");
     if (!window.__rnSeo) load("seo-pack.js?v=4", "rnSeoJs");
