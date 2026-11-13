@@ -30,7 +30,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="cinema.css?v=9">
+  <link rel="stylesheet" href="cinema.css?v=11">
+  <link rel="stylesheet" href="cinema-pro.css?v=1">
   <link rel="stylesheet" href="cinema-player.css?v=3">
 </head>
 
@@ -42,6 +43,8 @@
       <span class="cx-mark">忍</span>
       <span class="cx-bn"><b>RONIN</b><i>فیلم</i></span>
     </a>
+
+    <a class="cx-back" href="index.html" title="بازگشت به صفحهٔ اصلی رونین"><i>↩</i><span>صفحهٔ اصلی</span></a>
 
     <nav class="cx-nav" id="cxNav">
       <a href="cinema.html" data-nav="all">همه</a>
@@ -97,6 +100,8 @@
         </div>
 
         <div id="cxAnimeBand" class="cx-anime-band" hidden></div>
+        <div id="cxAnimeRail" class="cx-anime-rail" hidden></div>
+        <div id="cxAnimeGenres" class="cx-anime-genres" hidden></div>
         <div class="cx-chips" id="cxChips"></div>
         <div class="cx-grid" id="cxGrid"></div>
         <div class="cx-more"><button id="cxMore" class="cx-btn ghost" type="button" hidden>نمایش بیشتر</button></div>
@@ -104,6 +109,27 @@
       </div>
     </div>
   </main>
+
+  <section class="cx-info">
+    <div class="cx-info-in">
+      <div class="cx-info-card">
+        <b>🎬 دربارهٔ رونین فیلم</b>
+        <p>رونین فیلم کاتالوگ اختصاصی فیلم، سریال و انیمهٔ رونین استور با پلیر داخلی، امکان ساخت لیست تماشا و آپلود برای تیم است. همهٔ محتوا توسط تیم رونین بازبینی و مدیریت می‌شود.</p>
+        <div class="cx-info-links">
+          <a class="cx-btn ghost sm" href="index.html">🛍 فروشگاه رونین</a>
+          <a class="cx-btn ghost sm" href="index.html#premium">💎 پرمیوم</a>
+          <a class="cx-btn ghost sm" href="cinema.html?mine=1">🔖 لیست من</a>
+        </div>
+      </div>
+      <div class="cx-info-card">
+        <b>❓ سوالات پرتکرار</b>
+        <details><summary>تماشا نیاز به پرمیوم دارد؟</summary><p>بخش عمدهٔ کاتالوگ آزاد است؛ عنوان‌های نشان‌دار 💎 فقط با اشتراک پرمیوم باز می‌شوند.</p></details>
+        <details><summary>چطور لیست تماشا بسازم؟</summary><p>روی کارت هر عنوان دکمهٔ ＋ را بزن؛ بعداً از تب «لیست من» همه را یک‌جا می‌بینی.</p></details>
+        <details><summary>آپلود محتوا چطور کار می‌کند؟</summary><p>فقط مدیر و تیم رونین دکمهٔ «آپلود» را می‌بینند و می‌توانند عنوان تازه اضافه کنند.</p></details>
+        <details><summary>پلیر از چه فرمت‌هایی پشتیبانی می‌کند؟</summary><p>MP4، HLS (m3u8) و امبد یوتیوب/آپارات/ویمئو؛ همراه با ادامهٔ تماشا، سرعت پخش و تمام‌صفحه.</p></details>
+      </div>
+    </div>
+  </section>
 
   <footer class="cx-foot">
     <div class="cx-foot-in">
@@ -136,6 +162,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script src="cinema-player.js?v=2"></script>
-  <script src="cinema-app.js?v=9"></script>
+  <script src="cinema-app.js?v=11"></script>
+  <script src="cinema-pro.js?v=1"></script>
 </body>
 </html>
