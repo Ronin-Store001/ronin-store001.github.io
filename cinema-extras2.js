@@ -1,6 +1,6 @@
 /* RONIN FILM EXTRAS — cinema-extras2.js
-   لایهٔ سبک روی صفحهٔ فیلم/سریال/انیمه: نوار پیشرفت خواندن، دکمهٔ بازگشت به بالا،
-   ورود نرم کارت‌ها هنگام اسکرول و میان‌بر «/» برای جست‌وجو. چیدمان را تغییر نمی‌دهد. */
+   لایهٔ سبک روی صفحهٔ فیلم/سریال/انیمه: نوار پیشرفت خواندن، دکمهٔ بازگشت به بالا
+   و میان‌بر «/» برای جست‌وجو. چیدمان و انیمیشن‌های کارت‌ها را تغییر نمی‌دهد. */
 "use strict";
 (function () {
   if (window.__cxExtra2) return;
@@ -18,9 +18,6 @@
     "  backdrop-filter:blur(10px);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s}",
     "#cxTop.on{opacity:1;transform:none;pointer-events:auto}",
     "#cxTop:hover{border-color:rgba(124,92,255,.7);background:rgba(124,92,255,.22)}",
-    ".cx-grid .cx-card{opacity:0;transform:translateY(14px);transition:opacity .4s,transform .4s}",
-    ".cx-grid .cx-card.in{opacity:1;transform:none}",
-    "@media (prefers-reduced-motion:reduce){.cx-grid .cx-card{opacity:1;transform:none;transition:none}}",
     ".cx-kbd{position:fixed;inset-inline-start:14px;bottom:18px;z-index:79;font-size:9.5px;",
     "  color:#93a0c8;background:rgba(12,15,36,.7);border:1px solid rgba(140,160,255,.2);",
     "  padding:5px 9px;border-radius:9px;opacity:0;transition:.2s;pointer-events:none}",
@@ -65,29 +62,6 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  /* ورود نرم کارت‌ها */
-  var seen = new WeakSet();
-  var io = null;
-  if ("IntersectionObserver" in window) {
-    io = new IntersectionObserver(function (ents) {
-      ents.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        en.target.classList.add("in");
-        io.unobserve(en.target);
-      });
-    }, { rootMargin: "80px 0px" });
-  }
-  function reveal() {
-    var cards = document.querySelectorAll(".cx-grid .cx-card");
-    for (var i = 0; i < cards.length; i++) {
-      var c = cards[i];
-      if (seen.has(c)) continue;
-      seen.add(c);
-      if (!io) { c.classList.add("in"); continue; }
-      io.observe(c);
-    }
-  }
-
   /* میان‌بر جست‌وجو */
   document.addEventListener("keydown", function (e) {
     if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -108,18 +82,4 @@
       localStorage.setItem("cx_kbd_seen", "1");
     }
   } catch (e) {}
-
-  var t = null;
-  function watch() {
-    if (!window.MutationObserver) { reveal(); return; }
-    new MutationObserver(function () {
-      clearTimeout(t);
-      t = setTimeout(reveal, 120);
-    }).observe(document.body, { childList: true, subtree: true });
-    reveal();
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { reveal(); watch(); });
-  else { reveal(); watch(); }
-  setTimeout(reveal, 800);
-  setTimeout(reveal, 2500);
 })();
