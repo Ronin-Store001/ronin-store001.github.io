@@ -1,0 +1,84 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": false,
+
+    "$other": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'owner')",
+        ".write": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'owner')",
+        "role": {
+          ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+        },
+        "prem": {
+          ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+        },
+        "premExp": {
+          ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+        }
+      }
+    },
+
+    "premreq": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null && (!data.exists() || root.child('users').child(auth.uid).child('role').val() === 'owner')",
+        "st": { ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'" },
+        "price": { ".write": "auth != null && !data.exists()" },
+        "by": { ".validate": "newData.val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'owner'" },
+        "days": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 365" },
+        "at": { ".validate": "newData.isNumber()" }
+      }
+    },
+
+    "ads": {
+      "campaigns": {
+        ".read": true,
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'",
+        "$id": {
+          ".validate": "newData.hasChildren(['title', 'video']) || !newData.exists()",
+          "video": { ".validate": "newData.isString() && newData.val().length < 500" },
+          "poster": { ".validate": "newData.isString() && newData.val().length < 500" },
+          "title": { ".validate": "newData.isString() && newData.val().length <= 60" },
+          "live": { ".validate": "newData.isBoolean()" }
+        }
+      },
+      "stats": {
+        ".read": "auth != null",
+        "$cid": {
+          "$metric": {
+            ".write": true,
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          }
+        }
+      }
+    },
+
+    "site": {
+      "contact": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'",
+        ".write": true,
+        "$id": {
+          ".validate": "newData.hasChildren(['name', 'msg'])",
+          "name": { ".validate": "newData.isString() && newData.val().length <= 60" },
+          "contact": { ".validate": "newData.isString() && newData.val().length <= 100" },
+          "topic": { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "msg": { ".validate": "newData.isString() && newData.val().length <= 1500" },
+          "at": { ".validate": "newData.isNumber()" }
+        }
+      },
+      "views": {
+        ".read": true,
+        "$page": {
+          ".write": true,
+          "$day": { ".validate": "newData.isNumber()" }
+        }
+      }
+    }
+  }
+}

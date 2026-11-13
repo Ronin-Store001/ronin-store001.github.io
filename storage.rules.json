@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "ads": {
+      "videos": {
+        ".read": true,
+        ".write": "request.auth != null && request.resource.size < 25 * 1024 * 1024 && request.resource.contentType.matches('video/.*')"
+      },
+      "posters": {
+        ".read": true,
+        ".write": "request.auth != null && request.resource.size < 3 * 1024 * 1024 && request.resource.contentType.matches('image/.*')"
+      }
+    },
+    "avatars": {
+      "$uid": {
+        ".read": true,
+        ".write": "request.auth != null && request.auth.uid == $uid && request.resource.size < 3 * 1024 * 1024 && request.resource.contentType.matches('image/.*')"
+      }
+    }
+  }
+}
