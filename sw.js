@@ -1,5 +1,5 @@
 /* RONIN STORE — service worker v3 */
-var CACHE = "ronin-v45";
+var CACHE = "ronin-v46";
 
 var CORE = [
   "./", "./index.html", "./offline.html", "./ronin-offline.js?v=8", "./manifest.json",
@@ -16,7 +16,8 @@ var CORE = [
   "./cinema-app.js?v=11", "./cinema-pro.css?v=1", "./cinema-pro.js?v=1", "./cinema-ads.css?v=1",
   "./cinema-ads.js?v=1", "./cinema-ads2.js?v=1", "./cinema-skin.css?v=1", "./cinema-skin2.css?v=1",
   "./cinema-player-pro.js?v=1", "./cinema-ux2.js?v=1", "./cinema-extras2.js?v=1",
-  "./premium-core.js?v=1", "./ads-studio.js?v=1", "./owner-site.js?v=1",
+  "./premium-core.js?v=1", "./theme-pack2.js?v=1", "./companion-pack2.js?v=1",
+  "./ads-studio.js?v=1", "./owner-site.js?v=1",
   "./seo-pack.js?v=4", "./site-analytics.js?v=1", "./privacy.html", "./terms.html", "./contact.html",
   "./404.html", "./lite.js"
 ];

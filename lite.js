@@ -62,6 +62,8 @@
     premCore();
     if (document.getElementById("sec-owner")) ownerLayer();
     if (document.getElementById("sec-ads") && !window.__adsStudio) load("ads-studio.js?v=1", "adsStudioJs");
+    if (!window.__themePack2) load("theme-pack2.js?v=1", "themePack2Js");
+    if (!window.__compPack2) load("companion-pack2.js?v=1", "compPack2Js");
     if (!window.__rnSeo) load("seo-pack.js?v=4", "rnSeoJs");
     if (!window.__rnStats) load("site-analytics.js?v=1", "rnStatsJs");
   }
