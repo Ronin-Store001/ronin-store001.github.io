@@ -34,8 +34,21 @@
     if (e.target && e.target.closest && e.target.closest("#liteBtn")) { e.preventDefault(); flip(); }
   });
 
+  /* پنل مالک: پیام‌ها و آمار بازدید — فقط وقتی R آماده و کاربر مالک است */
+  function ownerLayer() {
+    var n = 0;
+    (function wait() {
+      if (window.R && R.isOwner && R.isOwner()) {
+        if (!window.__ownerSite) load("owner-site.js?v=1", "ownerSiteJs");
+        return;
+      }
+      if (n++ < 24) setTimeout(wait, 500);
+    })();
+  }
+
   function boot() {
     if (document.getElementById("sec-premium") && !window.__premPro) load("premium-pro.js?v=1", "premiumProJs");
+    if (document.getElementById("sec-owner")) ownerLayer();
     if (document.getElementById("sec-ads") && !window.__adsStudio) load("ads-studio.js?v=1", "adsStudioJs");
     if (!window.__rnSeo) load("seo-pack.js?v=4", "rnSeoJs");
     if (!window.__rnStats) load("site-analytics.js?v=1", "rnStatsJs");
