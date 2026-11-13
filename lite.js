@@ -34,11 +34,10 @@
     if (e.target && e.target.closest && e.target.closest("#liteBtn")) { e.preventDefault(); flip(); }
   });
 
-  /* ── لایه‌های ارتقا (فقط در صفحه‌هایی که بخش مربوطه را دارند) ── */
   function boot() {
     if (document.getElementById("sec-premium") && !window.__premPro) load("premium-pro.js?v=1", "premiumProJs");
     if (document.getElementById("sec-ads") && !window.__adsStudio) load("ads-studio.js?v=1", "adsStudioJs");
-    if (!window.__rnSeo) load("seo-pack.js?v=3", "rnSeoJs");
+    if (!window.__rnSeo) load("seo-pack.js?v=4", "rnSeoJs");
     if (!window.__rnStats) load("site-analytics.js?v=1", "rnStatsJs");
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

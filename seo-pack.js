@@ -1,5 +1,4 @@
-/* RONIN SEO PACK — تگ‌های اشتراک‌گذاری، canonical، دادهٔ ساختاریافته
-   و بهینه‌سازی تصویر + لینک صفحات حقوقی در فوتر، بدون دست‌زدن به ظاهر موجود. */
+/* RONIN SEO PACK — تگ‌های اشتراک‌گذاری، canonical، دادهٔ ساختاریافته و لینک صفحات حقوقی */
 "use strict";
 (function () {
   if (window.__rnSeo) return;
@@ -8,28 +7,19 @@
   var ORIGIN = location.origin;
   var PAGE = (location.pathname.split("/").pop() || "index.html");
   var isCinema = /cinema\.html/.test(PAGE);
-
-  var META = {
-    index: {
-      desc: "رونین استور: بازار خرید و فروش، انجمن، چت، پرمیوم و کاتالوگ فیلم و انیمه با پلیر اختصاصی.",
-      img: "media/ronin-ad-elite.jpg"
-    },
-    cinema: {
-      desc: "تماشای آنلاین فیلم، سریال و انیمه با کیفیت بالا، جست‌وجوی هوشمند، فیلتر پیشرفته و پلیر اختصاصی رونین.",
-      img: "media/ronin-ad-elite.jpg"
-    }
-  };
-  var info = isCinema ? META.cinema : META.index;
+  var IMG = "media/ronin-ad-elite.jpg";
+  var DESC = isCinema
+    ? "تماشای آنلاین فیلم، سریال و انیمه با کیفیت بالا، جست‌وجوی هوشمند، فیلتر پیشرفته و پلیر اختصاصی رونین."
+    : "رونین استور: بازار خرید و فروش، انجمن، چت، پرمیوم و کاتالوگ فیلم و انیمه با پلیر اختصاصی.";
 
   function head() { return document.head || document.documentElement; }
   function meta(attr, key, val) {
     if (!val) return;
-    var sel = "meta[" + attr + '="' + key + '"]';
-    var el = document.querySelector(sel);
+    var el = document.querySelector("meta[" + attr + '="' + key + '"]');
     if (!el) { el = document.createElement("meta"); el.setAttribute(attr, key); head().appendChild(el); }
     el.setAttribute("content", val);
   }
-  function link(rel, href) {
+  function addLink(rel, href) {
     if (!href) return;
     var el = document.querySelector('link[rel="' + rel + '"]');
     if (!el) { el = document.createElement("link"); el.setAttribute("rel", rel); head().appendChild(el); }
@@ -38,11 +28,11 @@
 
   try {
     var url = (!PAGE || PAGE === "index.html") ? ORIGIN + "/" : ORIGIN + "/" + PAGE;
-    var img = ORIGIN + "/" + info.img;
+    var img = ORIGIN + "/" + IMG;
     var title = document.title || "RONIN STORE";
 
-    link("canonical", url);
-    meta("name", "description", (document.querySelector('meta[name="description"]') || {}).content || info.desc);
+    addLink("canonical", url);
+    meta("name", "description", (document.querySelector('meta[name="description"]') || {}).content || DESC);
     meta("name", "robots", "index,follow,max-image-preview:large");
     meta("name", "theme-color", "#05060f");
 
@@ -51,7 +41,7 @@
     meta("property", "og:locale", "fa_IR");
     meta("property", "og:url", url);
     meta("property", "og:title", title);
-    meta("property", "og:description", info.desc);
+    meta("property", "og:description", DESC);
     meta("property", "og:image", img);
     meta("property", "og:image:width", "960");
     meta("property", "og:image:height", "540");
@@ -59,7 +49,7 @@
 
     meta("name", "twitter:card", "summary_large_image");
     meta("name", "twitter:title", title);
-    meta("name", "twitter:description", info.desc);
+    meta("name", "twitter:description", DESC);
     meta("name", "twitter:image", img);
 
     var ld = document.getElementById("rnLd");
@@ -68,30 +58,16 @@
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "WebSite",
-          "@id": ORIGIN + "/#website",
-          url: ORIGIN + "/",
-          name: "RONIN STORE",
-          inLanguage: "fa-IR",
+          "@type": "WebSite", "@id": ORIGIN + "/#website",
+          url: ORIGIN + "/", name: "RONIN STORE", inLanguage: "fa-IR",
           potentialAction: {
             "@type": "SearchAction",
             target: ORIGIN + "/?q={q}",
             "query-input": "required name=q"
           }
         },
-        {
-          "@type": "Organization",
-          "@id": ORIGIN + "/#org",
-          name: "RONIN STORE",
-          url: ORIGIN + "/",
-          logo: ORIGIN + "/icon-512.png"
-        }
-      ].concat(isCinema ? [{
-        "@type": "CollectionPage",
-        name: "رونین فیلم",
-        url: ORIGIN + "/cinema.html",
-        isPartOf: { "@id": ORIGIN + "/#website" }
-      }] : [])
+        { "@type": "Organization", "@id": ORIGIN + "/#org", name: "RONIN STORE", url: ORIGIN + "/", logo: ORIGIN + "/icon-512.png" }
+      ].concat(isCinema ? [{ "@type": "CollectionPage", name: "رونین فیلم", url: ORIGIN + "/cinema.html", isPartOf: { "@id": ORIGIN + "/#website" } }] : [])
     });
   } catch (e) {}
 
@@ -106,8 +82,7 @@
   head().appendChild(st);
 
   function lazy() {
-    var imgs = document.querySelectorAll("img");
-    Array.prototype.forEach.call(imgs, function (i) {
+    Array.prototype.forEach.call(document.querySelectorAll("img"), function (i) {
       if (i.dataset.rnLazy) return;
       i.dataset.rnLazy = "1";
       if (!i.getAttribute("loading")) i.setAttribute("loading", "lazy");
@@ -116,29 +91,31 @@
   }
 
   function legal() {
-    var host = document.querySelector("footer, #siteFooter, .foot, .cx-foot");
+    var host = document.querySelector("footer") ||
+      document.getElementById("siteFooter") ||
+      document.querySelector(".cx-foot") ||
+      document.querySelector(".foot");
     if (!host || host.querySelector(".rn-legal")) return;
-    var bar = document.createElement("div");
-    bar.className = "rn-legal";
-    bar.innerHTML =
-      '<a href="contact.html">تماس و درباره</a>' +
-      '<span>·</span><a href="terms.html">قوانین</a>' +
-      '<span>·</span><a href="privacy.html">حریم خصوصی</a>' +
-      '<span>·</span><a href="cinema.html">رونین فیلم</a>';
+    var bar = document.querySelector(".rn-legal");
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.className = "rn-legal";
+      bar.innerHTML =
+        '<a href="contact.html">تماس و درباره</a>' +
+        '<span>·</span><a href="terms.html">قوانین</a>' +
+        '<span>·</span><a href="privacy.html">حریم خصوصی</a>' +
+        '<span>·</span><a href="cinema.html">رونین فیلم</a>';
+    }
     host.appendChild(bar);
   }
 
-  /* فوتر صفحهٔ اصلی با تأخیر ساخته و بازسازی می‌شود؛ تا ۳۰ ثانیه دوباره اضافه می‌کنیم */
-  function ensure() {
-    lazy();
-    legal();
-    return !!document.querySelector(".rn-legal");
-  }
+  function ensure() { lazy(); legal(); }
   var ticks = 0;
   var iv = setInterval(function () {
+    ensure();
     ticks++;
-    if (ensure() || ticks > 38) clearInterval(iv);
-  }, 800);
+    if (ticks > 40) clearInterval(iv);
+  }, 750);
 
   function boot() { ensure(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

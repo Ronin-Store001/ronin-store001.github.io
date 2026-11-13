@@ -1,66 +1,23 @@
-/* RONIN STORE — service worker v3
-   آفلاین واقعی: پوستهٔ سایت + صفحهٔ آفلاین + بازی کش می‌شوند */
-var CACHE = "ronin-v41";
+/* RONIN STORE — service worker v3 */
+var CACHE = "ronin-v42";
 
 var CORE = [
-  "./",
-  "./index.html",
-  "./offline.html",
-  "./ronin-offline.js?v=8",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./icon.svg",
-  "./ronin-zero.css?v=12",
-  "./ronin-2026.css?v=1",
-  "./css/5-community.css?v=1",
-  "./css/6-market.css?v=1",
-  "./css/7-world-pro.css?v=2",
-  "./css/8-account-pro.css?v=1",
-  "./users.js?v=2",
-  "./inbox.js?v=3",
-  "./settings-pro.js?v=1",
-  "./ronin-account-pro.js?v=1",
-  "./theme.js?v=4",
-  "./ronin-bulletin.js?v=3",
-  "./js/3-feed.js?v=3",
-  "./js/10-market-pro.js?v=1",
-  "./js/11-video-ads.js?v=2",
-  "./ronin-world-pro.js?v=2",
-  "./ronin-i18n.js?v=3",
-  "./ronin-footer.js?v=7",
-  "./ronin-support.js?v=1",
-  "./ronin-team-chat.js?v=1",
-  "./ronin-owner-suite.js?v=1",
-  "./ronin-owner-vault.js?v=1",
-  "./ronin-auth-fun.js?v=1",
-  "./ronin-events-rank.css?v=8",
-  "./ronin-events-rank.js?v=2",
-  "./nav-drawer.js?v=6",
-  "./ronin-menu.js?v=2",
-  "./cinema.html",
-  "./cinema.css?v=11",
-  "./cinema-player.css?v=3",
-  "./cinema-player.js?v=2",
-  "./cinema-app.js?v=11",
-  "./cinema-pro.css?v=1",
-  "./cinema-pro.js?v=1",
-  "./cinema-ads.css?v=1",
-  "./cinema-ads.js?v=1",
-  "./cinema-ads2.js?v=1",
-  "./cinema-skin.css?v=1",
-  "./cinema-skin2.css?v=1",
-  "./cinema-player-pro.js?v=1",
-  "./cinema-ux2.js?v=1",
-  "./premium-pro.js?v=1",
-  "./ads-studio.js?v=1",
-  "./seo-pack.js?v=3",
-  "./site-analytics.js?v=1",
-  "./privacy.html",
-  "./terms.html",
-  "./contact.html",
-  "./404.html",
-  "./lite.js"
+  "./", "./index.html", "./offline.html", "./ronin-offline.js?v=8", "./manifest.json",
+  "./icon-192.png", "./icon-512.png", "./icon.svg",
+  "./ronin-zero.css?v=12", "./ronin-2026.css?v=1", "./css/5-community.css?v=1",
+  "./css/6-market.css?v=1", "./css/7-world-pro.css?v=2", "./css/8-account-pro.css?v=1",
+  "./users.js?v=2", "./inbox.js?v=3", "./settings-pro.js?v=1", "./ronin-account-pro.js?v=1",
+  "./theme.js?v=4", "./ronin-bulletin.js?v=3", "./js/3-feed.js?v=3", "./js/10-market-pro.js?v=1",
+  "./js/11-video-ads.js?v=2", "./ronin-world-pro.js?v=2", "./ronin-i18n.js?v=3",
+  "./ronin-footer.js?v=7", "./ronin-support.js?v=1", "./ronin-team-chat.js?v=1",
+  "./ronin-owner-suite.js?v=1", "./ronin-owner-vault.js?v=1", "./ronin-auth-fun.js?v=1",
+  "./ronin-events-rank.css?v=8", "./ronin-events-rank.js?v=2", "./nav-drawer.js?v=6", "./ronin-menu.js?v=2",
+  "./cinema.html", "./cinema.css?v=11", "./cinema-player.css?v=3", "./cinema-player.js?v=2",
+  "./cinema-app.js?v=11", "./cinema-pro.css?v=1", "./cinema-pro.js?v=1", "./cinema-ads.css?v=1",
+  "./cinema-ads.js?v=1", "./cinema-ads2.js?v=1", "./cinema-skin.css?v=1", "./cinema-skin2.css?v=1",
+  "./cinema-player-pro.js?v=1", "./cinema-ux2.js?v=1", "./premium-pro.js?v=1", "./ads-studio.js?v=1",
+  "./seo-pack.js?v=4", "./site-analytics.js?v=1", "./privacy.html", "./terms.html", "./contact.html",
+  "./404.html", "./lite.js"
 ];
 
 self.addEventListener("install", function (e) {
@@ -85,7 +42,6 @@ function isNav(req) {
   return req.mode === "navigate" || (req.method === "GET" && req.headers.get("accept") &&
     req.headers.get("accept").indexOf("text/html") >= 0);
 }
-
 function isStatic(u) {
   return /\.(css|js|mjs|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|json|mp3|ogg|mp4|webm|webmanifest)$/i.test(u.pathname);
 }
@@ -102,9 +58,7 @@ self.addEventListener("fetch", function (e) {
         var done = false;
         var timer = setTimeout(function () {
           if (done) return;
-          caches.match("./index.html").then(function (c) {
-            if (c) { done = true; res(c); }
-          });
+          caches.match("./index.html").then(function (c) { if (c) { done = true; res(c); } });
         }, 3500);
         fetch(req).then(function (r) {
           clearTimeout(timer);
@@ -113,9 +67,7 @@ self.addEventListener("fetch", function (e) {
           var copy = r.clone();
           caches.open(CACHE).then(function (c) {
             c.put(req, copy).catch(function () {});
-            if (new URL(req.url).pathname === "/") {
-              c.put("./index.html", r.clone()).catch(function () {});
-            }
+            if (new URL(req.url).pathname === "/") c.put("./index.html", r.clone()).catch(function () {});
           });
           res(r);
         }).catch(function () {
@@ -146,9 +98,7 @@ self.addEventListener("fetch", function (e) {
             caches.open(CACHE).then(function (c) { c.put(req, copy).catch(function () {}); });
           }
           return r;
-        }).catch(function () {
-          return caches.match("./offline.html");
-        });
+        }).catch(function () { return caches.match("./offline.html"); });
       })
     );
     return;
