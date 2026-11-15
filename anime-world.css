@@ -1,0 +1,395 @@
+/* ══════════════════════════════════════════════════════════════
+   RONIN ANIME WORLD — anime-world.css
+   قالب کامل و تازه برای صفحهٔ انیمه (روشن، رنگی، شبیه پرتال‌های جهانی انیمه)
+   فقط وقتی <html> کلاس aw-anime داشته باشد فعال می‌شود.
+   ══════════════════════════════════════════════════════════════ */
+
+html.aw-anime {
+  --aw-bg: #fdfcff;
+  --aw-ink: #17122b;
+  --aw-ink2: #5d5776;
+  --aw-mute: #9791ae;
+  --aw-line: #ece7f6;
+  --aw-or: #ff5e00;
+  --aw-pink: #ff2d78;
+  --aw-violet: #7b3ff2;
+  --aw-mint: #00b894;
+  --aw-sky: #11a3e8;
+  --aw-gold: #ffb020;
+  --aw-r: 20px;
+  --aw-sh: 0 18px 40px -30px rgba(48, 26, 92, .55);
+  background: var(--aw-bg) !important;
+  color: var(--aw-ink) !important;
+}
+
+html.aw-anime body {
+  background:
+    radial-gradient(900px 460px at 88% -6%, #ffe2f0 0%, rgba(255, 226, 240, 0) 60%),
+    radial-gradient(760px 420px at 4% 0%, #e2f1ff 0%, rgba(226, 241, 255, 0) 58%),
+    radial-gradient(700px 380px at 50% 104%, #fff1e0 0%, rgba(255, 241, 224, 0) 62%),
+    linear-gradient(180deg, #fffdff, #f8f5ff 48%, #fffaf5) !important;
+  color: var(--aw-ink) !important;
+}
+
+/* ── هدر ───────────────────────────────────────────────────── */
+html.aw-anime .cx-top {
+  background: rgba(255, 255, 255, .9) !important;
+  border-bottom: 1px solid var(--aw-line) !important;
+  box-shadow: 0 12px 30px -28px rgba(48, 26, 92, .7) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+}
+html.aw-anime .cx-mark {
+  background: linear-gradient(140deg, var(--aw-pink), var(--aw-or)) !important;
+  color: #fff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 24px -14px var(--aw-pink) !important;
+}
+html.aw-anime .cx-bn b { color: var(--aw-ink) !important; letter-spacing: .5px; }
+html.aw-anime .cx-bn i { color: var(--aw-mute) !important; }
+html.aw-anime .cx-back {
+  background: #fff !important; color: var(--aw-ink2) !important;
+  border: 1px solid var(--aw-line) !important; border-radius: 12px !important;
+}
+html.aw-anime .cx-back:hover { color: var(--aw-pink) !important; border-color: #ffcfe1 !important; }
+html.aw-anime .cx-search {
+  background: #f7f4ff !important; border: 1px solid #efe9fb !important;
+  border-radius: 14px !important;
+}
+html.aw-anime .cx-search:focus-within { background: #fff !important; border-color: #ffd0e2 !important; box-shadow: 0 0 0 4px rgba(255, 45, 120, .08); }
+html.aw-anime #cxq { color: var(--aw-ink) !important; font-weight: 600; }
+html.aw-anime #cxq::placeholder { color: #a9a3bd !important; }
+html.aw-anime .cx-nav a { color: var(--aw-ink2) !important; border-radius: 10px; }
+html.aw-anime .cx-nav a.on { color: #fff !important; background: linear-gradient(135deg, var(--aw-or), var(--aw-pink)) !important; }
+html.aw-anime .cx-ico, html.aw-anime #cxAcct {
+  background: #fff !important; color: var(--aw-ink2) !important;
+  border: 1px solid var(--aw-line) !important; border-radius: 12px !important;
+}
+html.aw-anime .cx-ico:hover { color: var(--aw-pink) !important; border-color: #ffd0e2 !important; }
+
+/* ── هیرو ──────────────────────────────────────────────────── */
+html.aw-anime .cx-hero {
+  position: relative;
+  background:
+    radial-gradient(560px 300px at 92% 0%, rgba(255, 45, 120, .22), transparent 60%),
+    radial-gradient(520px 300px at 4% 96%, rgba(123, 63, 242, .18), transparent 62%),
+    linear-gradient(135deg, #fff6fb 0%, #f5efff 48%, #fff2e6 100%) !important;
+  border: 1px solid #f2e9ff !important;
+  border-radius: 32px !important;
+  box-shadow: 0 40px 90px -70px rgba(72, 32, 130, .8), inset 0 1px 0 #fff !important;
+  overflow: hidden !important;
+}
+html.aw-anime .cx-hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 86% 22%, rgba(255, 255, 255, .9), transparent 34%),
+    radial-gradient(circle at 12% 78%, rgba(255, 255, 255, .7), transparent 30%) !important;
+  opacity: 1 !important;
+}
+html.aw-anime .cx-hero-bg { opacity: 0 !important; }
+html.aw-anime .cx-hero-in { position: relative; z-index: 2; }
+html.aw-anime .cx-hero-mark {
+  color: rgba(123, 63, 242, .07) !important; -webkit-text-fill-color: rgba(123, 63, 242, .07) !important;
+  background: none !important; text-shadow: none !important; font-weight: 900;
+}
+html.aw-anime .cx-hero-kick {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff !important; border: 1px solid #ffe0ee !important;
+  color: var(--aw-or) !important; font-weight: 900;
+  padding: 5px 12px; border-radius: 999px; box-shadow: 0 10px 24px -22px rgba(48, 26, 92, .8);
+}
+html.aw-anime .cx-hero-kick i { background: linear-gradient(90deg, var(--aw-or), var(--aw-pink)) !important; box-shadow: none !important; }
+html.aw-anime .cx-hero-kick b { background: none !important; color: var(--aw-mute) !important; font-weight: 800; }
+html.aw-anime .cx-hero h2 {
+  color: var(--aw-ink) !important; -webkit-text-fill-color: var(--aw-ink) !important;
+  background: none !important; text-shadow: none !important;
+  font-weight: 900 !important; line-height: 1.3 !important;
+  letter-spacing: -.4px;
+}
+html.aw-anime .cx-hero h2 small {
+  color: var(--aw-violet) !important; -webkit-text-fill-color: var(--aw-violet) !important;
+  font-weight: 800; letter-spacing: 1px;
+}
+html.aw-anime .cx-hero-meta { color: var(--aw-ink2) !important; }
+html.aw-anime .cx-hero-meta span { color: var(--aw-ink2) !important; }
+html.aw-anime .cx-hero-meta .cx-hm-rate {
+  background: linear-gradient(135deg, #fff4d8, #ffe1ab) !important; color: #99510a !important;
+  border: 1px solid #ffd89b !important; padding: 3px 9px; border-radius: 999px; font-weight: 900;
+}
+html.aw-anime .cx-hero-meta .ok { color: #00865f !important; font-weight: 900; }
+html.aw-anime .cx-hero-tags span {
+  background: #fff !important; color: var(--aw-violet) !important;
+  border: 1px solid #ebe0ff !important; border-radius: 999px; font-weight: 800;
+}
+html.aw-anime .cx-hero p { color: #514b68 !important; line-height: 1.9; }
+html.aw-anime .cx-hero-play {
+  background: linear-gradient(135deg, var(--aw-or), #ff8a3d 55%, var(--aw-pink)) !important;
+  color: #fff !important; border: 0 !important; font-weight: 900;
+  box-shadow: 0 18px 34px -18px var(--aw-or) !important;
+}
+html.aw-anime .cx-hero-act .cx-btn.ghost {
+  background: #fff !important; color: var(--aw-ink) !important;
+  border: 1px solid var(--aw-line) !important; font-weight: 800;
+}
+html.aw-anime .cx-hero-act .cx-btn.ghost:hover { border-color: #ffd0e2 !important; color: var(--aw-pink) !important; }
+html.aw-anime .cx-hero-poster {
+  border-radius: 22px !important; overflow: hidden;
+  box-shadow: 0 26px 50px -28px rgba(72, 32, 130, .65) !important;
+  border: 4px solid #fff !important;
+}
+html.aw-anime .cx-hero-fact {
+  background: #fff !important; border: 1px solid var(--aw-line) !important;
+  border-radius: 14px !important; box-shadow: var(--aw-sh) !important;
+}
+html.aw-anime .cx-hero-fact span { color: var(--aw-mute) !important; font-weight: 700; }
+html.aw-anime .cx-hero-fact b { color: var(--aw-ink) !important; font-weight: 900; }
+html.aw-anime .cx-score {
+  background: linear-gradient(160deg, #fff6fb, #fff) !important;
+  border: 2px solid #ffd6e6 !important; border-radius: 50% !important;
+  color: var(--aw-pink) !important; box-shadow: 0 16px 32px -22px var(--aw-pink) !important;
+}
+html.aw-anime .cx-score b { color: var(--aw-pink) !important; -webkit-text-fill-color: var(--aw-pink) !important; background: none !important; }
+html.aw-anime .cx-score i { color: var(--aw-mute) !important; }
+html.aw-anime .cx-hero-dot { background: #e6ddf7 !important; }
+html.aw-anime .cx-hero-dot.on { background: linear-gradient(90deg, var(--aw-or), var(--aw-pink)) !important; width: 24px; border-radius: 6px; }
+html.aw-anime .cx-hero-arrow {
+  background: #fff !important; color: var(--aw-ink) !important;
+  border: 1px solid var(--aw-line) !important; border-radius: 12px !important;
+}
+html.aw-anime .cx-hero-arrow:hover { border-color: #ffd0e2 !important; color: var(--aw-pink) !important; }
+html.aw-anime .cx-hero-count { color: var(--aw-ink2) !important; font-weight: 800; }
+html.aw-anime .cx-hero-prog i { background: linear-gradient(90deg, var(--aw-or), var(--aw-pink)) !important; }
+
+/* ── تب‌ها ──────────────────────────────────────────────────── */
+html.aw-anime #cxTabs {
+  background: #fff !important; border: 1px solid var(--aw-line) !important;
+  border-radius: 20px !important; box-shadow: 0 18px 40px -38px rgba(48, 26, 92, .85) !important;
+}
+html.aw-anime #cxTabs::after { background: linear-gradient(270deg, #fff, rgba(255, 255, 255, 0)) !important; }
+html.aw-anime .cx-tab {
+  background: #f8f5ff !important; border: 1px solid #f0e9fc !important;
+  color: var(--aw-ink2) !important; border-radius: 13px !important; font-weight: 800;
+}
+html.aw-anime .cx-tab .cx-tabi { background: #efe7ff !important; color: var(--aw-violet) !important; }
+html.aw-anime .cx-tab .cx-tabc {
+  background: #fff !important; color: var(--aw-violet) !important;
+  border: 1px solid #eee4ff !important; font-weight: 900;
+}
+html.aw-anime .cx-tab:hover { background: #fff !important; color: var(--aw-ink) !important; border-color: #ffd9e8 !important; }
+html.aw-anime .cx-tab.on {
+  color: #fff !important; border-color: transparent !important;
+  background: linear-gradient(135deg, var(--aw-or), #ff7a2f 58%, var(--aw-pink)) !important;
+  box-shadow: 0 16px 32px -20px var(--aw-or) !important;
+}
+html.aw-anime .cx-tab.on .cx-tabi { background: rgba(255, 255, 255, .26) !important; color: #fff !important; }
+html.aw-anime .cx-tab.on .cx-tabc { background: #fff !important; color: var(--aw-or) !important; border-color: #fff !important; }
+
+/* ── سرصفحه و ستون فیلترها ─────────────────────────────────── */
+html.aw-anime #cxTitle {
+  color: var(--aw-ink) !important; -webkit-text-fill-color: var(--aw-ink) !important;
+  background: none !important; font-weight: 900 !important;
+}
+html.aw-anime #cxTitle::before {
+  content: ""; display: inline-block; width: 6px; height: 20px; margin-inline-end: 9px;
+  border-radius: 4px; vertical-align: -3px;
+  background: linear-gradient(180deg, var(--aw-pink), var(--aw-or));
+}
+html.aw-anime .cx-head .cx-count {
+  background: #fff0f6 !important; color: var(--aw-pink) !important;
+  border: 1px solid #ffd6e6 !important; border-radius: 10px !important; font-weight: 900;
+}
+html.aw-anime .cx-head .cx-sortbox { background: #fff !important; border: 1px solid var(--aw-line) !important; border-radius: 13px !important; }
+html.aw-anime .cx-head .cx-sortbox label { color: var(--aw-mute) !important; font-weight: 800; }
+html.aw-anime .cx-head .cx-sortbox select { color: var(--aw-ink) !important; background: #fff !important; font-weight: 800; }
+html.aw-anime .cx-side-card, html.aw-anime .cx-side .cx-side-card {
+  background: #fff !important; border: 1px solid var(--aw-line) !important;
+  border-radius: 18px !important; box-shadow: var(--aw-sh) !important;
+}
+html.aw-anime .cx-side-h { color: var(--aw-ink) !important; font-weight: 900; }
+html.aw-anime .cx-side-h button { color: var(--aw-pink) !important; }
+html.aw-anime .cx-pill {
+  background: #f8f5ff !important; color: var(--aw-ink2) !important;
+  border: 1px solid #f0e9fc !important; border-radius: 10px !important; font-weight: 800;
+}
+html.aw-anime .cx-pill:hover { background: #fff !important; color: var(--aw-ink) !important; border-color: #ffd9e8 !important; }
+html.aw-anime .cx-pill.on {
+  background: linear-gradient(135deg, var(--aw-pink), var(--aw-violet)) !important;
+  color: #fff !important; border-color: transparent !important;
+  box-shadow: 0 10px 22px -14px var(--aw-pink) !important;
+}
+html.aw-anime .cx-field, html.aw-anime #fYf, html.aw-anime #fYt {
+  background: #fbf9ff !important; color: var(--aw-ink) !important;
+  border: 1px solid var(--aw-line) !important; border-radius: 10px !important;
+}
+html.aw-anime .cx-switch { color: var(--aw-ink2) !important; }
+html.aw-anime .cx-side .cx-btn.ghost {
+  background: #fbf7ff !important; color: var(--aw-violet) !important;
+  border: 1px solid #ecdfff !important; font-weight: 800;
+}
+html.aw-anime .cx-chips > *, html.aw-anime .cx-chip {
+  background: #fff !important; color: var(--aw-ink2) !important;
+  border: 1px solid var(--aw-line) !important; border-radius: 999px;
+}
+
+/* ── آمار ──────────────────────────────────────────────────── */
+html.aw-anime .cx-an-stat {
+  background: #fff !important; border: 1px solid var(--aw-line) !important;
+  border-radius: 18px !important; box-shadow: var(--aw-sh) !important;
+  padding: 14px 14px !important;
+}
+html.aw-anime .cx-an-stat span { color: var(--aw-mute) !important; font-weight: 800; }
+html.aw-anime .cx-an-stat b { color: var(--aw-ink) !important; font-weight: 900; }
+html.aw-anime .cx-an-stat b small { color: var(--aw-mute) !important; }
+html.aw-anime .cx-an-stat::after { display: none !important; }
+html.aw-anime .cx-an-stat.accent { background: linear-gradient(150deg, #ffeef6, #fff6ec) !important; border-color: #ffd9e8 !important; }
+html.aw-anime .cx-an-stat.accent b { color: var(--aw-pink) !important; }
+html.aw-anime .cx-an-stat:nth-child(2) b { color: var(--aw-violet) !important; }
+html.aw-anime .cx-an-stat:nth-child(3) b { color: var(--aw-sky) !important; }
+html.aw-anime .cx-an-stat:nth-child(4) b { color: var(--aw-or) !important; }
+html.aw-anime .cx-an-stat:nth-child(5) b { color: var(--aw-mint) !important; }
+
+/* ── ریل‌ها و استودیوها ────────────────────────────────────── */
+html.aw-anime .cx-ar-head b, html.aw-anime .cx-an-shead b {
+  color: var(--aw-ink) !important; -webkit-text-fill-color: var(--aw-ink) !important;
+  background: none !important; font-weight: 900 !important;
+}
+html.aw-anime .cx-ar-head span, html.aw-anime .cx-an-shead span { color: var(--aw-mute) !important; }
+html.aw-anime .cx-an-studio {
+  background: #fff !important; color: var(--aw-ink) !important;
+  border: 1px solid var(--aw-line) !important; border-radius: 14px !important;
+  box-shadow: 0 12px 26px -26px rgba(48, 26, 92, .9) !important; font-weight: 800;
+}
+html.aw-anime .cx-an-studio:hover { background: #fff4f9 !important; border-color: #ffd0e2 !important; color: var(--aw-pink) !important; }
+html.aw-anime .cx-an-studio b { color: #fff !important; background: linear-gradient(135deg, var(--aw-or), var(--aw-pink)) !important; }
+html.aw-anime .cx-ar-card {
+  background: #fff !important; border: 1px solid var(--aw-line) !important;
+  border-radius: 18px !important; box-shadow: var(--aw-sh) !important;
+}
+html.aw-anime .cx-ar-card:hover { border-color: #ffd0e2 !important; box-shadow: 0 24px 46px -28px rgba(255, 45, 120, .45) !important; }
+html.aw-anime .cx-ar-meta b { color: var(--aw-ink) !important; }
+html.aw-anime .cx-ar-meta small { color: var(--aw-mute) !important; }
+html.aw-anime .cx-ar-bar { background: #f1ecff !important; }
+html.aw-anime .cx-ar-bar i { background: linear-gradient(90deg, var(--aw-or), var(--aw-pink)) !important; }
+html.aw-anime .cx-ar-rank { background: #efe8ff !important; color: var(--aw-violet) !important; font-weight: 900; }
+html.aw-anime .cx-ar-rank.g1 { background: linear-gradient(135deg, #ffd76e, #ff9f1c) !important; color: #5a3200 !important; }
+html.aw-anime .cx-ar-rank.g2 { background: linear-gradient(135deg, #e8edf7, #b9c3d6) !important; color: #3a4358 !important; }
+html.aw-anime .cx-ar-rank.g3 { background: linear-gradient(135deg, #ffd0a8, #e08b52) !important; color: #4a2800 !important; }
+html.aw-anime .cx-ar-art { background: linear-gradient(150deg, #ffe6f3, #e7ddff) !important; }
+
+/* ── کارت‌های کاتالوگ ──────────────────────────────────────── */
+html.aw-anime .cx-card {
+  background: #fff !important; border: 1px solid var(--aw-line) !important;
+  border-radius: 22px !important; box-shadow: var(--aw-sh) !important;
+  overflow: hidden !important;
+}
+html.aw-anime .cx-card:hover {
+  transform: translateY(-4px);
+  border-color: #ffdbe9 !important;
+  box-shadow: 0 28px 52px -30px rgba(255, 45, 120, .45) !important;
+}
+html.aw-anime .cx-post { background: #f6f2ff !important; }
+html.aw-anime .cx-body { background: #fff !important; padding: 10px 12px 12px !important; }
+html.aw-anime .cx-t {
+  color: var(--aw-ink) !important; -webkit-text-fill-color: var(--aw-ink) !important;
+  background: none !important; font-weight: 900 !important;
+}
+html.aw-anime .cx-s { color: var(--aw-mute) !important; font-weight: 700; }
+html.aw-anime .cx-rate {
+  background: linear-gradient(135deg, #fff4d8, #ffe1ab) !important; color: #99510a !important;
+  border: 1px solid #ffd89b !important; font-weight: 900; border-radius: 999px;
+}
+html.aw-anime .cx-kind {
+  background: rgba(255, 255, 255, .95) !important; color: var(--aw-ink) !important;
+  border: 1px solid #f2ecff !important; font-weight: 800; border-radius: 999px;
+}
+html.aw-anime .cx-wb {
+  background: rgba(255, 255, 255, .96) !important; color: var(--aw-ink) !important;
+  border: 1px solid var(--aw-line) !important; font-weight: 900;
+}
+html.aw-anime .cx-wb.on { background: linear-gradient(135deg, var(--aw-mint), #2ecc71) !important; color: #fff !important; border-color: transparent !important; }
+html.aw-anime .cx-play {
+  background: linear-gradient(135deg, var(--aw-or), #ff8a3d) !important; color: #fff !important;
+  box-shadow: 0 14px 26px -16px var(--aw-or) !important;
+}
+html.aw-anime .cx-ph { background: linear-gradient(150deg, #ffe9f4, #ece5ff) !important; color: #c79ad8 !important; }
+html.aw-anime .cx-hero-poster .cx-ph { background: linear-gradient(150deg, #ffd9ec, #e3d8ff) !important; }
+html.aw-anime .cx-card .cx-an-info i {
+  background: #f4efff !important; border-color: #e8ddff !important; color: var(--aw-violet) !important; font-weight: 800;
+}
+html.aw-anime .cx-card .cx-an-info i.ok { background: #e8fbf3 !important; border-color: #c9f2e2 !important; color: #00926f !important; }
+html.aw-anime .cx-card .cx-an-rank {
+  background: linear-gradient(135deg, var(--aw-pink), var(--aw-violet)) !important;
+  color: #fff !important; box-shadow: 0 10px 20px -12px var(--aw-pink) !important; font-weight: 900;
+}
+
+/* ── اسپات‌لایت و کالکشن‌ها ─────────────────────────────────── */
+html.aw-anime .cx-anime-band {
+  background: linear-gradient(135deg, #fff 0%, #fff6fb 52%, #f6f1ff 100%) !important;
+  border: 1px solid var(--aw-line) !important; border-radius: 26px !important;
+  box-shadow: 0 30px 70px -56px rgba(48, 26, 92, .8) !important;
+}
+html.aw-anime .cx-ansp-top { background: linear-gradient(135deg, var(--aw-or), var(--aw-pink)) !important; color: #fff !important; font-weight: 900; }
+html.aw-anime .cx-ab-k { color: var(--aw-pink) !important; font-weight: 900; }
+html.aw-anime .cx-ansp-tx h2 {
+  color: var(--aw-ink) !important; -webkit-text-fill-color: var(--aw-ink) !important; background: none !important;
+}
+html.aw-anime .cx-ansp-tx h2 small { color: var(--aw-mute) !important; -webkit-text-fill-color: var(--aw-mute) !important; }
+html.aw-anime .cx-ansp-tx p { color: #514b68 !important; }
+html.aw-anime .cx-ansp-meta span, html.aw-anime .cx-ansp-meta .rt {
+  background: #fff5fa !important; color: var(--aw-pink) !important; border: 1px solid #ffdceb !important;
+  border-radius: 999px; font-weight: 800;
+}
+html.aw-anime .cx-ab-chip { background: #f7f2ff !important; color: var(--aw-violet) !important; border: 1px solid #ebe1ff !important; font-weight: 800; }
+html.aw-anime .cx-ansp-fact { background: #fbf9ff !important; border: 1px solid var(--aw-line) !important; border-radius: 14px !important; }
+html.aw-anime .cx-ansp-fact span { color: var(--aw-mute) !important; }
+html.aw-anime .cx-ansp-fact b { color: var(--aw-ink) !important; }
+html.aw-anime .cx-ansp-ring { background: #fff !important; color: var(--aw-violet) !important; border: 1px solid #eee4ff !important; }
+html.aw-anime .cx-ansp-ring b { color: var(--aw-violet) !important; }
+html.aw-anime .cx-ansp-ring i { color: var(--aw-mute) !important; }
+html.aw-anime .cx-ab-mark { color: #ffb7d5 !important; -webkit-text-fill-color: #ffb7d5 !important; opacity: .3 !important; background: none !important; }
+html.aw-anime .cx-ag-card { border-radius: 18px !important; box-shadow: var(--aw-sh) !important; }
+html.aw-anime .cx-ag-card b { color: #fff !important; }
+html.aw-anime .cx-ag-card small { color: rgba(255, 255, 255, .88) !important; }
+
+/* ── تبلیغ، اطلاعات، فوتر، پنجره‌ها ────────────────────────── */
+html.aw-anime .cx-ad {
+  background: linear-gradient(135deg, #fff, #fff7fb) !important;
+  border: 1px dashed #ffd6e6 !important; border-radius: 20px !important; color: #4a4463 !important;
+}
+html.aw-anime .cx-ad-lb { color: var(--aw-or) !important; font-weight: 900; }
+html.aw-anime .cx-ad-tx { color: #4a4463 !important; }
+html.aw-anime .cx-ad-btn { background: linear-gradient(135deg, var(--aw-or), #ff8a3d) !important; color: #fff !important; font-weight: 800; }
+html.aw-anime .cx-info { background: linear-gradient(180deg, #fbf9ff, #fff) !important; }
+html.aw-anime .cx-info-card {
+  background: #fff !important; border: 1px solid var(--aw-line) !important;
+  border-radius: 20px !important; color: var(--aw-ink2) !important; box-shadow: var(--aw-sh) !important;
+}
+html.aw-anime .cx-info-card b { color: var(--aw-ink) !important; -webkit-text-fill-color: var(--aw-ink) !important; background: none !important; }
+html.aw-anime .cx-info-card p { color: var(--aw-ink2) !important; }
+html.aw-anime .cx-info-card summary { color: var(--aw-ink) !important; font-weight: 800; }
+html.aw-anime .cx-info-card details { border-color: var(--aw-line) !important; }
+html.aw-anime .cx-info-card .cx-btn.ghost { background: #fff8fc !important; color: var(--aw-pink) !important; border: 1px solid #ffd6e6 !important; font-weight: 800; }
+html.aw-anime .cx-note { color: var(--aw-mute) !important; }
+html.aw-anime .cx-foot { background: #fff !important; border-top: 1px solid var(--aw-line) !important; color: var(--aw-ink2) !important; }
+html.aw-anime .cx-foot b { color: var(--aw-ink) !important; }
+html.aw-anime .cx-foot a { color: var(--aw-ink2) !important; }
+html.aw-anime .cx-foot a:hover { color: var(--aw-pink) !important; }
+html.aw-anime .cx-foot-lb { color: var(--aw-mute) !important; border-color: var(--aw-line) !important; }
+html.aw-anime .cx-skip { background: #fff !important; color: var(--aw-ink) !important; }
+html.aw-anime .cx-modal-in, html.aw-anime .cx-sheet-in { background: #fff !important; color: var(--aw-ink2) !important; border-radius: 22px !important; }
+html.aw-anime .cx-modal h2, html.aw-anime .cx-sheet-h b, html.aw-anime .cx-dt-h { color: var(--aw-ink) !important; }
+html.aw-anime .cx-kbd { background: #fff !important; color: var(--aw-ink2) !important; border: 1px solid var(--aw-line) !important; }
+html.aw-anime #cxProg > i { background: linear-gradient(90deg, var(--aw-or), var(--aw-pink)) !important; }
+html.aw-anime #cxTop { background: #fff !important; color: var(--aw-ink) !important; border: 1px solid var(--aw-line) !important; box-shadow: var(--aw-sh) !important; }
+
+/* ── موبایل ────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  html.aw-anime .cx-hero { border-radius: 24px !important; }
+  html.aw-anime .cx-hero h2 { font-size: 22px !important; }
+  html.aw-anime .cx-card { border-radius: 18px !important; }
+  html.aw-anime .cx-head h1, html.aw-anime #cxTitle { font-size: 19px !important; }
+  html.aw-anime .cx-an-stat { padding: 9px 10px !important; border-radius: 14px !important; }
+  html.aw-anime .cx-body { padding: 8px 10px 10px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.aw-anime .cx-card:hover { transform: none; }
+}
