@@ -1,6 +1,6 @@
-/* RONIN FILM EXTRAS — cinema-extras2.js
+/* RONIN CINEMA EXTRAS — cinema-extras2.js
    لایهٔ سبک روی صفحهٔ فیلم/سریال/انیمه: نوار پیشرفت خواندن، دکمهٔ بازگشت به بالا،
-   میان‌بر «/» و لودر لایه‌های مرتب‌سازی و پلیر. */
+   ورود نرم کارت‌ها هنگام اسکرول و میان‌بر «/» برای جست‌وجو. چیدمان را تغییر نمی‌دهد. */
 "use strict";
 (function () {
   if (window.__cxExtra2) return;
@@ -62,6 +62,7 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
+  /* میان‌بر جست‌وجو */
   document.addEventListener("keydown", function (e) {
     if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
     var a = document.activeElement;
@@ -82,6 +83,24 @@
     document.head.appendChild(t);
   })();
 
+  /* نوار تب حرفه‌ای */
+  (function loadTabsPro() {
+    if (window.__cxTabsPro) return;
+    var t = document.createElement("script");
+    t.src = "cinema-tabs-pro.js?v=1";
+    t.defer = true;
+    document.head.appendChild(t);
+  })();
+
+  /* ارتقای صفحهٔ انیمه */
+  (function loadAnimePlus() {
+    if (window.__cxAnimePlus) return;
+    var t = document.createElement("script");
+    t.src = "anime-plus.js?v=1";
+    t.defer = true;
+    document.head.appendChild(t);
+  })();
+
   /* لایهٔ ارتقای پلیر */
   (function loadPU() {
     if (window.__puPlayer) return;
@@ -91,6 +110,7 @@
     document.head.appendChild(t);
   })();
 
+  /* راهنما یک‌بار دیده می‌شود */
   try {
     if (!localStorage.getItem("cx_kbd_seen")) {
       kbd.classList.add("on");
