@@ -17,6 +17,20 @@
     try { return (window.RoninCinema && RoninCinema.catalog()) || []; } catch (e) { return []; }
   }
   function anime() { return cat().filter(function (x) { return x.kind === "anime"; }); }
+  function animeOn() {
+    try {
+      var s = window.RoninCinema && RoninCinema.state;
+      if (s) return s.kind === "anime" && !s.mine;
+    } catch (e) {}
+    return document.body.classList.contains("cx-anime-mode");
+  }
+  var modeTries = 0;
+  function syncMode() {
+    if (modeTries > 2) return;
+    if (!animeOn() || document.body.classList.contains("cx-anime-mode")) return;
+    modeTries++;
+    try { if (window.RoninCinema && RoninCinema.reload) RoninCinema.reload(); } catch (e) {}
+  }
   function byId(id) {
     var l = cat();
     for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i];
@@ -128,7 +142,7 @@
       if (chips && chips.parentNode === main) chips.insertAdjacentElement("beforebegin", stud);
       else main.appendChild(stud);
     }
-    var on = document.body.classList.contains("cx-anime-mode");
+    var on = animeOn();
     stats.hidden = !on;
     stud.hidden = !on;
     if (!on) { stats.innerHTML = ""; stud.innerHTML = ""; return; }
@@ -139,7 +153,7 @@
 
   function paintCards() {
     var grid = document.getElementById("cxGrid");
-    if (!grid || !document.body.classList.contains("cx-anime-mode")) return;
+    if (!grid || !animeOn()) return;
     var list = anime().slice().sort(function (a, b) { return num(b.rate) - num(a.rate); });
     var rank = {};
     list.slice(0, 10).forEach(function (x, i) { rank[x.id] = i + 1; });
@@ -171,7 +185,7 @@
   }
 
   function refresh() {
-    try { paintBars(); paintCards(); } catch (e) {}
+    try { syncMode(); paintBars(); paintCards(); } catch (e) {}
   }
 
   function hook() {
