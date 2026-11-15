@@ -24,12 +24,32 @@
     } catch (e) {}
     return document.body.classList.contains("cx-anime-mode");
   }
-  var modeTries = 0;
+  function railHTML() {
+    var list = anime().slice().sort(function (a, b) { return num(b.rate) - num(a.rate); }).slice(0, 10);
+    if (!list.length) return "";
+    return '<div class="cx-ar-head"><b>🔥 محبوب‌ترین انیمه‌ها</b><span>RONIN TOP ' + fa(list.length) + '</span></div>' +
+      '<div class="cx-ar-track">' + list.map(function (x, i) {
+        var r = num(x.rate), g = i < 3 ? " g" + (i + 1) : "";
+        var h = 0, s = String(x.id || x.title);
+        for (var k = 0; k < s.length; k++) h = (h * 31 + s.charCodeAt(k)) % 360;
+        return '<button class="cx-ar-card" type="button" data-id="' + esc(x.id) + '">' +
+          '<span class="cx-ar-rank' + g + '">' + fa(i + 1) + '</span>' +
+          '<span class="cx-ar-art" style="background:linear-gradient(150deg,hsl(' + h + ' 68% 30%),hsl(' + ((h + 45) % 360) + ' 72% 18%))">' +
+            (x.poster ? '<img src="' + esc(x.poster) + '" alt="' + esc(x.title) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : "<i>🌸</i>") +
+            '<span class="cx-ar-play">▶</span></span>' +
+          '<span class="cx-ar-meta"><b>' + esc(x.title) + '</b><small>★ ' + fa(r.toFixed(1)) +
+          " • " + esc(x.studio || x.country || "") + '</small><span class="cx-ar-bar"><i style="width:' +
+          Math.max(4, Math.min(100, Math.round(r * 10))) + '%"></i></span></span></button>';
+      }).join("") + "</div>";
+  }
   function syncMode() {
-    if (modeTries > 2) return;
-    if (!animeOn() || document.body.classList.contains("cx-anime-mode")) return;
-    modeTries++;
-    try { if (window.RoninCinema && RoninCinema.reload) RoninCinema.reload(); } catch (e) {}
+    if (!animeOn()) return;
+    if (!document.body.classList.contains("cx-anime-mode")) document.body.classList.add("cx-anime-mode");
+    var rail = document.getElementById("cxAnimeRail");
+    if (rail && (rail.hidden || !rail.querySelector(".cx-ar-card"))) {
+      if (!rail.querySelector(".cx-ar-card")) rail.innerHTML = railHTML();
+      rail.hidden = false;
+    }
   }
   function byId(id) {
     var l = cat();
@@ -135,7 +155,7 @@
     var head = main.querySelector(".cx-head");
     if (!head) return;
     var stats = box("cxAnStats");
-    if (stats.previousElementSibling !== head) head.insertAdjacentElement("afterend", stats);
+    if (stats.parentNode !== main || stats.previousElementSibling !== head) head.insertAdjacentElement("afterend", stats);
     var stud = box("cxAnStudios");
     if (!stud.parentNode) {
       var chips = document.getElementById("cxChips");
