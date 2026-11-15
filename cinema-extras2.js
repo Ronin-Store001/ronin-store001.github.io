@@ -1,3 +1,6 @@
+/* RONIN FILM EXTRAS — cinema-extras2.js
+   لایهٔ سبک روی صفحهٔ فیلم/سریال/انیمه: نوار پیشرفت خواندن، دکمهٔ بازگشت به بالا،
+   میان‌بر «/» و لودر لایه‌های مرتب‌سازی و پلیر. */
 "use strict";
 (function () {
   if (window.__cxExtra2) return;
@@ -69,6 +72,15 @@
     q.focus();
     q.select();
   });
+
+  /* مرتب‌سازی صفحه */
+  (function loadTidy() {
+    if (window.__cxTidy) return;
+    var t = document.createElement("script");
+    t.src = "cinema-tidy.js?v=1";
+    t.defer = true;
+    document.head.appendChild(t);
+  })();
 
   /* لایهٔ ارتقای پلیر */
   (function loadPU() {
