@@ -1,6 +1,4 @@
-/* RONIN COMPANION ART v2 — companion-art.js
-   همهٔ همراه‌های دست‌ساز (قدیمی و تازه) تمام‌تنه و متحرک: نفس کشیدن، تکان دست‌ها،
-   راه رفتن و رقص. با کلیک روی همراهِ صفحه، حرکات رقص اجرا می‌شود. */
+/* RONIN COMPANION ART v2 — companion-art.js */
 "use strict";
 (function boot() {
   if (window.__compArt) return;
@@ -135,6 +133,7 @@
     n.setAttribute("data-skin", id);
     var cur = n.querySelector(".rnArt");
     if (cur && cur.getAttribute("data-art") === id) return;
+    cur = cur || n.querySelector("svg");
     var tmp = document.createElement("div");
     tmp.innerHTML = svg(id, t);
     var sv = tmp.querySelector("svg");
