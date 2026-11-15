@@ -34,6 +34,7 @@
     if (e.target && e.target.closest && e.target.closest("#liteBtn")) { e.preventDefault(); flip(); }
   });
 
+  /* پنل مالک: پیام‌ها و آمار بازدید — فقط وقتی R آماده و کاربر مالک است */
   function ownerLayer() {
     var n = 0;
     (function wait() {
@@ -45,6 +46,7 @@
     })();
   }
 
+  /* پرمیوم: قیمت‌ها و تایمر — بعد از آماده شدن لایهٔ پرمیوم */
   function premCore() {
     var n = 0;
     (function wait() {
@@ -64,6 +66,7 @@
     if (!window.__compPack2) load("companion-pack2.js?v=1", "compPack2Js");
     if (!window.__compExtra) load("companion-extra.js?v=1", "compExtraJs");
     if (!window.__compArt) load("companion-art.js?v=1", "compArtJs");
+    if (!window.__rnNaruto) load("naruto-guide.js?v=1", "rnNarutoJs");
     if (!window.__rnSkin) load("theme-skin.js?v=1", "rnSkinJs");
     if (!window.__owPrefs) load("owner-prefs.js?v=1", "owPrefsJs");
     if (!window.__owFix) load("owner-fix.js?v=1", "owFixJs");
