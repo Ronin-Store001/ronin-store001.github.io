@@ -345,7 +345,6 @@ html.aw-anime .cx-ansp-fact b { color: var(--aw-ink) !important; }
 html.aw-anime .cx-ansp-ring { background: #fff !important; color: var(--aw-violet) !important; border: 1px solid #eee4ff !important; }
 html.aw-anime .cx-ansp-ring b { color: var(--aw-violet) !important; }
 html.aw-anime .cx-ansp-ring i { color: var(--aw-mute) !important; }
-html.aw-anime .cx-ab-mark { color: #ffb7d5 !important; -webkit-text-fill-color: #ffb7d5 !important; opacity: .3 !important; background: none !important; }
 html.aw-anime .cx-ag-card { border-radius: 18px !important; box-shadow: var(--aw-sh) !important; }
 html.aw-anime .cx-ag-card b { color: #fff !important; }
 html.aw-anime .cx-ag-card small { color: rgba(255, 255, 255, .88) !important; }
@@ -393,3 +392,33 @@ html.aw-anime #cxTop { background: #fff !important; color: var(--aw-ink) !import
 @media (prefers-reduced-motion: reduce) {
   html.aw-anime .cx-card:hover { transform: none; }
 }
+
+/* ── اصلاح خوانایی عنوان‌های بند اسپات‌لایت ─────────────────── */
+html.aw-anime .cx-anime-band h2,
+html.aw-anime .cx-anime-band h3,
+html.aw-anime .cx-anime-band b,
+html.aw-anime .cx-anime-band strong {
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: var(--aw-ink) !important;
+  color: var(--aw-ink) !important;
+  text-shadow: none !important;
+}
+html.aw-anime .cx-anime-band h2 { font-size: clamp(20px, 2.4vw, 30px) !important; font-weight: 900 !important; }
+html.aw-anime .cx-anime-band p,
+html.aw-anime .cx-anime-band small { color: var(--aw-ink2) !important; -webkit-text-fill-color: var(--aw-ink2) !important; }
+html.aw-anime .cx-anime-band span { color: var(--aw-ink2) !important; -webkit-text-fill-color: var(--aw-ink2) !important; }
+html.aw-anime .cx-anime-band .cx-ansp-top,
+html.aw-anime .cx-anime-band .cx-ansp-meta span,
+html.aw-anime .cx-anime-band .cx-ansp-meta .rt,
+html.aw-anime .cx-anime-band .cx-ab-chip,
+html.aw-anime .cx-anime-band .cx-ab-k {
+  -webkit-text-fill-color: currentColor !important;
+}
+html.aw-anime .cx-anime-band .cx-ansp-top { color: #fff !important; background: linear-gradient(135deg, var(--aw-or), var(--aw-pink)) !important; }
+html.aw-anime .cx-anime-band .cx-ab-chip { color: var(--aw-violet) !important; }
+html.aw-anime .cx-anime-band .cx-ab-k { color: var(--aw-pink) !important; }
+html.aw-anime .cx-anime-band .cx-ansp-meta span,
+html.aw-anime .cx-anime-band .cx-ansp-meta .rt { color: var(--aw-pink) !important; }
+html.aw-anime .cx-anime-band .cx-ab-mark { color: #ffc2da !important; -webkit-text-fill-color: #ffc2da !important; opacity: .5 !important; }
