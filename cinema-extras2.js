@@ -62,7 +62,6 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  /* میان‌بر جست‌وجو */
   document.addEventListener("keydown", function (e) {
     if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
     var a = document.activeElement;
@@ -74,7 +73,6 @@
     q.select();
   });
 
-  /* مرتب‌سازی صفحه */
   (function loadTidy() {
     if (window.__cxTidy) return;
     var t = document.createElement("script");
@@ -83,7 +81,6 @@
     document.head.appendChild(t);
   })();
 
-  /* نوار تب حرفه‌ای */
   (function loadTabsPro() {
     if (window.__cxTabsPro) return;
     var t = document.createElement("script");
@@ -92,7 +89,6 @@
     document.head.appendChild(t);
   })();
 
-  /* ارتقای صفحهٔ انیمه */
   (function loadAnimePlus() {
     if (window.__cxAnimePlus) return;
     var t = document.createElement("script");
@@ -101,7 +97,14 @@
     document.head.appendChild(t);
   })();
 
-  /* لایهٔ ارتقای پلیر */
+  (function loadAnimeLight() {
+    if (window.__cxAnimeLight) return;
+    var t = document.createElement("script");
+    t.src = "anime-light.js?v=1";
+    t.defer = true;
+    document.head.appendChild(t);
+  })();
+
   (function loadPU() {
     if (window.__puPlayer) return;
     var t = document.createElement("script");
@@ -110,7 +113,6 @@
     document.head.appendChild(t);
   })();
 
-  /* راهنما یک‌بار دیده می‌شود */
   try {
     if (!localStorage.getItem("cx_kbd_seen")) {
       kbd.classList.add("on");
