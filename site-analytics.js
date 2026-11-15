@@ -20,7 +20,7 @@
   var day = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
   var path = "site/views/" + page + "/" + day;
 
-  function bump(node) {
+  function bump(node, next) {
     fetch(DB + "/" + node + ".json")
       .then(function (r) {
         if (!r.ok) {
@@ -35,11 +35,17 @@
           method: "PUT", headers: { "Content-Type": "application/json" }, body: String(n)
         });
       })
-      .then(function () { try { sessionStorage.setItem(key, "1"); } catch (e) {} })
+      .then(function () {
+        try { sessionStorage.setItem(key, "1"); } catch (e) {}
+        if (next) next();
+      })
       .catch(function () {});
   }
 
-  bump(path);
-  bump("site/views/_total/" + day);
-  setTimeout(function () { bump("site/views/" + page + "/_last"); }, 1200);
+  /* زنجیره‌ای: اگر اولین درخواست رد شود، بقیه فرستاده نمی‌شوند */
+  bump(path, function () {
+    bump("site/views/_total/" + day, function () {
+      setTimeout(function () { bump("site/views/" + page + "/_last"); }, 1200);
+    });
+  });
 })();
