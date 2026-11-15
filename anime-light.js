@@ -1,4 +1,4 @@
-/* RONIN ANIME WORLD LOADER — anime-light.js (v3)
+/* RONIN ANIME WORLD LOADER — anime-light.js (v4)
    فایل استایل کامل صفحهٔ انیمه (anime-world.css) را بارگذاری می‌کند و کلاس
    aw-anime را روی <html> می‌گذارد؛ فقط در حالت انیمه فعال می‌شود. */
 "use strict";
@@ -11,7 +11,7 @@
     var l = document.createElement("link");
     l.id = "rnAnimeWorldCss";
     l.rel = "stylesheet";
-    l.href = "anime-world.css?v=3";
+    l.href = "anime-world.css?v=4";
     (document.head || document.documentElement).appendChild(l);
   }
 
