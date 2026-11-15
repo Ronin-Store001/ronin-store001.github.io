@@ -71,9 +71,9 @@
     "site": {
       "contact": {
         ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'",
+        ".write": true,
         "$id": {
-          ".write": "!data.exists() || root.child('users').child(auth.uid).child('role').val() === 'owner'",
-          ".validate": "root.child('users').child(auth.uid).child('role').val() === 'owner' || newData.hasChildren(['name', 'msg'])",
+          ".validate": "newData.hasChildren(['name', 'msg'])",
           "name": {
             ".validate": "newData.isString() && newData.val().length <= 60"
           },
@@ -88,9 +88,6 @@
           },
           "at": {
             ".validate": "newData.isNumber()"
-          },
-          "seen": {
-            ".validate": "newData.isBoolean()"
           }
         }
       },
@@ -102,6 +99,10 @@
             ".validate": "newData.isNumber()"
           }
         }
+      },
+      "prefs": {
+        ".read": true,
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
       }
     },
     "$other": {
