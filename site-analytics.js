@@ -12,6 +12,9 @@
   var key = "rn_seen_" + page;
 
   try { if (sessionStorage.getItem(key)) return; } catch (e) {}
+  /* اگر قواعد دیتابیس خواندن را رد کند، بی‌صدا خاموش می‌شود (بدون خطای تکرارشونده) */
+  var OFF = "rn_stats_off";
+  try { if (+localStorage.getItem(OFF) > Date.now()) return; } catch (e) {}
 
   var d = new Date();
   var day = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
@@ -19,7 +22,13 @@
 
   function bump(node) {
     fetch(DB + "/" + node + ".json")
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (!r.ok) {
+          try { localStorage.setItem(OFF, String(Date.now() + 6 * 3600e3)); } catch (e) {}
+          throw new Error("denied");
+        }
+        return r.json();
+      })
       .then(function (v) {
         var n = (+v || 0) + 1;
         return fetch(DB + "/" + node + ".json", {
