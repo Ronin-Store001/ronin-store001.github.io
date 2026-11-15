@@ -1,6 +1,3 @@
-/* RONIN FILM EXTRAS — cinema-extras2.js
-   لایهٔ سبک روی صفحهٔ فیلم/سریال/انیمه: نوار پیشرفت خواندن، دکمهٔ بازگشت به بالا
-   و میان‌بر «/» برای جست‌وجو. چیدمان و انیمیشن‌های کارت‌ها را تغییر نمی‌دهد. */
 "use strict";
 (function () {
   if (window.__cxExtra2) return;
@@ -62,7 +59,6 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  /* میان‌بر جست‌وجو */
   document.addEventListener("keydown", function (e) {
     if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
     var a = document.activeElement;
@@ -74,7 +70,15 @@
     q.select();
   });
 
-  /* راهنما یک‌بار دیده می‌شود */
+  /* لایهٔ ارتقای پلیر */
+  (function loadPU() {
+    if (window.__puPlayer) return;
+    var t = document.createElement("script");
+    t.src = "player-ultra.js?v=1";
+    t.defer = true;
+    document.head.appendChild(t);
+  })();
+
   try {
     if (!localStorage.getItem("cx_kbd_seen")) {
       kbd.classList.add("on");
@@ -82,4 +86,5 @@
       localStorage.setItem("cx_kbd_seen", "1");
     }
   } catch (e) {}
+
 })();
