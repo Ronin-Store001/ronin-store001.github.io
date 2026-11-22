@@ -1,10 +1,10 @@
 {
   "rules": {
-    ".read": true,
+    ".read": false,
     ".write": false,
     "users": {
+      ".read": true,
       "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'owner')",
         ".write": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'owner')",
         "role": {
           ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
@@ -15,6 +15,186 @@
         "premExp": {
           ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
         }
+      }
+    },
+    "posts": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "products": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      }
+    },
+    "news": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      }
+    },
+    "events": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      }
+    },
+    "cinema": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      }
+    },
+    "anime": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      }
+    },
+    "groups": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "groupMsgs": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "groupInvites": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "follows": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "followers": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "votes": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "online": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "bm": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "dm": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "dmBox": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "notifs": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "typing": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "orders": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "reports": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "pending": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "settings": {
+      "brand": {
+        ".read": true,
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      },
+      "site": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      },
+      "teamNote": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      },
+      "teamPin": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      }
+    },
+    "team": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
+      }
+    },
+    "teamTasks": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "chat": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "chatPlus": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "userQuestions": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "campaigns": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'owner'"
       }
     },
     "premreq": {
@@ -106,7 +286,7 @@
       }
     },
     "$other": {
-      ".read": true,
+      ".read": "auth != null",
       ".write": "auth != null"
     }
   }
