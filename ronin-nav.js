@@ -42,4 +42,4 @@ rl("ronin-premium-vip.js?v=1");
 rl("ronin-lang-money.js?v=1");
 
 /* RONIN SITE ANALYTICS — شمارندهٔ بازدید صفحه‌ها (site/views)؛ صفحهٔ اصلی هم شمرده می‌شود */
-rl("site-analytics.js?v=3");
+rl("site-analytics.js?v=4");

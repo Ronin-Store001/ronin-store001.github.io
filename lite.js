@@ -71,7 +71,7 @@
     if (!window.__owPrefs) load("owner-prefs.js?v=1", "owPrefsJs");
     if (!window.__owFix) load("owner-fix.js?v=1", "owFixJs");
     if (!window.__rnSeo) load("seo-pack.js?v=4", "rnSeoJs");
-    if (!window.__rnStats) load("site-analytics.js?v=3", "rnStatsJs");
+    if (!window.__rnStats) load("site-analytics.js?v=4", "rnStatsJs");
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
