@@ -1,41 +1,50 @@
-/* RONIN ANIME WORLD LOADER — anime-light.js (v4)
-   فایل استایل کامل صفحهٔ انیمه (anime-world.css) را بارگذاری می‌کند و کلاس
-   aw-anime را روی <html> می‌گذارد؛ فقط در حالت انیمه فعال می‌شود. */
+/* RONIN LIGHT CINEMA LOADER — anime-light.js (v6)
+   استایل روشن و رنگی صفحهٔ سینما (همه / فیلم / سریال / انیمه) را بارگذاری می‌کند.
+   نشانهٔ فعال‌سازی کلاس aw-light روی <body> است (کلاس <html> را خود سایت بازنویسی می‌کند).
+   بخش‌های مخصوص انیمه (آمار، استودیوها، ریل) فقط در حالت انیمه نمایش داده می‌شوند. */
 "use strict";
 (function () {
-  if (window.__rnAnimeWorld) return;
-  window.__rnAnimeWorld = true;
+  if (window.__rnLightCinema) return;
+  window.__rnLightCinema = true;
 
   function css() {
-    if (document.getElementById("rnAnimeWorldCss")) return;
+    if (document.getElementById("rnLightCss")) return;
     var l = document.createElement("link");
-    l.id = "rnAnimeWorldCss";
+    l.id = "rnLightCss";
     l.rel = "stylesheet";
-    l.href = "anime-world.css?v=4";
+    l.href = "anime-world.css?v=5";
     (document.head || document.documentElement).appendChild(l);
   }
 
-  function isAnime() {
-    if (/(^|[?&])kind=anime(&|$)/.test(location.search)) return true;
-    if (document.body && document.body.classList.contains("cx-anime-mode")) return true;
-    try {
-      var s = window.RoninCinema && RoninCinema.state;
-      if (s) return s.kind === "anime" && !s.mine;
-    } catch (e) {}
-    return false;
+  function state() {
+    try { return (window.RoninCinema && RoninCinema.state) || null; } catch (e) { return null; }
+  }
+
+  function kind() {
+    var s = state();
+    if (s && s.kind) return s.mine ? "mine" : s.kind;
+    var m = /(^|[?&])kind=(anime|film|series)(&|$)/.exec(location.search);
+    return m ? m[2] : "all";
   }
 
   function sync() {
-    var on = isAnime();
-    var html = document.documentElement;
-    if (html.classList.contains("aw-anime") !== on) html.classList.toggle("aw-anime", on);
-    if (on) {
-      if (document.body && !document.body.classList.contains("cx-anime-mode")) document.body.classList.add("cx-anime-mode");
+    var body = document.body;
+    if (!body) return;
+    var onCinema = !!document.querySelector(".cx-wrap") || !!document.getElementById("cxGrid");
+    if (onCinema && !body.classList.contains("aw-light")) body.classList.add("aw-light");
+    if (!onCinema) {
+      if (body.classList.contains("aw-light")) body.classList.remove("aw-light");
+      return;
+    }
+    var k = kind();
+    if (body.getAttribute("data-aw-kind") !== k) body.setAttribute("data-aw-kind", k);
+    if (k === "anime") {
+      if (!body.classList.contains("cx-anime-mode")) body.classList.add("cx-anime-mode");
       var rail = document.getElementById("cxAnimeRail");
       if (rail && rail.hidden && rail.querySelector(".cx-ar-card")) rail.hidden = false;
     }
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta && on) meta.setAttribute("content", "#fdfcff");
+    if (meta) meta.setAttribute("content", "#fdfcff");
   }
 
   css();
