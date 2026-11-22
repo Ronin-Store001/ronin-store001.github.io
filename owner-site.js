@@ -8,6 +8,15 @@
   if (window.__ownerSite) return;
   window.__ownerSite = true;
 
+  var LABELS = {
+    index: "صفحهٔ اصلی",
+    cinema: "رونین فیلم",
+    contact: "تماس با ما",
+    terms: "قوانین",
+    privacy: "حریم خصوصی",
+    "404": "صفحه ۴۰۴"
+  };
+
   var CSS = [
     "#ownerSite{margin:0 0 16px}",
     ".osw{border-radius:20px;border:1px solid rgba(140,160,255,.2);overflow:hidden;",
@@ -194,35 +203,59 @@
       d.setDate(d.getDate() - i);
       days.push({ key: dayKey(d), label: fa(d.getDate() + "/" + (d.getMonth() + 1)) });
     }
-    var idx = VIEWS.index || {}, cin = VIEWS.cinema || {}, tot = VIEWS._total || {};
+    var tot = VIEWS._total || {};
     function sum(obj) {
+      if (!obj || typeof obj !== "object") return 0;
       return Object.keys(obj).reduce(function (a, k) {
         var v = obj[k];
         return a + (typeof v === "number" ? v : 0);
       }, 0);
     }
+    function pname(k) {
+      return LABELS[k] || k;
+    }
+    /* همهٔ صفحه‌های ثبت‌شده (contact، terms، privacy، 404 و هر صفحهٔ تازهٔ دیگر) */
+    var pages = Object.keys(VIEWS).filter(function (k) {
+      return k.charAt(0) !== "_" && VIEWS[k] && typeof VIEWS[k] === "object";
+    }).map(function (k) {
+      return { k: k, all: sum(VIEWS[k]) };
+    }).sort(function (a, b) { return b.all - a.all; });
+
+    function dayOf(key) {
+      var t = +tot[key] || 0;
+      if (t) return t;
+      return pages.reduce(function (a, p) {
+        var o = VIEWS[p.k] || {};
+        return a + (+o[key] || 0);
+      }, 0);
+    }
+
     var series = days.map(function (d) {
-      return { label: d.label, idx: +idx[d.key] || 0, cin: +cin[d.key] || 0, all: +tot[d.key] || 0 };
+      return { label: d.label, all: dayOf(d.key) };
     });
-    var max = Math.max.apply(null, series.map(function (s) { return Math.max(s.all, s.idx + s.cin); }).concat([1]));
+    var max = Math.max.apply(null, series.map(function (s) { return s.all; }).concat([1]));
     var today = series[series.length - 1];
-    var allIdx = sum(idx), allCin = sum(cin);
 
     var bars = series.map(function (s) {
-      var h = Math.round((Math.max(s.all, s.idx + s.cin) / max) * 100);
+      var h = Math.round((s.all / max) * 100);
       return '<div class="osBar" title="' + esc(s.label) + " — " + fa(s.all) + ' بازدید">' +
         "<i style=\"height:" + Math.max(2, h) + '%\"></i><em>' + s.label + "</em></div>";
     }).join("");
 
-    return '<div class="osKpis">' +
-        '<div class="osK b"><span>امروز</span><b>' + money0(today.all) + "</b></div>" +
-        '<div class="osK g"><span>صفحهٔ اصلی (کل)</span><b>' + money0(allIdx) + "</b></div>" +
-        '<div class="osK c"><span>رونین فیلم (کل)</span><b>' + money0(allCin) + "</b></div>" +
-        '<div class="osK"><span>۱۴ روز اخیر</span><b>' + money0(series.reduce(function (a, s) { return a + Math.max(s.all, s.idx + s.cin); }, 0)) + "</b></div>" +
-      "</div>" +
+    var cls = ["g", "c", ""];
+    var cards = '<div class="osK b"><span>امروز</span><b>' + money0(today.all) + "</b></div>";
+    pages.slice(0, 8).forEach(function (p, i) {
+      cards += '<div class="osK ' + (cls[i % 3] || "") + '"><span>' + esc(pname(p.k)) + " (کل)</span><b>" +
+        money0(p.all) + "</b></div>";
+    });
+    if (!pages.length) cards += '<div class="osK"><span>هنوز صفحه‌ای ثبت نشده</span><b>۰</b></div>';
+    cards += '<div class="osK"><span>۱۴ روز اخیر</span><b>' +
+      money0(series.reduce(function (a, s) { return a + s.all; }, 0)) + "</b></div>";
+
+    return '<div class="osKpis">' + cards + "</div>" +
       '<div class="osChart">' + bars + "</div>" +
       '<div class="osLg"><span><i style="background:linear-gradient(180deg,#8ef0ff,#7c5cff)"></i>کل بازدید روز</span>' +
-        '<span>تفکیک صفحه‌ها در کارت‌های بالا</span></div>' +
+        "<span>تفکیک صفحه‌ها در کارت‌های بالا</span></div>" +
       '<div class="osNote">شمارش سبک و بدون سرویس بیرونی است: هر نشست یک‌بار در <b>site/views/&lt;صفحه&gt;/&lt;تاریخ&gt;</b> ثبت می‌شود (بدون IP و بدون شناسهٔ کاربر).</div>';
   }
 
