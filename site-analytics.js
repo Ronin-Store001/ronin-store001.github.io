@@ -1,5 +1,6 @@
 /* RONIN SITE ANALYTICS — شمارندهٔ بازدید سبک و بدون سرویس بیرونی
    هر بازدید یک‌بار در هر نشست در Firebase زیر site/views/<صفحه>/<تاریخ> ثبت می‌شود.
+   نام صفحه را می‌توان با window.__rnPage دستی تعیین کرد (صفحهٔ ۴۰۴ یا مسیرهای پویا).
    هیچ اطلاعات شخصی ذخیره نمی‌شود. */
 "use strict";
 (function () {
@@ -7,8 +8,11 @@
   window.__rnStats = true;
 
   var DB = "https://ronin-store-3d738-default-rtdb.firebaseio.com";
-  var page = (location.pathname.split("/").pop() || "index.html").replace(/\.html$/, "") || "index";
-  if (page === "" || page === "/") page = "index";
+
+  var page = String(window.__rnPage || "").trim();
+  if (!page) page = (location.pathname.split("/").pop() || "index.html").replace(/\.html$/, "");
+  page = page.toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40) || "other";
+
   var key = "rn_seen_" + page;
 
   try { if (sessionStorage.getItem(key)) return; } catch (e) {}
