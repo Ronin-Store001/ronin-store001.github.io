@@ -6,7 +6,7 @@
   if (window.__rnStats) return;
   window.__rnStats = true;
 
-  var DB = "https://ronin-store3d738-default-rtdb.firebaseio.com";
+  var DB = "https://ronin-store-3d738-default-rtdb.firebaseio.com";
   var page = (location.pathname.split("/").pop() || "index.html").replace(/\.html$/, "") || "index";
   if (page === "" || page === "/") page = "index";
   var key = "rn_seen_" + page;

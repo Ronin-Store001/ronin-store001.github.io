@@ -1,0 +1,58 @@
+/* RONIN CINEMA — readability on small screens
+   ریزفونت‌های صفحهٔ سینما (برچسب ژانر، امتیاز، نوع، شمارندهٔ تب، فوتر) روی موبایل
+   خیلی کوچک بودند (۸ تا ۹٬۵ پیکسل). این فایل فقط اندازه‌ها را به حد خوانا می‌رساند
+   و چیدمان را تغییر نمی‌دهد. */
+
+@media (max-width: 760px) {
+  body.aw-light .cx-bn i { font-size: 10.5px !important; }
+
+  body.aw-light .cx-hero-kick,
+  body.aw-light .cx-hero-kick b { font-size: 11px !important; }
+
+  body.aw-light .cx-hero-tags span { font-size: 11.5px !important; padding: 4px 10px !important; }
+
+  body.aw-light .cx-score i { font-size: 10px !important; }
+
+  body.aw-light .cx-hero-fact span { font-size: 10.5px !important; }
+  body.aw-light .cx-hero-fact b { font-size: 13px !important; }
+
+  body.aw-light .cx-tab { font-size: 12.5px !important; }
+  body.aw-light .cx-tab .cx-tabc {
+    font-size: 10.5px !important; min-width: 19px; height: 19px; line-height: 19px;
+  }
+
+  body.aw-light .cx-sortbox label { font-size: 11px !important; }
+  body.aw-light .cx-sortbox select { font-size: 12px !important; }
+
+  body.aw-light .cx-rate { font-size: 11px !important; padding: 3px 8px !important; }
+  body.aw-light .cx-kind { font-size: 10.5px !important; padding: 3px 8px !important; }
+
+  body.aw-light .cx-post .cx-s span,
+  body.aw-light .cx-s { font-size: 11px !important; }
+  body.aw-light .cx-t { font-size: 13px !important; }
+
+  body.aw-light .cx-chips .cx-pill,
+  body.aw-light .cx-chips > * {
+    font-size: 12px !important;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  body.aw-light .cx-anime-band .cx-ab-chip { font-size: 11px !important; }
+  body.aw-light .cx-ansp-meta span,
+  body.aw-light .cx-ansp-meta .rt { font-size: 11px !important; }
+  body.aw-light .cx-ansp-fact span { font-size: 10.5px !important; }
+  body.aw-light .cx-ansp-fact b { font-size: 13px !important; }
+
+  body.aw-light .cxad-brand,
+  body.aw-light .cxad-badge { font-size: 10.5px !important; }
+  body.aw-light .cxad-next { font-size: 11px !important; }
+  body.aw-light .cxad-tx { font-size: 12px !important; }
+
+  body.aw-light .cx-note { font-size: 11.5px !important; }
+  body.aw-light .cx-foot-lb { font-size: 11.5px !important; }
+  body.aw-light .cx-foot,
+  body.aw-light .cx-foot a,
+  body.aw-light .cx-foot p { font-size: 12px !important; }
+}
