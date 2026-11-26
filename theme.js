@@ -1,11 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════
-   RONIN STORE — theme.js v4 | موتور تم: تاریک / روشن / خودکار
+   RONIN STORE — theme.js v5 | موتور تم: تاریک / روشن / خودکار
    ───────────────────────────────────────────────────────────────
-   • سه حالت: dark، light، auto (پیش‌فرض auto = همراه با تم سیستم)
-   • چهار لهجهٔ رنگی: aurora، sakura، ember، mint (روی هر دو تم کار می‌کنند)
+   • پیش‌فرض تیره است؛ روشن و خودکار از تنظیمات انتخاب می‌شوند
+     (علت اصلی سفیدشدن هدر و نوار پایین روی صفحهٔ تیره همین بود)
+   • چهار لهجهٔ رنگی: aurora، sakura، ember، mint (روی هر دو تم کار میکنند)
    • قبل از رندر اجرا می‌شود تا پرش رنگ (flash) نداشته باشیم
    • یک منبع حقیقت: R.theme — دکمهٔ هدر، تنظیمات و منوی کناری
-     با رویداد «themechange» با هم هم‌گام می‌شوند
+     با رویداد «themechange» با هم‌گام می‌شوند
    • هم‌گام بین تب‌ها (storage) و با تغییر تم سیستم در حالت خودکار
    • پالت روشن کامل: متغیرهای پایه + سطوح تیرهٔ هاردکدشده
    ═══════════════════════════════════════════════════════════════ */
@@ -29,7 +30,8 @@
     try { return matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"; }
     catch (e) { return "dark"; }
   }
-  function norm(v) { return ORDER.indexOf(v) >= 0 ? v : "auto"; }
+  /* پیش‌فرض تیره: نبودِ انتخاب کاربر نباید سایت را به تم روشنِ نیمه‌کاره ببرد */
+  function norm(v) { return ORDER.indexOf(v) >= 0 ? v : "dark"; }
 
   function readTint() {
     try { return localStorage.getItem(TINT_KEY); } catch (e) { return null; }
@@ -67,6 +69,7 @@
     'html[data-theme="light"] .nav a:hover{background:rgba(110,80,240,.10);color:#141a2c}',
     'html[data-theme="light"] .icobtn{background:rgba(18,28,60,.05);border-color:rgba(28,40,74,.12)}',
     'html[data-theme="light"] .icobtn:hover{background:rgba(110,80,240,.14);border-color:var(--ln2)}',
+
 
     /* منوی کناری */
     'html[data-theme="light"] #rail{background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(248,250,255,.95))!important;',
