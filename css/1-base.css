@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    RONIN STORE — V19 «NEO RAIN CITY»              css/1-base.css
-   متغیرها • ریست • شهر بارانی نئونی • ابزارهای پایه
+   متغیرها • ریست • شهر بارانی نئونی • ابزارهای پایه • لایهٔ طراحی حرفه‌ای
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── ۱. متغیرها ─────────────────────────────────────────────── */
@@ -15,9 +15,14 @@
   --rail:250px; --top:66px;
   --grad:linear-gradient(135deg,var(--vio),var(--cy));
   --grad2:linear-gradient(135deg,var(--mag),var(--vio));
+  /* لایهٔ طراحی حرفه‌ای */
+  --pro-line:rgba(155,170,235,.14);
+  --pro-line-2:rgba(155,170,235,.22);
+  --pro-surf:rgba(13,17,38,.66);
+  --pro-r:18px; --pro-r-sm:13px;
 }
 
-/* ── ۲. ریست ────────────────────────────────────────────────── */
+/* ── ۲. ریست ─────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);min-height:100vh;
@@ -36,7 +41,7 @@ button{cursor:pointer;background:none;border:0;padding:0}
 ::-webkit-scrollbar-track{background:#070a1a}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--vio),var(--cy));border-radius:20px}
 
-/* ── ۳. ابزارهای پایه ───────────────────────────────────────── */
+/* ── ۳. ابزارهای پایه ───────────────────────────────────── */
 .row{display:flex;align-items:center;gap:9px}
 .row.w{flex-wrap:wrap}
 .row.c{justify-content:center}
@@ -51,7 +56,7 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .mt{margin-top:12px} .mb{margin-bottom:12px}
 .ellip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ── ۴. شهر بارانی نئونی ────────────────────────────────────── */
+/* ── ۴. شهر بارانی نئونی ─────────────────────────────────── */
 #city{position:fixed;inset:0;z-index:-5;pointer-events:none;overflow:hidden;
   background:linear-gradient(180deg,#04060f 0%,#070c22 40%,#100a2a 70%,#180e38 100%)}
 #city .haze{position:absolute;inset:0;
@@ -115,7 +120,7 @@ button{cursor:pointer;background:none;border:0;padding:0}
 #city .scan{position:absolute;inset:0;pointer-events:none;opacity:.35;
   background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
 
-/* ── ۵. عملکرد سبک / کممصرف ────────────────────────────────── */
+/* ── ۵. عملکرد سبک / کم‌مصرف ───────────────────────────────── */
 body.lite #city .rain,body.lite #city .fog,body.lite #city .train{display:none}
 body.lite #city .stars{animation:none;opacity:.55}
 @media (max-width:640px){
@@ -124,4 +129,73 @@ body.lite #city .stars{animation:none;opacity:.55}
 }
 @media (prefers-reduced-motion:reduce){
   #city *{animation:none!important}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۶. لایهٔ طراحی حرفه‌ای — ریتم ثابت تایپوگرافی، دکمه و کارت یکدست،
+   حذف تزئینات کودکانه. با !important چون آخرین فایل‌های سایت بعد از
+   این فایل بار می‌شوند.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* تایپوگرافی */
+html body{line-height:1.7}
+html body h1{font-size:clamp(23px,5vw,32px)!important;font-weight:900!important;
+  letter-spacing:-.6px;line-height:1.32!important}
+html body h2{font-size:clamp(17px,3.4vw,22px)!important;font-weight:900!important;
+  letter-spacing:-.4px;line-height:1.42!important}
+html body h3{font-size:15px!important;font-weight:900!important;letter-spacing:-.2px}
+html body .mut,html body .sm{letter-spacing:0}
+
+/* دکمه‌ها */
+html body .btn{min-height:44px!important;height:auto!important;padding:0 18px!important;
+  border-radius:var(--pro-r-sm)!important;font-weight:800!important;font-size:12.5px!important;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  transition:transform .16s ease,box-shadow .2s ease,background .2s ease,color .2s ease}
+html body .btn:hover{transform:translateY(-1px)}
+html body .btn:active{transform:none}
+html body .btn.sm{min-height:36px!important;padding:0 13px!important;font-size:11.5px!important}
+html body .btn.ghost{background:rgba(255,255,255,.05)!important;
+  border:1px solid var(--pro-line)!important;color:var(--ink)!important}
+html body .btn.p,html body .btn.d{box-shadow:0 14px 28px -18px rgba(124,92,255,1)}
+html body .icobtn{width:42px!important;height:42px!important;border-radius:var(--pro-r-sm)!important;
+  display:grid;place-items:center;border:1px solid var(--pro-line)!important;
+  background:rgba(255,255,255,.04)!important;transition:background .18s ease,border-color .18s ease}
+html body .icobtn:hover{background:rgba(124,92,255,.16)!important;border-color:var(--pro-line-2)!important}
+
+/* کارت‌ها و پنل‌ها */
+html body .card,html body .qc,html body .pnl{border-radius:var(--pro-r)!important;
+  border:1px solid var(--pro-line)!important;
+  box-shadow:0 18px 40px -30px rgba(0,0,0,.95)!important}
+html body .card:hover,html body .qc:hover{transform:translateY(-2px)}
+html body .card::before{opacity:.5}
+
+/* چیپ و تب */
+html body .chip{border-radius:999px!important;border:1px solid var(--pro-line)!important;
+  background:rgba(255,255,255,.045)!important;font-weight:800!important}
+html body .tabs{border-radius:999px!important;border:1px solid var(--pro-line)!important;
+  background:rgba(255,255,255,.045)!important}
+html body .tabs .tab{border-radius:999px!important;font-weight:800!important}
+html body .tabs .tab.on{background:var(--grad)!important;color:#06060f!important}
+
+/* فرم‌ها */
+html body .inp,html body .sel,html body .area{min-height:44px!important;
+  border-radius:var(--pro-r-sm)!important;border:1px solid var(--pro-line)!important;
+  background:rgba(6,9,22,.72)!important;padding:10px 13px!important}
+html body .inp:focus,html body .sel:focus,html body .area:focus{
+  border-color:rgba(124,92,255,.6)!important;box-shadow:0 0 0 3px rgba(124,92,255,.14)!important}
+
+/* نوار پایین */
+html body #dock .dwrap{border-radius:22px!important;border:1px solid var(--pro-line)!important;
+  box-shadow:0 22px 44px -28px rgba(0,0,0,.95)!important}
+html body #dock a{border-radius:14px!important;padding:7px 4px!important;
+  transition:color .16s ease,background .16s ease}
+html body #dock a.on{background:rgba(124,92,255,.16)!important;color:#fff!important}
+
+/* حذف تزئینات کودکانه (ماسکوت و برچسب‌های پرصدا) */
+html body #gninja{display:none!important}
+html body #city .sign{opacity:.8}
+
+@media (max-width:560px){
+  html body .btn{min-height:42px!important;padding:0 14px!important}
+  html body .card,html body .qc{border-radius:16px!important}
 }
