@@ -56,3 +56,97 @@
   body.aw-light .cx-foot a,
   body.aw-light .cx-foot p { font-size: 12px !important; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   پاس مدرن صفحهٔ سینما — هیرو تیرهٔ نئونی، کارت پوستر تمام‌قد، تب سگمنتی
+   ═══════════════════════════════════════════════════════════════ */
+body.aw-light.cx-anime-mode .cx-hero {
+  background:
+    radial-gradient(120% 130% at 88% -10%, rgba(255,111,174,.34), transparent 58%),
+    radial-gradient(90% 120% at 6% 110%, rgba(56,217,255,.28), transparent 60%),
+    linear-gradient(135deg, #1c0f3a 0%, #2a1663 46%, #0d1a33 100%) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 34px 70px -34px rgba(50,20,120,.75), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  color: #fff !important;
+}
+body.aw-light.cx-anime-mode .cx-hero-mark { color: rgba(255,255,255,.10) !important; }
+body.aw-light.cx-anime-mode .cx-hero h2,
+body.aw-light.cx-anime-mode .cx-hero h2 small { color: #fff !important; }
+body.aw-light.cx-anime-mode .cx-hero-meta { color: rgba(255,255,255,.72) !important; }
+body.aw-light.cx-anime-mode .cx-hero-kick { color: rgba(255,255,255,.72) !important; }
+body.aw-light.cx-anime-mode .cx-hero-tags span {
+  background: rgba(255,255,255,.12) !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  color: #fff !important;
+  backdrop-filter: blur(8px);
+}
+body.aw-light.cx-anime-mode .cx-hero-poster {
+  box-shadow: 0 26px 50px -22px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.18) !important;
+}
+body.aw-light.cx-anime-mode .cx-hero .cx-btn.ghost,
+body.aw-light.cx-anime-mode .cx-hero .cx-btn:not(.cx-hero-play) {
+  background: rgba(255,255,255,.12) !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  color: #fff !important;
+  backdrop-filter: blur(10px);
+}
+body.aw-light.cx-anime-mode .cx-hero-dot { background: rgba(255,255,255,.28) !important; }
+body.aw-light.cx-anime-mode .cx-hero-dot.on {
+  background: linear-gradient(135deg,#ff6fae,#8b5cf6 56%,#38d9ff) !important;
+}
+
+/* تب سگمنتی یکدست */
+body.aw-light.cx-anime-mode #cxTabs {
+  background: rgba(255,255,255,.9) !important;
+  border: 1px solid rgba(96,70,170,.14) !important;
+  border-radius: 18px !important;
+  padding: 5px !important;
+  gap: 4px !important;
+}
+body.aw-light.cx-anime-mode #cxTabs .cx-tab {
+  border: 0 !important;
+  background: transparent !important;
+  border-radius: 13px !important;
+  color: #5b5478 !important;
+  font-weight: 900 !important;
+}
+body.aw-light.cx-anime-mode #cxTabs .cx-tab.on {
+  background: linear-gradient(135deg,#ff6fae,#8b5cf6 56%,#38d9ff) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 24px -14px rgba(139,92,246,.95) !important;
+}
+body.aw-light.cx-anime-mode #cxTabs .cx-tab.on .cx-tabc {
+  background: rgba(255,255,255,.24) !important;
+  color: #fff !important;
+}
+
+/* کارت پوستر تمام‌قد با عنوان روی تصویر */
+body.aw-light.cx-anime-mode .cx-card .cx-post { position: relative; }
+body.aw-light.cx-anime-mode .cx-card .cx-body {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 26px 10px 10px !important;
+  background: linear-gradient(180deg, transparent, rgba(10,5,26,.55) 45%, rgba(8,4,20,.92)) !important;
+  border-radius: 0 0 19px 19px;
+}
+body.aw-light.cx-anime-mode .cx-card .cx-t { color: #fff !important; }
+body.aw-light.cx-anime-mode .cx-card .cx-s,
+body.aw-light.cx-anime-mode .cx-card .cx-s span { color: rgba(255,255,255,.72) !important; }
+body.aw-light.cx-anime-mode .cx-card .cx-body [style*="var(--ok)"] { color: #7cf0c4 !important; }
+
+/* چیدمان دو ستونهٔ پوستر روی موبایل */
+@media (max-width: 640px) {
+  body.aw-light.cx-anime-mode .cx-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 11px !important;
+  }
+  body.aw-light.cx-anime-mode .cx-card { border-radius: 18px !important; }
+}
+
+/* کاشی ژانر با تن رنگی نرم */
+body.aw-light.cx-anime-mode .cx-ag-card:nth-child(4n+1) { background: linear-gradient(150deg,#fff,#ffeaf4) !important; }
+body.aw-light.cx-anime-mode .cx-ag-card:nth-child(4n+2) { background: linear-gradient(150deg,#fff,#eef0ff) !important; }
+body.aw-light.cx-anime-mode .cx-ag-card:nth-child(4n+3) { background: linear-gradient(150deg,#fff,#e8fbff) !important; }
+body.aw-light.cx-anime-mode .cx-ag-card:nth-child(4n+4) { background: linear-gradient(150deg,#fff,#f3e9ff) !important; }
