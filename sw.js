@@ -1,9 +1,10 @@
 /* RONIN STORE — service worker v3 */
-var CACHE = "ronin-v60";
+var CACHE = "ronin-v61";
 
 var CORE = [
   "./", "./index.html", "./offline.html", "./ronin-offline.js?v=8", "./manifest.json",
   "./icon-192.png", "./icon-512.png", "./icon.svg",
+  "./css/1-base.css", "./css/2-ui.css", "./css/3-panels.css", "./css/4-mobile.css",
   "./ronin-zero.css?v=12", "./ronin-2026.css?v=1", "./css/5-community.css?v=1",
   "./css/6-market.css?v=1", "./css/7-world-pro.css?v=2", "./css/8-account-pro.css?v=1",
   "./users.js?v=2", "./inbox.js?v=3", "./settings-pro.js?v=1", "./ronin-account-pro.js?v=1",
@@ -17,8 +18,8 @@ var CORE = [
   "./cinema-ads.js?v=1", "./cinema-ads2.js?v=1", "./cinema-skin.css?v=1", "./cinema-skin2.css?v=1",
   "./cinema-player-pro.js?v=1", "./cinema-ux2.js?v=1", "./cinema-extras2.js?v=1",
   "./premium-core.js?v=1", "./theme-pack2.js?v=1", "./companion-pack2.js?v=1", "./companion-extra.js?v=1", "./player-ultra.js?v=1", "./companion-art.js?v=1",
-  "./theme-skin.js?v=1", "./owner-prefs.js?v=1", "./owner-fix.js?v=1", "./cinema-tidy.js?v=1", "./cinema-tabs-pro.js?v=1", "./anime-plus.js?v=1", "./naruto-guide.js?v=1", "./anime-light.js?v=6", "./anime-world.css?v=5", "./cinema-mobile.css?v=1",
-  "./ads-studio.js?v=1", "./owner-site.js?v=2", "./ronin-nav.js", "./theme.js?v=4",
+  "./theme-skin.js?v=1", "./owner-prefs.js?v=1", "./owner-fix.js?v=1", "./cinema-tidy.js?v=1", "./cinema-tabs-pro.js?v=1", "./anime-plus.js?v=1", "./naruto-guide.js?v=1", "./anime-light.js?v=7", "./anime-world.css?v=5", "./cinema-mobile.css?v=3",
+  "./ads-studio.js?v=1", "./owner-site.js?v=2", "./ronin-nav.js",
   "./seo-pack.js?v=4", "./site-analytics.js?v=4", "./privacy.html", "./terms.html", "./contact.html",
   "./404.html", "./lite.js"
 ];
